@@ -26,10 +26,12 @@
 
 <h1><b>Blackdagger</b></h1>
 
-blackdagger is a powerful Cron alternative that comes with a Web UI. It allows you to define dependencies between commands as a [Directed Acyclic Graph (DAG)](https://en.wikipedia.org/wiki/Directed_acyclic_graph) in a declarative [YAML format](https://blackdagger.readthedocs.io/en/latest/yaml_format.html). Additionally, blackdagger natively supports running Docker containers, making HTTP requests, and executing commands over SSH.
+
+
+Blackdagger is a potent alternative to Cron, enhanced with a Web UI, designed for DevOps, DevSecOps, MLOps, MLSecOps, and Continuous Red Teaming (CART) environments. It enables the definition of command dependencies using a [Directed Acyclic Graph (DAG)](https://en.wikipedia.org/wiki/Directed_acyclic_graph) in a declarative [YAML format](https://blackdagger.readthedocs.io/en/latest/yaml_format.html). Furthermore, Blackdagger natively supports Docker container management, making HTTP requests, and executing commands over SSH, offering a versatile toolset for complex automation workflows.
 
 - [Documentation](https://blackdagger.readthedocs.io) 
-- [Discord Community](https://discord.gg/gpahPUjGRk)
+
 
 ## **Highlights**
 - Single binary file installation
@@ -37,6 +39,9 @@ blackdagger is a powerful Cron alternative that comes with a Web UI. It allows y
 - Web UI for visually managing, rerunning, and monitoring pipelines
 - Use existing programs without any modification
 - Self-contained, with no need for a DBMS
+- Suitable for Continuous Red Teaming (CART)
+- Suitable for DevOps and DevSecOps
+- Suitable for MLOps and MLSecOps
 
 ## **Table of Contents**
 
@@ -51,7 +56,6 @@ blackdagger is a powerful Cron alternative that comes with a Web UI. It allows y
   - [Execution History](#execution-history)
   - [DAG Execution Log](#dag-execution-log)
 - [Installation](#installation)
-  - [Via Homebrew](#via-homebrew)
   - [Via Bash script](#via-bash-script)
   - [Via Docker](#via-docker)
   - [Via GitHub Release Page](#via-github-release-page)
@@ -105,6 +109,13 @@ blackdagger is a powerful Cron alternative that comes with a Web UI. It allows y
 - **CI/CD Integration:** Automate code deployment, testing, and environment updates.
 - **Alerting System:** Create notifications based on specific triggers or conditions.
 - **Custom Task Automation:** Define and schedule custom tasks using code snippets.
+- **Model Training Automation:** Automate the training of machine learning models by scheduling jobs that run on new data sets. Use Blackdagger to manage dependencies between data preprocessing, training, evaluation, and deployment tasks.
+- **Model Deployment Pipeline:** Create a DAG to automate the deployment of trained models to production environments, including steps for model validation, containerization with Docker, and deployment using SSH commands.
+- **Security Scans Integration:** Schedule regular security scans and static code analysis as part of the CI/CD pipeline. Use Blackdagger to orchestrate these tasks, ensuring that deployments are halted if vulnerabilities are detected.
+- **Automated Compliance Checks:** Set up workflows to automatically run compliance checks against infrastructure and codebase, reporting results via HTTP requests to compliance monitoring tools.
+- **Automated Penetration Testing:** Schedule and manage continuous penetration testing activities. Define dependencies in Blackdagger to ensure that penetration tests are conducted after deployment but before wide release, using Docker containers to isolate testing environments.
+- **Threat Simulation and Response:** Automate the execution of threat simulations to test the effectiveness of security measures. Use Blackdagger to orchestrate complex scenarios involving multiple steps, such as breaching a system, escalating privileges, and exfiltrating data, followed by automated rollback and alerting.
+
 
 ## **Web UI**
 
@@ -383,6 +394,4 @@ We welcome any and all contributions!
 
 ## **License**
 
-This project is licensed under the GNU GPLv3.
-This project forked from [here](https://github.com/dagu-dev/dagu) and designed to evolve different purpose.
-
+This project is licensed under the GNU GPLv3. It was forked from [Dagu](https://github.com/dagu-dev/dagu) and has been adapted to serve a different purpose. While Dagu is an excellent project, its current objectives do not align with ours.

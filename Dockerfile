@@ -2,7 +2,7 @@
 FROM --platform=$BUILDPLATFORM alpine:latest
 
 ARG TARGETARCH
-ARG VERSION=1.0.5 
+ARG VERSION=1.0.0 
 ARG RELEASES_URL="https://github.com/ErdemOzgen/blackdagger/releases"
 ARG TARGET_FILE="dagu_${VERSION}_linux_${TARGETARCH}.tar.gz"
 
