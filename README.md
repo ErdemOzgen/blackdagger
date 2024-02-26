@@ -123,34 +123,34 @@ Blackdagger is a potent alternative to Cron, enhanced with a Web UI, designed fo
 
 It shows the real-time status, logs, and DAG configurations. You can edit DAG configurations on a browser.
 
-  ![example](assets/images/demo.gif?raw=true)
+  ![example](assets/images/demo.png)
 
   You can switch to the vertical graph with the button on the top right corner.
 
-  ![Details-TD](assets/images/ui-details2.webp?raw=true)
+  ![Details-TD](assets/images/ui-details.png?raw=true)
 
 ### DAGs List
 
 It shows all DAGs and the real-time status.
 
-  ![DAGs](assets/images/ui-dags.webp?raw=true)
+  ![DAGs](assets/images/ui-dags.png)
 
 ### Search DAGs
 
 It greps given text across all DAGs.
-  ![History](assets/images/ui-search.webp?raw=true)
+  ![History](assets/images/ui-search.png?raw=true)
 
 ### Execution History
 
 It shows past execution results and logs.
 
-  ![History](assets/images/ui-history.webp?raw=true)
+  ![History](assets/images/ui-history.png)
 
 ### DAG Execution Log
 
 It shows the detail log and standard output of each execution and step.
 
-  ![DAG Log](assets/images/ui-logoutput.webp?raw=true)
+  ![DAG Log](assets/images/ui-logoutput.png)
 
 ## **Installation**
 
@@ -299,7 +299,7 @@ exit
 
 This example workflow showcases a data pipeline typically implemented in DevOps and Data Engineering scenarios. It demonstrates an end-to-end data processing cycle starting from data acquisition and cleansing to transformation, loading, analysis, reporting, and ultimately, cleanup.
 
-![Details-TD](assets/images/example.webp?raw=true)
+![Details-TD](assets/images/example.png)
 
 The YAML code below represents this workflow:
 
