@@ -384,7 +384,5 @@ We welcome any and all contributions!
 ## **License**
 
 This project is licensed under the GNU GPLv3.
+This project forked from [here](https://github.com/dagu-dev/dagu) and designed to evolve different purpose.
 
-## **Support and Community**
-
-Join our [Discord community](https://discord.gg/gpahPUjGRk) to ask questions, request features, and share your ideas.
