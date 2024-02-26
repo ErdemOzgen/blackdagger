@@ -1,0 +1,10 @@
+handlerOn:
+  Exit:
+    command: "true"
+steps:
+  - name: "1"
+    command: "true"
+  - name: "2"
+    command: "true"
+    depends:
+      - "1"

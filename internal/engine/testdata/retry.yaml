@@ -1,0 +1,4 @@
+params: "a b c"
+steps:
+  - name: "1"
+    command: "true"

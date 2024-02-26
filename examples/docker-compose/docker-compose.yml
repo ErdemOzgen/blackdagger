@@ -1,0 +1,41 @@
+version: "3.9"
+services:
+
+  # init container updates permission
+  init:
+    image: "yohamta/blackdagger:latest"
+    user: root
+    volumes:
+      - blackdagger:/home/blackdagger/.blackdagger
+    command: chown -R blackdagger /home/blackdagger/.blackdagger/
+
+  # ui server process
+  server:
+    image: "yohamta/blackdagger:latest"
+    environment:
+      - blackdagger_PORT=8080
+      - blackdagger_DAGS=/home/blackdagger/.blackdagger/dags
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - blackdagger:/home/blackdagger/.blackdagger
+      - ./dags/:/home/blackdagger/.blackdagger/dags
+    depends_on:
+      - init
+
+  # scheduler process
+  scheduler:
+    image: "yohamta/blackdagger:latest"
+    environment:
+      - blackdagger_DAGS=/home/blackdagger/.blackdagger/dags
+    restart: unless-stopped
+    volumes:
+      - blackdagger:/home/blackdagger/.blackdagger
+      - ./dags/:/home/blackdagger/.blackdagger/dags
+    command: blackdagger scheduler
+    depends_on:
+      - init
+
+volumes:
+  blackdagger: {}

@@ -1,0 +1,25 @@
+# build
+bin/*
+dist/
+service/frontend/assets/fonts/*
+service/frontend/assets/*
+!service/frontend/assets/.gitkeep
+
+# NVM
+.nvmrc
+
+# tmp files
+tmp/*
+
+# MacOS
+.DS_Store
+
+# VSCode
+.vscode
+
+# Goland
+.idea
+
+# certs
+cert/*.pem
+cert/*.srl

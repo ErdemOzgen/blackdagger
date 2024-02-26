@@ -1,0 +1,11 @@
+coverage:
+  ignore:
+    - "internal/web/handlers"
+  status:
+    project:
+      default:
+        if_ci_failed: success
+        threshold: 5%
+    patch: off
+github_checks:
+    annotations: false
