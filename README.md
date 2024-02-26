@@ -20,7 +20,7 @@
 
 <div align="center">
 
-[Installation](#installation) | [Quick Start](#️quick-start-guide) 
+[Installation](#installation) | [Quick Start Docs](https://blackdagger.readthedocs.io/en/latest/quickstart.html#launch-the-web-ui) 
 
 </div>
 
