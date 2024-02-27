@@ -50,7 +50,7 @@ export const mainListItems = (
     <ListItem
       text="Terminal"
       icon={<Icon icon={faTerminal} />}
-      to="http://localhost:8090"
+      to="http://:8090"
       external
     />
   </React.Fragment>
@@ -64,8 +64,21 @@ type ListItemProps = {
 };
 
 function ListItem({ icon, text, to, external }: ListItemProps) {
-  const listItemProps = external ? { href: to, target: '_blank' } : { to };
-
+  //const listItemProps = external ? { href: to, target: '_blank' } : { to };
+  let listItemProps = {};
+  
+  if (external) {
+    // If the link is external, dynamically construct the URL to include the current hostname and port 8090
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
+    const port = "8090";
+    const href = `${protocol}//${hostname}:${port}`;
+    listItemProps = { component: "a", href: href, target: '_blank', rel: 'noopener noreferrer' };
+  } else {
+    // For internal routing, use your existing logic
+    // This assumes you have a routing setup (e.g., using React Router) that can handle these paths
+    listItemProps = { component: "a", href: to }; // Adjust as needed for your routing library
+  }
   return (
     <ListItemButton component="a" {...listItemProps}>
       <ListItemIcon sx={{ color: 'black' }}>{icon}</ListItemIcon>
