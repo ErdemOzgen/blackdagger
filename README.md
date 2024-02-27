@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/images/blackdagger.png" width="500" alt="blackdagger-logo">
+  <img src="./assets/images/blackdaggerReadme.png" width="500" alt="blackdagger-logo">
 </p>
 
 <p align="center">
