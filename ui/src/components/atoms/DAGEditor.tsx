@@ -13,6 +13,7 @@ function DAGEditor({ value, onChange }: Props) {
       value={value}
       onChange={onChange}
       language="yaml"
+      theme="vs-dark"
     />
   );
 }
