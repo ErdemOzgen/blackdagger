@@ -25,7 +25,7 @@ jobs:
       - name: Set up Nodejs
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 20
 
       - name: Set up yarn
         run: npm install --global yarn
