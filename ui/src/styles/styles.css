@@ -27,15 +27,31 @@ body {
   padding-left: 4px;
 }
 
+.MuiTableRow-root th, 
+.MuiTableRow-root td {
+  
+  padding: 8px;
+  text-align: left;
+  
+  
+}
+
+/* This style block for .MuiTableRow-root is not necessary for affecting cell borders
+and could potentially cause confusion as borders are typically not applied directly to rows for the purpose of defining cell borders.
+If you meant to define a border for the whole table, consider applying styles to the <table> element instead.
+I'll remove it to focus on cell styles: */
+
 .MuiTableRow-root th {
-  background-color: #F2F4F8;
+  background-color: #EFC050; /* Specific to header cells */
   font-weight: 500;
+  border: 1px solid #000000;
 }
 
 .MuiTableRow-root td {
-  color: #EFC050;
+  color: #EFC050; /* Specific to data cells */
   font-weight: 500;
 }
+
 
 .line-highlight {
   margin-top: 1.4em !important;
