@@ -6,7 +6,7 @@ DST_DIR=$(SRC_DIR)/internal
 BUILD_VERSION=$(shell date +'%y%m%d%H%M%S')
 LDFLAGS=-X 'main.version=$(BUILD_VERSION)'
 
-VERSION=
+VERSION=1.0.1
 DOCKER_CMD := docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 --build-arg VERSION=$(VERSION) --push --no-cache
 
 DEV_CERT_SUBJ_CA="/C=TR/ST=ASIA/L=TOKYO/O=DEV/OU=blackdagger/CN=*.blackdagger.dev/emailAddress=ca@dev.com"
