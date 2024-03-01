@@ -167,10 +167,11 @@ curl -L https://raw.githubusercontent.com/ErdemOzgen/blackdagger/main/scripts/do
 docker run \
 --rm \
 -p 8080:8080 \
+-p 8090:8090 \
 -v $HOME/.blackdagger/dags:/home/blackdagger/.blackdagger/dags \
 -v $HOME/.blackdagger/data:/home/blackdagger/.blackdagger/data \
 -v $HOME/.blackdagger/logs:/home/blackdagger/.blackdagger/logs \
-ErdemOzgen/blackdagger:latest
+erdemozgen/blackdagger:latest
 ```
 
 ### ViaGitHubReleasePage'></a>Via GitHub Release Page 
