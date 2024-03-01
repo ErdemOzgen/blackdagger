@@ -40,4 +40,6 @@ ENV blackdagger_HOST=0.0.0.0
 ENV blackdagger_PORT=8080
 
 # Start blackdagger in the background and gotty in the foregrounds
-CMD bash -c "blackdagger server &" && gotty -p 8090 -w --credential blackdagger:blackdagger /bin/bash
+COPY startservices.sh /home/blackdagger/startservices.sh
+#RUN chmod +x startservices.sh
+#ENTRYPOINT [ "./startservices.sh" ]
