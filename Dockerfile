@@ -39,5 +39,5 @@ EOF
 ENV blackdagger_HOST=0.0.0.0
 ENV blackdagger_PORT=8080
 
-# Start blackdagger in the background and gotty in the foreground
-CMD bash -c "blackdagger server &" && gotty -p 8090 -w --credential blackcart:blackcart /bin/bash
+# Start blackdagger in the background and gotty in the foregrounds
+CMD bash -c "blackdagger server &" && gotty -p 8090 -w --credential blackdagger:blackdagger /bin/bash
