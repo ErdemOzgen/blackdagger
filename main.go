@@ -1,5 +1,6 @@
 /*
-Copyright © 2023 Dagu Yota Hamada
+Copyright © 2024 Mahmut Erdem Ozgen
+Forked from Dagu-dev
 */
 package main
 
