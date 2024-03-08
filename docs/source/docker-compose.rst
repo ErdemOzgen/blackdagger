@@ -33,7 +33,7 @@ To automate workflows based on cron expressions, it is necessary to run both the
 
       # scheduler process
       scheduler:
-        image: "yohamta/blackdagger:latest"
+        image: "erdemozgen/blackdagger:latest"
         environment:
           - blackdagger_DAGS=/home/blackdagger/.blackdagger/dags
         restart: unless-stopped

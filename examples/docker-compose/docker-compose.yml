@@ -3,7 +3,7 @@ services:
 
   # init container updates permission
   init:
-    image: "yohamta/blackdagger:latest"
+    image: "erdemozgen/blackdagger:latest"
     user: root
     volumes:
       - blackdagger:/home/blackdagger/.blackdagger
@@ -11,7 +11,7 @@ services:
 
   # ui server process
   server:
-    image: "yohamta/blackdagger:latest"
+    image: "erdemozgen/blackdagger:latest"
     environment:
       - blackdagger_PORT=8080
       - blackdagger_DAGS=/home/blackdagger/.blackdagger/dags
@@ -26,7 +26,7 @@ services:
 
   # scheduler process
   scheduler:
-    image: "yohamta/blackdagger:latest"
+    image: "erdemozgen/blackdagger:latest"
     environment:
       - blackdagger_DAGS=/home/blackdagger/.blackdagger/dags
     restart: unless-stopped
