@@ -13,7 +13,7 @@ import (
 func startAllCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "start-all",
-		Short: "Launches both the Dagu web UI server and the scheduler process.",
+		Short: "Launches both the Blackdagger web UI server and the scheduler process.",
 		Long:  `blackdagger start-all [--dags=<DAGs dir>] [--host=<host>] [--port=<port>]`,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			_ = viper.BindPFlag("port", cmd.Flags().Lookup("port"))

@@ -240,7 +240,7 @@ func (n *Node) setup(logDir string, requestId string) error {
 
 func (n *Node) setupScript() (err error) {
 	if n.Script != "" {
-		n.scriptFile, _ = os.CreateTemp(n.Dir, "dagu_script-")
+		n.scriptFile, _ = os.CreateTemp(n.Dir, "blackdagger_script-")
 		if _, err = n.scriptFile.WriteString(n.Script); err != nil {
 			return
 		}

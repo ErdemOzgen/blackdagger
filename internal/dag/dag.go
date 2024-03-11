@@ -77,7 +77,7 @@ func (d *DAG) SockAddr() string {
 	h := md5.New()
 	h.Write([]byte(s))
 	bs := h.Sum(nil)
-	return path.Join("/tmp", fmt.Sprintf("@dagu-%s-%x.sock", name, bs))
+	return path.Join("/tmp", fmt.Sprintf("@blackdagger-%s-%x.sock", name, bs))
 }
 
 func (d *DAG) Clone() *DAG {

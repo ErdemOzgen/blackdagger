@@ -4,7 +4,7 @@ FROM --platform=$BUILDPLATFORM ubuntu:22.04
 ARG TARGETARCH
 ARG VERSION=1.0.1
 ARG RELEASES_URL="https://github.com/ErdemOzgen/blackdagger/releases"
-ARG TARGET_FILE="dagu_${VERSION}_linux_${TARGETARCH}.tar.gz"
+ARG TARGET_FILE="blackdagger_${VERSION}_linux_${TARGETARCH}.tar.gz"
 
 ARG USER="blackdagger"
 ARG USER_UID=1000

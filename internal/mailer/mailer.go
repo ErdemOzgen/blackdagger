@@ -27,7 +27,7 @@ type Config struct {
 
 var (
 	replacer = strings.NewReplacer("\r\n", "", "\r", "", "\n", "", "%0a", "", "%0d", "")
-	boundary = "==simple-boundary-dagu-mailer"
+	boundary = "==simple-boundary-blackdagger-mailer"
 )
 
 // SendMail sends an email.

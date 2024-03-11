@@ -335,7 +335,7 @@ schedule:
 
 func TestGeneratingSockAddr(t *testing.T) {
 	d := &DAG{Location: "testdata/testDag.yml"}
-	require.Regexp(t, `^/tmp/@dagu-testDag-[0-9a-f]+\.sock$`, d.SockAddr())
+	require.Regexp(t, `^/tmp/@blackdagger-testDag-[0-9a-f]+\.sock$`, d.SockAddr())
 }
 
 func TestOverwriteGlobalConfig(t *testing.T) {
