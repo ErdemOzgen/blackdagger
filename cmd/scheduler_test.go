@@ -15,7 +15,7 @@ func TestSchedulerCommand(t *testing.T) {
 	go func() {
 		testRunCommand(t, createSchedulerCommand(), cmdTest{
 			args:        []string{"scheduler"},
-			expectedOut: []string{"starting dagu scheduler"},
+			expectedOut: []string{"starting blackdagger scheduler"},
 		})
 	}()
 
