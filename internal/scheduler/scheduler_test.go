@@ -115,7 +115,7 @@ func TestSchedulerContinueOnFailure(t *testing.T) {
 
 	nodes := g.Nodes()
 	require.Equal(t, NodeStatus_Success, nodes[0].ReadStatus())
-	require.Equal(t, NodeStatus_Error, nodes[1].ReadStatus())
+	require.Equal(t, NodeStatus_ValidSkip, nodes[1].ReadStatus())
 	require.Equal(t, NodeStatus_Success, nodes[2].ReadStatus())
 }
 
@@ -199,8 +199,8 @@ func TestSchedulerRetryFail(t *testing.T) {
 	require.Equal(t, sc.Status(g), SchedulerStatus_Error)
 
 	nodes := g.Nodes()
-	require.Equal(t, NodeStatus_Error, nodes[0].ReadStatus())
-	require.Equal(t, NodeStatus_Error, nodes[1].ReadStatus())
+	require.Equal(t, NodeStatus_ValidSkip, nodes[0].ReadStatus())
+	require.Equal(t, NodeStatus_ValidSkip, nodes[1].ReadStatus())
 	require.Equal(t, NodeStatus_Error, nodes[2].ReadStatus())
 	require.Equal(t, NodeStatus_Cancel, nodes[3].ReadStatus())
 

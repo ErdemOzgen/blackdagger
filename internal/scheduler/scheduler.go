@@ -121,7 +121,11 @@ func (sc *Scheduler) Schedule(ctx context.Context, g *ExecutionGraph, done chan 
 						setup = false
 						node.Error = err
 						sc.lastError = err
-						node.updateStatus(NodeStatus_Error)
+						if node.ContinueOn.Failure {
+							node.updateStatus(NodeStatus_ValidSkip)
+						} else {
+							node.updateStatus(NodeStatus_Error)
+						}
 					}
 					defer func() {
 						_ = node.teardown()
@@ -144,7 +148,7 @@ func (sc *Scheduler) Schedule(ctx context.Context, g *ExecutionGraph, done chan 
 						switch node.ReadStatus() {
 						case NodeStatus_None:
 							// nothing to do
-						case NodeStatus_Error:
+						case NodeStatus_Error, NodeStatus_ValidSkip:
 							sc.lastError = err
 						}
 					}
@@ -172,7 +176,11 @@ func (sc *Scheduler) Schedule(ctx context.Context, g *ExecutionGraph, done chan 
 				}
 				if err := node.teardown(); err != nil {
 					sc.lastError = err
-					node.updateStatus(NodeStatus_Error)
+					if node.ContinueOn.Failure {
+						node.updateStatus(NodeStatus_ValidSkip)
+					} else {
+						node.updateStatus(NodeStatus_Error)
+					}
 				}
 				if done != nil {
 					done <- node
@@ -287,7 +295,7 @@ func isReady(g *ExecutionGraph, node *Node) (ready bool) {
 		switch n.ReadStatus() {
 		case NodeStatus_Success:
 			continue
-		case NodeStatus_Error:
+		case NodeStatus_Error, NodeStatus_ValidSkip:
 			if !n.ContinueOn.Failure {
 				ready = false
 				node.updateStatus(NodeStatus_Cancel)
@@ -379,7 +387,11 @@ func handleError(node *Node) {
 			node.SetRetriedAt(time.Now())
 			node.updateStatus(NodeStatus_None)
 		} else {
-			node.updateStatus(NodeStatus_Error)
+			if node.ContinueOn.Failure {
+				node.updateStatus(NodeStatus_ValidSkip)
+			} else {
+				node.updateStatus(NodeStatus_Error)
+			}
 		}
 	}
 }

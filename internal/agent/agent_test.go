@@ -255,7 +255,7 @@ func TestRetry(t *testing.T) {
 
 	for _, n := range status.Nodes {
 		if n.Status != scheduler.NodeStatus_Success &&
-			n.Status != scheduler.NodeStatus_Skipped {
+			n.Status != scheduler.NodeStatus_Skipped && n.Status != scheduler.NodeStatus_ValidSkip {
 			t.Errorf("invalid status: %s", n.Status.String())
 		}
 	}

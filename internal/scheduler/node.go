@@ -28,6 +28,7 @@ const (
 	NodeStatus_Cancel
 	NodeStatus_Success
 	NodeStatus_Skipped
+	NodeStatus_ValidSkip
 )
 
 func (s NodeStatus) String() string {
@@ -42,6 +43,8 @@ func (s NodeStatus) String() string {
 		return "finished"
 	case NodeStatus_Skipped:
 		return "skipped"
+	case NodeStatus_ValidSkip:
+		return "valid_skipped"
 	case NodeStatus_None:
 		fallthrough
 	default:

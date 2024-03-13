@@ -74,6 +74,7 @@ function Graph({
     dat.push('classDef cancel color:#333,fill:white,stroke:pink,stroke-width:3px');
     dat.push('classDef done color:#333,fill:white,stroke:green,stroke-width:3px');
     dat.push('classDef skipped color:#333,fill:white,stroke:gray,stroke-width:3px');
+    dat.push('classDef validSkip color:#333,fill:white,stroke:orange,stroke-width:3px');
     return dat.join('\n');
   }, [steps, onClickNode, flowchart]);
   return <Mermaid style={mermaidStyle} def={graph} />;
@@ -88,4 +89,5 @@ const graphStatusMap = {
   [NodeStatus.Cancel]: ':::cancel',
   [NodeStatus.Success]: ':::done',
   [NodeStatus.Skipped]: ':::skipped',
+  [NodeStatus.ValidSkip]: ':::validSkip',
 };
