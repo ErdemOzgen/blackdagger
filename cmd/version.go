@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var asciiArt = `
+var AsciiArt = `
 
 ██████╗░██╗░░░░░░█████╗░░█████╗░██╗░░██╗██████╗░░█████╗░░██████╗░░██████╗░███████╗██████╗░
 ██╔══██╗██║░░░░░██╔══██╗██╔══██╗██║░██╔╝██╔══██╗██╔══██╗██╔════╝░██╔════╝░██╔════╝██╔══██╗
@@ -27,7 +27,7 @@ func versionCmd() *cobra.Command {
 			cobra.CheckErr(config.LoadConfig(homeDir))
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println(asciiArt)
+			fmt.Println(AsciiArt)
 			fmt.Println(constants.Version)
 		},
 	}

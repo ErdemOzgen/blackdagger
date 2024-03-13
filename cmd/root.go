@@ -4,6 +4,7 @@ Copyright © 2024 ErdemOzgen m.erdemozgen@gmail.com
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"path"
 
@@ -26,9 +27,15 @@ var (
 
 const legacyPath = ".blackdagger"
 
+func customHelpFunc(cmd *cobra.Command, strings []string) {
+	fmt.Print(AsciiArt)
+	fmt.Println(cmd.UsageString())
+}
+
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	//fmt.Println(AsciiArt)
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
@@ -39,7 +46,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.blackdagger/admin.yaml)")
 
 	cobra.OnInitialize(initConfig)
-
+	rootCmd.SetHelpFunc(customHelpFunc)
 	registerCommands(rootCmd)
 }
 
