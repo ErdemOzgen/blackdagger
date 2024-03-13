@@ -13,7 +13,7 @@ func main() {
 	cmd.Execute()
 }
 
-var version = "1.0.1"
+var version = "1.0.2"
 
 func init() {
 	constants.Version = version

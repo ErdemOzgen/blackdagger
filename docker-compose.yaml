@@ -1,41 +1,23 @@
 version: "3.9"
 services:
-
-  # init container updates permission
-  init:
-    image: "erdemozgen/blackdagger:latest"
-    user: root
-    volumes:
-      - blackdagger:/home/blackdagger/.blackdagger
-    command: chown -R blackdagger /home/blackdagger/.blackdagger/
-
-  # ui web server process
+  # blackdagger server
   server:
     image: "erdemozgen/blackdagger:latest"
+    build: .
     environment:
       - blackdagger_PORT=8080
       - blackdagger_DAGS=/home/blackdagger/.blackdagger/dags
+      - TERM=xterm
     restart: unless-stopped
     ports:
       - "8080:8080"
+      - "8090:8090"
     volumes:
       - blackdagger:/home/blackdagger/.blackdagger
       - ./dags/:/home/blackdagger/.blackdagger/dags
-    depends_on:
-      - init
-
-  # scheduler process
-  scheduler:
-    image: "erdemozgen/blackdagger:latest"
-    environment:
-      - blackdagger_DAGS=/home/blackdagger/.blackdagger/dags
-    restart: unless-stopped
-    volumes:
-      - blackdagger:/home/blackdagger/.blackdagger
-      - ./dags/:/home/blackdagger/.blackdagger/dags
-    command: blackdagger scheduler
-    depends_on:
-      - init
+    #command: ["bash", "/home/blackdagger/startservices.sh"] # Custom command to start the services
+    command: ["sh", "-c", "/startservices.sh"]
 
 volumes:
   blackdagger: {}
+

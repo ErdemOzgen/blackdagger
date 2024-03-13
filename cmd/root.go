@@ -19,8 +19,8 @@ var (
 	// rootCmd represents the base command when called without any subcommands
 	rootCmd = &cobra.Command{
 		Use:   "blackdagger",
-		Short: "YAML-based DAG scheduling tool for red teaming.",
-		Long:  `YAML-based DAG scheduling tool for red teaming.`,
+		Short: "YAML-based DAG scheduling tool for Red teaming,CART,DevOps,DevSecOps,MLOps,MLSecOps.",
+		Long:  `YAML-based DAG scheduling tool for Red teaming,CART,DevOps,DevSecOps,MLOps,MLSecOps.`,
 	}
 )
 

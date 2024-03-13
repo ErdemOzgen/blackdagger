@@ -1,0 +1,6 @@
+telegram:
+  - id: "tel"                          # Unique identifier for this Telegram configuration
+    telegram_api_key: ${TELEGRAM_API_KEY}
+    telegram_chat_id: ${TELEGRAM_CHAT_ID}
+    telegram_format: "{{data}}"
+    telegram_parsemode: "Markdown"      # None/Markdown/MarkdownV2/HTML
