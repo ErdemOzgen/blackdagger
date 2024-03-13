@@ -23,3 +23,10 @@ tmp/*
 # certs
 cert/*.pem
 cert/*.srl
+
+# dags
+dags/*
+suspend/*
+data/*
+logs/*
+
