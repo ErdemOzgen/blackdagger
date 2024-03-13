@@ -19,14 +19,8 @@ Via Docker
 ----------
 
 .. code-block:: bash
-
-   docker run \
-   --rm \
-   -p 8080:8080 \
-   -v $HOME/.blackdagger/dags:/home/blackdagger/.blackdagger/dags \
-   -v $HOME/.blackdagger/data:/home/blackdagger/.blackdagger/data \
-   -v $HOME/.blackdagger/logs:/home/blackdagger/.blackdagger/logs \
-   ErdemOzgen/blackdagger:latest
+# Clone the repository and run the docker compose
+docker compose up
 
 Via GitHub Release Page
 -----------------------

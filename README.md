@@ -164,14 +164,8 @@ curl -L https://raw.githubusercontent.com/ErdemOzgen/blackdagger/main/scripts/do
 ### Via Docker
 
 ```sh
-docker run \
---rm \
--p 8080:8080 \
--p 8090:8090 \
--v $HOME/.blackdagger/dags:/home/blackdagger/.blackdagger/dags \
--v $HOME/.blackdagger/data:/home/blackdagger/.blackdagger/data \
--v $HOME/.blackdagger/logs:/home/blackdagger/.blackdagger/logs \
-erdemozgen/blackdagger:latest
+# in blackdagger repo
+docker compose up 
 ```
 
 ### ViaGitHubReleasePage'></a>Via GitHub Release Page 
