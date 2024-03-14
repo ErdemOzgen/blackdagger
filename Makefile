@@ -1,4 +1,4 @@
-.PHONY: build server scheduler test proto certs swagger
+.PHONY: build server scheduler test proto certs swagger docker-build
 
 ########## Variables ##########
 SRC_DIR=./
@@ -7,6 +7,13 @@ BUILD_VERSION=$(shell date +'%y%m%d%H%M%S')
 LDFLAGS=-X 'main.version=$(BUILD_VERSION)'
 
 VERSION=1.0.2
+
+DOCKER_USERNAME=erdemozgen
+IMAGE_NAME=blackdagger
+FULL_IMAGE_NAME=$(DOCKER_USERNAME)/$(IMAGE_NAME):$(VERSION)
+LATEST_IMAGE_NAME=$(DOCKER_USERNAME)/$(IMAGE_NAME):latest
+BUILDER_NAME=mybuilder
+
 DOCKER_CMD := docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 --build-arg VERSION=$(VERSION) --push --no-cache
 
 DEV_CERT_SUBJ_CA="/C=TR/ST=ASIA/L=TOKYO/O=DEV/OU=blackdagger/CN=*.blackdagger.dev/emailAddress=ca@dev.com"
@@ -137,3 +144,16 @@ install-nodemon:
 install-swagger:
 	brew tap go-swagger/go-swagger
 	brew install go-swagger
+
+docker-build:
+	# Enable Docker BuildKit
+	@export DOCKER_BUILDKIT=1
+	# Create and use a new buildx builder instance
+	-@docker buildx create --name $(BUILDER_NAME) --use
+	# Login to Docker Hub
+	@docker login
+	# Build the Docker image for multiple architectures and push to Docker Hub
+	@docker buildx build --platform linux/amd64,linux/arm64 -t $(FULL_IMAGE_NAME) --push .
+	@docker buildx build --platform linux/amd64,linux/arm64 -t $(LATEST_IMAGE_NAME) --push .
+	# Clean up the builder instance
+	-@docker buildx rm $(BUILDER_NAME)
