@@ -6,6 +6,121 @@ YAML Format
 .. contents::
     :local:
 
+All Available Fields for DAGs
+-------------------------------
+
+This section provides a comprehensive list of available fields that can be used to configure DAGs and their steps in detail. Each field serves a specific purpose, enabling granular control over how the DAG runs. The fields include:
+
+- ``name``: The name of the DAG, which is optional. The default name is the name of the file.
+- ``description``: A brief description of the DAG.
+- ``schedule``: The execution schedule of the DAG in Cron expression format.
+- ``group``: The group name to organize DAGs, which is optional.
+- ``tags``: Free tags that can be used to categorize DAGs, separated by commas.
+- ``env``: Environment variables that can be accessed by the DAG and its steps.
+- ``logDir``: The directory where the standard output is written. The default value is ``${BLACKDAGGER_HOME}/logs/dags``.
+- ``restartWaitSec``: The number of seconds to wait after the DAG process stops before restarting it.
+- ``histRetentionDays``: The number of days to retain execution history (not for log files).
+- ``delaySec``: The interval time in seconds between steps.
+- ``maxActiveRuns``: The maximum number of parallel running steps.
+- ``params``: The default parameters that can be referred to by ``$1``, ``$2``, and so on.
+- ``preconditions``: The conditions that must be met before a DAG or step can run.
+- ``mailOn``: Whether to send an email notification when a DAG or step fails or succeeds.
+- ``MaxCleanUpTimeSec``: The maximum time to wait after sending a TERM signal to running steps before killing them.
+- ``handlerOn``: The command to execute when a DAG or step succeeds, fails, cancels, or exits.
+- ``steps``: A list of steps to execute in the DAG.
+
+In addition, a global configuration file, ``$BLACKDAGGER_HOME/config.yaml``, can be used to gather common settings, such as ``logDir`` or ``env``.
+
+Note: If ``BLACKDAGGER_HOME`` environment variable is not set, the default path is ``$HOME/.blackdagger/config.yaml``.
+
+Example: 
+
+.. code-block:: yaml
+
+    name: DAG name
+    description: run a DAG               
+    schedule: "0 * * * *"                
+    group: DailyJobs                     
+    tags: example                        
+    env:                                 
+      - LOG_DIR: ${HOME}/logs
+      - PATH: /usr/local/bin:${PATH}
+    logDir: ${LOG_DIR}                   
+    restartWaitSec: 60                   
+    histRetentionDays: 3                 
+    delaySec: 1                          
+    maxActiveRuns: 1                     
+    params: param1 param2                
+    preconditions:                       
+      - condition: "`echo $2`"           
+        expected: "param2"               
+    mailOn:
+      failure: true                      
+      success: true                      
+    MaxCleanUpTimeSec: 300               
+    handlerOn:                           
+      success:
+        command: "echo succeed"          
+      failure:
+        command: "echo failed"           
+      cancel:
+        command: "echo canceled"         
+      exit:
+        command: "echo finished"         
+
+
+All Available Fields for Steps
+--------------------------------
+
+Each step can have its own set of configurations, including:
+
+- ``name``: The name of the step.
+- ``description``: A brief description of the step.
+- ``dir``: The working directory for the step.
+- ``command``: The command and parameters to execute.
+- ``stdout``: The file to which the standard output is written.
+- ``output``: The variable to which the result is written.
+- ``script``: The script to execute.
+- ``signalOnStop``: The signal name (e.g., ``SIGINT``) to be sent when the process is stopped.
+- ``mailOn``: Whether to send an email notification when the step fails or succeeds.
+- ``continueOn``: Whether to continue to the next step, regardless of whether the step failed or not or the preconditions are met or not.
+- ``retryPolicy``: The retry policy for the step.
+- ``repeatPolicy``: The repeat policy for the step.
+- ``preconditions``: The conditions that must be met before a step can run.
+- ``depends``: The step depends on the other step.
+
+Example:
+
+.. code-block:: yaml
+
+    steps:
+      - name: some task                  
+        description: some task           
+        dir: ${HOME}/logs                
+        command: bash                    
+        stdout: /tmp/outfile
+        ouptut: RESULT_VARIABLE
+        script: |
+          echo "any script"
+        signalOnStop: "SIGINT"           
+        mailOn:
+          failure: true                  
+          success: true                  
+        continueOn:
+          failure: true                  
+          skipped: true                  
+        retryPolicy:                     
+          limit: 2                       
+          intervalSec: 5                 
+        repeatPolicy:                    
+          repeat: true                   
+          intervalSec: 60                
+        preconditions:                   
+          - condition: "`echo $1`"       
+            expected: "param1"
+        depends:
+          -  some task name step          
+
 Minimal DAG Definition
 -----------------------
 
@@ -229,116 +344,3 @@ You can use the `schedule` field to schedule a DAG with Cron expression.
 
 See :ref:`scheduler configuration` for more details.
 
-All Available Fields for DAGs
--------------------------------
-
-This section provides a comprehensive list of available fields that can be used to configure DAGs and their steps in detail. Each field serves a specific purpose, enabling granular control over how the DAG runs. The fields include:
-
-- ``name``: The name of the DAG, which is optional. The default name is the name of the file.
-- ``description``: A brief description of the DAG.
-- ``schedule``: The execution schedule of the DAG in Cron expression format.
-- ``group``: The group name to organize DAGs, which is optional.
-- ``tags``: Free tags that can be used to categorize DAGs, separated by commas.
-- ``env``: Environment variables that can be accessed by the DAG and its steps.
-- ``logDir``: The directory where the standard output is written. The default value is ``${BLACKDAGGER_HOME}/logs/dags``.
-- ``restartWaitSec``: The number of seconds to wait after the DAG process stops before restarting it.
-- ``histRetentionDays``: The number of days to retain execution history (not for log files).
-- ``delaySec``: The interval time in seconds between steps.
-- ``maxActiveRuns``: The maximum number of parallel running steps.
-- ``params``: The default parameters that can be referred to by ``$1``, ``$2``, and so on.
-- ``preconditions``: The conditions that must be met before a DAG or step can run.
-- ``mailOn``: Whether to send an email notification when a DAG or step fails or succeeds.
-- ``MaxCleanUpTimeSec``: The maximum time to wait after sending a TERM signal to running steps before killing them.
-- ``handlerOn``: The command to execute when a DAG or step succeeds, fails, cancels, or exits.
-- ``steps``: A list of steps to execute in the DAG.
-
-In addition, a global configuration file, ``$BLACKDAGGER_HOME/config.yaml``, can be used to gather common settings, such as ``logDir`` or ``env``.
-
-Note: If ``BLACKDAGGER_HOME`` environment variable is not set, the default path is ``$HOME/.blackdagger/config.yaml``.
-
-Example: 
-
-.. code-block:: yaml
-
-    name: DAG name
-    description: run a DAG               
-    schedule: "0 * * * *"                
-    group: DailyJobs                     
-    tags: example                        
-    env:                                 
-      - LOG_DIR: ${HOME}/logs
-      - PATH: /usr/local/bin:${PATH}
-    logDir: ${LOG_DIR}                   
-    restartWaitSec: 60                   
-    histRetentionDays: 3                 
-    delaySec: 1                          
-    maxActiveRuns: 1                     
-    params: param1 param2                
-    preconditions:                       
-      - condition: "`echo $2`"           
-        expected: "param2"               
-    mailOn:
-      failure: true                      
-      success: true                      
-    MaxCleanUpTimeSec: 300               
-    handlerOn:                           
-      success:
-        command: "echo succeed"          
-      failure:
-        command: "echo failed"           
-      cancel:
-        command: "echo canceled"         
-      exit:
-        command: "echo finished"         
-
-All Available Fields for Steps
---------------------------------
-
-Each step can have its own set of configurations, including:
-
-- ``name``: The name of the step.
-- ``description``: A brief description of the step.
-- ``dir``: The working directory for the step.
-- ``command``: The command and parameters to execute.
-- ``stdout``: The file to which the standard output is written.
-- ``output``: The variable to which the result is written.
-- ``script``: The script to execute.
-- ``signalOnStop``: The signal name (e.g., ``SIGINT``) to be sent when the process is stopped.
-- ``mailOn``: Whether to send an email notification when the step fails or succeeds.
-- ``continueOn``: Whether to continue to the next step, regardless of whether the step failed or not or the preconditions are met or not.
-- ``retryPolicy``: The retry policy for the step.
-- ``repeatPolicy``: The repeat policy for the step.
-- ``preconditions``: The conditions that must be met before a step can run.
-- ``depends``: The step depends on the other step.
-
-Example:
-
-.. code-block:: yaml
-
-    steps:
-      - name: some task                  
-        description: some task           
-        dir: ${HOME}/logs                
-        command: bash                    
-        stdout: /tmp/outfile
-        ouptut: RESULT_VARIABLE
-        script: |
-          echo "any script"
-        signalOnStop: "SIGINT"           
-        mailOn:
-          failure: true                  
-          success: true                  
-        continueOn:
-          failure: true                  
-          skipped: true                  
-        retryPolicy:                     
-          limit: 2                       
-          intervalSec: 5                 
-        repeatPolicy:                    
-          repeat: true                   
-          intervalSec: 60                
-        preconditions:                   
-          - condition: "`echo $1`"       
-            expected: "param1"
-        depends:
-          -  some task name step          

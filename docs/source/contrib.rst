@@ -50,21 +50,33 @@ Running Tests
 Code Structure
 ---------------
 
-- ``ui``: Frontend code for the Web UI.
 - ``cmd``: Contains the main application entry point.
 - ``docs``: Contains the documentation for the project.
 - ``examples``: Contains the example workflows.
+- ``models``: Contains code related to data models and structures that represent the data used within the application. 
+- ``restapi``: Contains code related to implementing a RESTful API
+- ``schemas``: Contains code that determines YAML format.
+- ``scripts``: Contains scripts for download and installation of Blackdagger itself and extra utilities.
+- ``service``: TBU
+- ``ui``: Frontend code for the Web UI.
 - ``internal``: Contains the internal code for the project.
-
-  - ``web``: Contains the backend code for the Web UI.
   - ``agent``: Contains the code for runnning the workflows.
   - ``config``: Contains the code for loading the configuration.
-  - ``controller``: Contains the code for managing the workflows.
+  - ``constants``: 
   - ``dag``: Contains the code for parsing the workflow definition.
-  - ``database``: Contains the code for interacting with the database.
+  - ``engine``: Contains the for running basic functions of Blackdagger.
+  - ``errors``: Contains the code for error handling in commands of DAG.
   - ``executor``: Contains the code for different types of executors.
-  - ``runner``: Contains the code for scheduler.
+  - ``grep``: TBU
+  - ``logger``: Contains the code for logging functions.
+  - ``mailer``: Contains the code for mail functions.
+  - ``pb``: Contains the code for steps in DAG.
+  - ``persistence``: Contains the code for storage and databases.
+  - ``proto``: Contains the code for "Protocol Buffers".
+  - ``reporter``: Contains the code for reporting the status of the scheduler.
+  - ``scheduler``: Contains the code for scheduler which schedules and runs the processes in a DAG.
   - ``sock``: Contains the code for interacting with the socket.
+  - ``utils``: Contains the code for utility functions.
 
 Setting up your local environment for front end development
 -------------------------------------------------------------
