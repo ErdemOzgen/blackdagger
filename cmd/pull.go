@@ -86,7 +86,12 @@ func Pulldags(args []string) {
 				fmt.Printf("The directory %s already exists. Pulling updates...\n", folderPath)
 
 				// Change the working directory to the repository's folder
-				os.Chdir(folderPath)
+				err := os.Chdir(folderPath)
+
+				if err != nil {
+					fmt.Printf("Failed to change directory to %s: %v\n", folderPath, err)
+					return // or handle the error in another appropriate way
+				}
 
 				// Execute git pull to update the repository
 				gitCmd := exec.Command("git", "pull")
