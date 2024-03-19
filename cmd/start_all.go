@@ -23,10 +23,13 @@ func startAllCmd() *cobra.Command {
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			ctx := cmd.Context()
-
+			// TODO: move to config files
+			pullDagList := []string{"default"}
+			Pulldags(pullDagList)
 			go func() {
 				config.Get().DAGs = getFlagString(cmd, "dags", config.Get().DAGs)
 				err := core.NewScheduler(app.TopLevelModule).Start(cmd.Context())
+
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -35,6 +38,7 @@ func startAllCmd() *cobra.Command {
 			service := app.NewFrontendService()
 			err := service.Start(ctx)
 			checkError(err)
+
 		},
 	}
 	bindStartAllCommandFlags(cmd)

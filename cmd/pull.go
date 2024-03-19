@@ -37,7 +37,7 @@ var pullCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Starting to pull the repository...")
-		pulldags(args)
+		Pulldags(args)
 	},
 }
 
@@ -55,11 +55,11 @@ func init() {
 	// pullCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func pulldags(args []string) {
+func Pulldags(args []string) {
 	// TODO: move to config files
 	jobCategories := []string{"mlops", "default", "devsecops", "devops"}
 	if len(args) > 0 {
-		if checkCategory(jobCategories, args[0]) {
+		if CheckCategory(jobCategories, args[0]) {
 			repoName := args[0]                 // Use the first argument as the repository name, e.g., "default"
 			viper.AutomaticEnv()                // Ensure Viper is looking for env vars
 			dagValue := viper.GetString("dags") // Get the DAG config value
@@ -109,9 +109,9 @@ func pulldags(args []string) {
 
 }
 
-// checkCategory checks if a string is present in a category.
+// CheckCategory checks if a string is present in a category.
 // It returns true if the string is found, otherwise false.
-func checkCategory(slice []string, str string) bool {
+func CheckCategory(slice []string, str string) bool {
 	for _, item := range slice {
 		if item == str {
 			return true

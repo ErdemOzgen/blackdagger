@@ -19,6 +19,9 @@ func serverCmd() *cobra.Command {
 			cobra.CheckErr(config.LoadConfig(homeDir))
 		},
 		Run: func(cmd *cobra.Command, args []string) {
+			// TODO: move to config files
+			pullDagList := []string{"default"}
+			Pulldags(pullDagList)
 			service := app.NewFrontendService()
 			err := service.Start(cmd.Context())
 			checkError(err)
