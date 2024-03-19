@@ -56,6 +56,7 @@ func init() {
 }
 
 func pulldags(args []string) {
+	// TODO: move to config files
 	jobCategories := []string{"mlops", "default", "devsecops", "devops"}
 	if len(args) > 0 {
 		if checkCategory(jobCategories, args[0]) {
@@ -70,6 +71,7 @@ func pulldags(args []string) {
 			// Check if the directory exists
 			if _, err := os.Stat(folderPath); os.IsNotExist(err) {
 				// Directory does not exist, clone the repository
+				// TODO: move to config files
 				gitCmd := exec.Command("git", "clone", fmt.Sprintf("https://github.com/ErdemOzgen/blackdagger-%s.git", repoName), folderPath)
 				if output, err := gitCmd.CombinedOutput(); err != nil {
 					fmt.Printf("Failed to clone the repository: %v, output: %s\n", err, string(output))
