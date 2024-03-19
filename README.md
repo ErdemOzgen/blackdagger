@@ -27,11 +27,18 @@
 <h1><b>Blackdagger</b></h1>
 
 
+Blackdagger represents a significant advancement in automation technology, offering a comprehensive solution for orchestrating complex workflows in DevOps, DevSecOps, MLOps, MLSecOps, and Continuous Red Teaming (CART) environments.
 
-Blackdagger is a potent alternative to Cron, enhanced with a Web UI, designed for DevOps, DevSecOps, MLOps, MLSecOps, and Continuous Red Teaming (CART) environments. It enables the definition of command dependencies using a [Directed Acyclic Graph (DAG)](https://en.wikipedia.org/wiki/Directed_acyclic_graph) in a declarative [YAML format](https://blackdagger.readthedocs.io/en/latest/yaml_format.html). Furthermore, Blackdagger natively supports Docker container management, making HTTP requests, and executing commands over SSH, offering a versatile toolset for complex automation workflows.
+At its core, Blackdagger simplifies the management and execution of intricate workflows through its user-friendly approach and powerful functionality. Leveraging a declarative YAML format, Blackdagger enables users to define automation pipelines using a Directed Acyclic Graph (DAG), facilitating clear and concise expression of task dependencies and execution logic.
 
-- [Documentation](https://blackdagger.readthedocs.io) 
+What sets Blackdagger apart is its simplicity and versatility. Unlike traditional cron-based schedulers or workflow orchestration platforms, Blackdagger eliminates the need for extensive scripting or coding. With a built-in Web UI, users can easily manage, rerun, and monitor automation pipelines in real-time, streamlining the workflow management process. Additionally, Blackdagger offers native Docker support, enabling seamless integration with containerized environments, and a versatile toolset for task execution, including making HTTP requests and executing commands over SSH.
 
+**What Sets Blackdagger Apart?**
+
+1. **Declarative YAML Format**: Blackdagger simplifies workflow definition with a declarative YAML format, allowing users to specify command dependencies using a Directed Acyclic Graph (DAG). This intuitive approach makes it easy to define complex workflows and manage task dependencies without the need for extensive scripting or coding.
+2. **Web UI for Visual Management**: With its built-in Web UI, Blackdagger provides users with a visually intuitive interface for managing, rerunning, and monitoring automation pipelines. Users can easily track the real-time status of workflows, view execution logs, and make configuration changes directly from their browser, eliminating the need for manual intervention.
+3. **Native Docker Support**: Blackdagger natively supports Docker container management, enabling seamless integration with containerized environments. Users can run arbitrary Docker containers as part of their automation workflows, making it easy to orchestrate tasks across distributed infrastructure and microservices architectures.
+4. **Versatile Task Execution**: From making HTTP requests to executing commands over SSH, Blackdagger offers a versatile toolset for task execution. Whether it's interacting with external APIs, running custom code snippets, or managing infrastructure components, Blackdagger empowers users to automate a wide range of tasks with ease.
 
 ## **Highlights**
 - Single binary file installation
@@ -42,6 +49,65 @@ Blackdagger is a potent alternative to Cron, enhanced with a Web UI, designed fo
 - Suitable for Continuous Red Teaming (CART)
 - Suitable for DevOps and DevSecOps
 - Suitable for MLOps and MLSecOps
+
+You can find everything about Blackdagger, including this README, in our [documentation](https://blackdagger.readthedocs.io).
+
+
+## **Installation**
+
+
+### Via Bash script
+
+```sh
+curl -L https://raw.githubusercontent.com/ErdemOzgen/blackdagger/main/scripts/downloader.sh | bash
+```
+
+### Via Docker
+
+```sh
+# in blackdagger repo
+docker compose up 
+```
+
+### ViaGitHubReleasePage'></a>Via GitHub Release Page 
+
+Download the latest binary from the [Releases page](https://github.com/ErdemOzgen/blackdagger/releases) and place it in your `$PATH` (e.g. `/usr/local/bin`).
+
+## **Running as a daemon**
+
+** If you need root privallages you can use it **
+
+
+To ensure continuous operation of the process on your system, simply create and execute the following script every minute via cron—no root account required:
+
+```bash
+#!/bin/bash
+process="blackdagger start-all"
+command="/usr/bin/blackdagger start-all"
+
+if ps ax | grep -v grep | grep "$process" > /dev/null
+then
+    exit
+else
+    $command &
+fi
+
+exit
+```
+
+If running as daemon what you need and you need still root privallages you can run:
+```bash
+sudo blackdagger start-all
+```
+But this will create **.blackdagger** folder in root user. It may cause python package issues and pip related problems.
+
+Last options is adding user account to the /etc/sudoers file with nopasswd permissions, enabling them to execute sudo commands without needing to enter a password. This modification simplifies operations that require elevated privileges by removing the requirement to provide a password for each sudo command.
+
+```bash
+# In /etc/sudoers
+username ALL=(ALL) NOPASSWD: ALL
+```
+
 
 ## **Table of Contents**
 
@@ -98,7 +164,7 @@ Blackdagger is a potent alternative to Cron, enhanced with a Web UI, designed fo
 - REST API Interface
 - Basic Authentication over HTTPS
 
-##**Usecase**
+## **Usecase**
 
 - **Data Pipeline Automation:** Schedule ETL tasks for data processing and centralization.
 - **Infrastructure Monitoring:** Periodically check infrastructure components with HTTP requests or SSH commands.
@@ -123,7 +189,7 @@ Blackdagger is a potent alternative to Cron, enhanced with a Web UI, designed fo
 
 It shows the real-time status, logs, and DAG configurations. You can edit DAG configurations on a browser.
 
-  ![example](assets/images/demo.png)
+  ![example](assets/images/example.png)
 
   You can switch to the vertical graph with the button on the top right corner.
 
@@ -152,25 +218,6 @@ It shows the detail log and standard output of each execution and step.
 
   ![DAG Log](assets/images/ui-logoutput.png)
 
-## **Installation**
-
-
-### Via Bash script
-
-```sh
-curl -L https://raw.githubusercontent.com/ErdemOzgen/blackdagger/main/scripts/downloader.sh | bash
-```
-
-### Via Docker
-
-```sh
-# in blackdagger repo
-docker compose up 
-```
-
-### ViaGitHubReleasePage'></a>Via GitHub Release Page 
-
-Download the latest binary from the [Releases page](https://github.com/ErdemOzgen/blackdagger/releases) and place it in your `$PATH` (e.g. `/usr/local/bin`).
 
 ## **Quick Start Guide**
 
@@ -271,24 +318,7 @@ blackdagger version
 - [Docker Compose](https://blackdagger.readthedocs.io/en/latest/docker-compose.html)
 - [REST API Documentation](https://app.swaggerhub.com/apis/ErdemOzgen/blackdagger)
 
-## **Running as a daemon**
 
-The easiest way to make sure the process is always running on your system is to create the script below and execute it every minute using cron (you don't need `root` account in this way):
-
-```bash
-#!/bin/bash
-process="blackdagger start-all"
-command="/usr/bin/blackdagger start-all"
-
-if ps ax | grep -v grep | grep "$process" > /dev/null
-then
-    exit
-else
-    $command &
-fi
-
-exit
-```
 
 ## **Example Workflow**
 
