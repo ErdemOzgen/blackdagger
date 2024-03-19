@@ -32,7 +32,7 @@ changelog:
 
 # brews:
 #   - repository:
-#       owner: yohamta
+#       owner: erdemozgen
 #       name: homebrew-tap
 #     folder: Formula
 #     homepage: 'https://github.com/erdemozgen/blackdagger'

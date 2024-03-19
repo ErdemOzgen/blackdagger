@@ -9,7 +9,7 @@
 project = 'Blackdagger'
 copyright = '2024, Blackdagger Developers'
 author = 'Blackdagger Developers'
-release = '1.11'
+release = '1.03'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
