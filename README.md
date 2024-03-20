@@ -27,7 +27,7 @@
 <h1><b>Blackdagger</b></h1>
 
 
-Blackdagger represents a significant advancement in automation technology, offering a comprehensive solution for orchestrating complex workflows in DevOps, DevSecOps, MLOps, MLSecOps, and Continuous Red Teaming (CART) environments.
+Blackdagger represents a significant advancement in automation technology, offering a comprehensive solution for orchestrating complex workflows in DevOps, DevSecOps, MLOps, MLSecOps, and Continuous Automated Red Teaming (CART) environments.
 
 At its core, Blackdagger simplifies the management and execution of intricate workflows through its user-friendly approach and powerful functionality. Leveraging a declarative YAML format, Blackdagger enables users to define automation pipelines using a Directed Acyclic Graph (DAG), facilitating clear and concise expression of task dependencies and execution logic.
 
@@ -61,6 +61,7 @@ You can find everything about Blackdagger, including this README, in our [docume
 ```sh
 curl -L https://raw.githubusercontent.com/ErdemOzgen/blackdagger/main/scripts/blackdagger-installer.sh | sudo bash
 ```
+**Important Note:** Within the Blackdagger server, to access the GoTTY web terminal, you must manually start the `default-gotty-service` DAG found in the DAGs section. Blackdagger utilizes GoTTY for web terminal functionality, which, for security reasons, does not automatically start upon system initialization.
 
 
 ### Via Docker
@@ -116,7 +117,12 @@ username ALL=(ALL) NOPASSWD: ALL
 ## **Table of Contents**
 
 - [Highlights](#highlights)
-- [Contents](#contents)
+- [Installation](#installation)
+  - [Via Bash script](#via-bash-script)
+  - [Via Docker](#via-docker)
+  - [Via GitHub Release Page](#via-github-release-page)
+- [CLI](#cli)
+- [Documentation](#documentation)
 - [Features](#features)
 - [Usecase](#usecase)
 - [Web UI](#web-ui)
@@ -125,17 +131,11 @@ username ALL=(ALL) NOPASSWD: ALL
   - [Search DAGs](#search-dags)
   - [Execution History](#execution-history)
   - [DAG Execution Log](#dag-execution-log)
-- [Installation](#installation)
-  - [Via Bash script](#via-bash-script)
-  - [Via Docker](#via-docker)
-  - [Via GitHub Release Page](#via-github-release-page)
 - [Quick Start Guide](#quick-start-guide)
   - [Launch the Web UI](#launch-the-web-ui)
   - [Create a New DAG](#create-a-new-dag)
   - [Edit the DAG](#edit-the-dag)
   - [Execute the DAG](#execute-the-dag)
-- [CLI](#cli)
-- [Documentation](#documentation)
 - [Running as a daemon](#running-as-a-daemon)
 - [Example Workflow](#example-workflow)
 - [Motivation](#motivation)
@@ -409,17 +409,98 @@ Legacy systems often have complex and implicit dependencies between jobs. When t
 
 ## **Why Not Use an Existing Workflow Scheduler Like Airflow?**
 
-There are many existing tools such as Airflow, but many of these require you to write code in a programming language like Python to define your DAG. For systems that have been in operation for a long time, there may already be complex jobs with hundreds of thousands of lines of code written in languages like Perl or Shell Script. Adding another layer of complexity on top of these codes can reduce maintainability. blackdagger was designed to be easy to use, self-contained, and require no coding, making it ideal for small projects.
+While there are numerous workflow schedulers like Airflow available, these often necessitate the authoring of DAGs through programming languages such as Python. For legacy systems with extensive job configurations, incorporating code in languages like Perl or Shell Script can already be a complex endeavor. Introducing an additional layer with such tools can further complicate maintainability. In contrast, BlackDagger is crafted for simplicity and usability, requiring no coding skills. This makes it a perfect fit for smaller projects looking for a straightforward, self-sufficient workflow management solution.
+
 
 ## **How It Works**
 
-blackdagger is a single command line tool that uses the local file system to store data, so no database management system or cloud service is required. DAGs are defined in a declarative YAML format, and existing programs can be used without modification.
+BlackDagger simplifies workflow management by operating as a standalone command-line tool, leveraging the local file system for data storage — eliminating the need for database management systems or cloud services. It enables the definition of DAGs in an intuitive, declarative YAML format, ensuring that existing programs can be seamlessly integrated without any modifications.
 
-----
 
 Feel free to contribute in any way you want! Share ideas, questions, submit issues, and create pull requests. Check out our [Contribution Guide](https://blackdagger.readthedocs.io/en/latest/contrib.html) for help getting started.
 
 We welcome any and all contributions!
+
+
+## **Roadmap**
+
+For the "Roadmap" section of your GitHub README, consider the following template. This will help to communicate the planned or in-progress features and improvements to potential users and contributors:
+
+---
+
+## **Roadroad**
+
+Blackdagger is committed to continuous improvement and the development of new features to enhance its usability and functionality. Our roadmap is guided by feedback from our users and our vision for making workflow management as intuitive and efficient as possible. Here's what's on the horizon:
+
+### **Short-term Goals**
+- **Enhanced User Interface**: We're working on further improving the Web UI for an even more intuitive and user-friendly experience. This includes better navigation, more detailed execution logs, and streamlined DAG management.
+- **Increased Task Types**: Adding support for more types of tasks, including advanced data processing and analytics tasks, to broaden the use cases Blackdagger can cover.
+- **Improved Documentation**: Expanding our documentation to include more examples, use cases, and best practices to help users get the most out of Blackdagger.
+
+### **Mid-term Initiatives**
+- **Plugin Architecture**: Developing a plugin system to allow for easy integration with external tools and services, enhancing Blackdagger's versatility and adaptability.
+- **Advanced Scheduling Features**: Implementing more sophisticated scheduling options to cater to complex workflow requirements, including conditional triggers(current will be updated) and event-driven execution.
+- **Security Enhancements**: Strengthening security features to ensure secure execution of tasks, especially in sensitive or production environments.
+
+### **Long-term Vision**
+- **Machine Learning and AI Integration**: Exploring ways to incorporate ML and AI capabilities to automate decision-making within workflows, such as dynamic adjustment of task execution based on previous outcomes.
+- **Community-Driven Development**: Building a vibrant community around Blackdagger, encouraging contributions, and fostering an ecosystem of plugins and integrations.
+- **Global Adoption and Localization**: Making Blackdagger accessible to a global audience through localization and support for multiple languages.
+
+We are excited about the journey ahead and invite the community to contribute ideas, feedback, and code to help make Blackdagger the go-to solution for workflow management. Stay tuned for updates and join us in shaping the future of Blackdagger!
+
+### TODOS for Roadmap
+
+- [ ] Create more executors see in [here](#executor-roadmap)
+- [ ] Create more playbooks for Default,DevOps, DevSecOps, MLOps, MLSecOps, and Continuous Automated Red Teaming (CART) environments.
+- [ ] Support for importing different DAGs within the same DAG using import statements, enabling modular workflow design.
+- [ ] Implementation of centralized control, allowing BlackDagger to function as an agent for streamlined management.
+- [ ] Enhancement of log collection features to include forwarding logs to a central server for aggregated analysis.
+- [ ] Addition of functionality to generate reports in DOCX and PDF formats for improved documentation and reporting.
+- [ ] Integration with ChatGPT and offline language models for automated document generation, enhancing documentation efficiency.
+
+## Executor Roadmap
+
+- [ ] **Kubernetes Executor**
+  - **Description**: Executes tasks as Kubernetes jobs, allowing for scalable and efficient containerized job execution in a Kubernetes cluster.
+  - **Use Case**: Ideal for scaling tasks that require isolation, resource control, or need to run in a specific container environment.
+
+- [ ] **Lambda Executor**
+  - **Description**: Triggers AWS Lambda functions, enabling serverless execution of tasks without provisioning or managing servers.
+  - **Use Case**: Perfect for lightweight, event-driven tasks such as data transformation, real-time file processing, or integrating with AWS services.
+
+- [ ] **Terraform Executor**
+  - **Description**: Runs Terraform commands to apply infrastructure as code configurations, supporting the automated setup and teardown of cloud resources.
+  - **Use Case**: Useful for DevOps pipelines that require dynamic environment provisioning for testing, staging, or production deployments.
+
+- [ ] **Webhook Executor**
+  - **Description**: Sends data to specified URLs via webhooks, allowing for easy integration with external systems and services.
+  - **Use Case**: Ideal for triggering notifications, external workflows, or updating third-party systems as part of a workflow.
+
+- [ ] **Machine Learning Model Executor**
+  - **Description**: Executes machine learning model inference jobs, supporting various ML frameworks.
+  - **Use Case**: Can be used for batch processing of data through pre-trained models, such as image recognition, sentiment analysis, or predictive analytics.
+
+- [ ] **Data Pipeline Executor**
+  - **Description**: Manages and executes data pipeline tasks, such as ETL (Extract, Transform, Load) operations, supporting integration with popular data processing frameworks.
+  - **Use Case**: Useful for data engineering workflows, including data extraction from various sources, transformation, and loading into data stores or warehouses.
+
+- [ ] **Browser Automation Executor**
+  - **Description**: Executes browser automation scripts using tools like Selenium or Puppeteer for web scraping, automated testing, or any task requiring browser interaction.
+  - **Use Case**: Ideal for automated end-to-end web application testing, data extraction from web pages, or automating repetitive web tasks.
+
+- [ ] **Ansible Executor**
+  - **Description**: Executes Ansible playbooks for configuration management and application deployment.
+  - **Use Case**: Great for ensuring consistent environment configuration, deploying applications, and managing changes across distributed infrastructure.
+
+- [ ] **Jupyter Notebook Executor**
+  - **Description**: Executes Jupyter notebooks, allowing for data analysis and visualization tasks to be part of automated workflows.
+  - **Use Case**: Suitable for integrating data science and exploratory data analysis into automated processes, including preprocessing, analysis, and visualization.
+
+- [ ] **IoT Device Executor**
+  - **Description**: Sends commands or updates to IoT devices, supporting device management and automation across IoT networks.
+  - **Use Case**: Useful for IoT applications needing orchestrated control or updates across multiple devices, such as smart home systems, industrial automation, or health monitoring devices.
+
 
 ## **License**
 
