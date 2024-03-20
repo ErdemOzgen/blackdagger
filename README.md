@@ -59,14 +59,17 @@ You can find everything about Blackdagger, including this README, in our [docume
 ### Via Bash script
 
 ```sh
-curl -L https://raw.githubusercontent.com/ErdemOzgen/blackdagger/main/scripts/downloader.sh | bash
+curl -L https://raw.githubusercontent.com/ErdemOzgen/blackdagger/main/scripts/blackdagger-installer.sh | sudo bash
 ```
 
 ### Via Docker
 
+
 ```sh
-# in blackdagger repo
+# In Blackdagger repo run this commmands 
 docker compose up 
+# You can access web terminal in http://127.0.0.1:8080
+# Also You can access gotty web terminal http://127.0.0.1:8090
 ```
 
 ### ViaGitHubReleasePage'></a>Via GitHub Release Page 
