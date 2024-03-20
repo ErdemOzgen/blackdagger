@@ -26,7 +26,7 @@ function Icon({ icon }: { icon: IconProp }) {
       }}
     >
       <FontAwesomeIcon
-        style={{ height: 20, width: 20, color:'#45B8AC' }}
+        style={{ height: 20, width: 20, color:'#FFFEFE' }}
         icon={icon}
       ></FontAwesomeIcon>
     </span>

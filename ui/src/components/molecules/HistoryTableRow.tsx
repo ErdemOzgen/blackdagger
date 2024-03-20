@@ -21,7 +21,7 @@ function HistoryTableRow({ data, onSelect, idx }: Props) {
         const style: CSSProperties = { ...circleStyle };
         const tdStyle: CSSProperties = { maxWidth: '22px' };
         if (i == idx) {
-          tdStyle.backgroundColor = '#FFDDAD';
+          tdStyle.backgroundColor = '#90CAF9';
         }
         if (status != 0) {
           style.backgroundColor = statusColorMapping[status].backgroundColor;

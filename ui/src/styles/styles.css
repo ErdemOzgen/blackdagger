@@ -3,7 +3,7 @@
 }
 
 a {
-  color: #485fc7;
+  color: #eef8ff;
   cursor: pointer;
   text-decoration: none;
 }
@@ -42,13 +42,13 @@ If you meant to define a border for the whole table, consider applying styles to
 I'll remove it to focus on cell styles: */
 
 .MuiTableRow-root th {
-  background-color: #EFC050; /* Specific to header cells */
+  background-color: #212121; /* Specific to header cells */
   font-weight: 500;
   border: 1px solid #000000;
 }
 
 .MuiTableRow-root td {
-  color: #EFC050; /* Specific to data cells */
+  color: #FFFEFE; /* Specific to data cells */
   font-weight: 500;
 }
 
@@ -83,7 +83,7 @@ I'll remove it to focus on cell styles: */
   color: #4d4d4d;
 }
 .gray-90 {
-  color: #333333;
+  color: #FFFEFE;
 }
 .gray-100 {
   color: #000000;

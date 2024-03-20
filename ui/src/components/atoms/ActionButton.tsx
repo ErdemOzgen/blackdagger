@@ -24,7 +24,7 @@ export default function ActionButton({
       startIcon={icon}
       disabled={disabled}
       onClick={onClick}
-      sx={{ color: '#EFC050' }} // Customizing color to darker blue
+      sx={{ color: '#FFFEFE' }} // Customizing color to darker blue
     >
       {children}
     </Button>
@@ -34,7 +34,7 @@ export default function ActionButton({
       size="small"
       onClick={onClick}
       disabled={disabled}
-      sx={{ color: '#EFC050' }} // Customizing color to darker blue
+      sx={{ color: '#FFFEFE' }} // Customizing color to darker blue
     >
       {icon}
     </IconButton>

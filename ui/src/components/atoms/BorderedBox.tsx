@@ -13,8 +13,8 @@ export default function BorderedBox({
     <Box
       sx={{
         border: 1,
-        borderColor: '#34568B',
-        backgroundColor: '#34568B',
+        borderColor: '#212121',
+        backgroundColor: '#212121',
         ...sx,
       }}
       {...props}
