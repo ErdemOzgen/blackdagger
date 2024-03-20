@@ -424,12 +424,6 @@ We welcome any and all contributions!
 
 ## **Roadmap**
 
-For the "Roadmap" section of your GitHub README, consider the following template. This will help to communicate the planned or in-progress features and improvements to potential users and contributors:
-
----
-
-## **Roadroad**
-
 Blackdagger is committed to continuous improvement and the development of new features to enhance its usability and functionality. Our roadmap is guided by feedback from our users and our vision for making workflow management as intuitive and efficient as possible. Here's what's on the horizon:
 
 ### **Short-term Goals**
