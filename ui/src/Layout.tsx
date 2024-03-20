@@ -73,8 +73,8 @@ const mdTheme = createTheme({
       paper: '#1e1e1e', // Dark background for components like Drawer and AppBar
     },
     text: {
-      primary: '#45B8AC', // Light text color for readability
-      secondary: '#45B8AC', // Slightly dimmer text color for less emphasis
+      primary: '#FFFEFE', // Light text color for readability
+      secondary: '#FFFEFE', // Slightly dimmer text color for less emphasis
     },
   },
   typography: {
@@ -92,7 +92,7 @@ type DashboardContentProps = {
 function Content({ title, navbarColor, children }: DashboardContentProps) {
   const [scrolled, setScrolled] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const gradientColor = navbarColor || '#293152';
+  const gradientColor = navbarColor || '#171617';
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -128,7 +128,7 @@ function Content({ title, navbarColor, children }: DashboardContentProps) {
             elevation={0}
             sx={{
               width: '100%',
-              backgroundColor: '#293152',
+              backgroundColor: '#171617',
               borderBottom: scrolled ? 1 : 0,
               borderColor: 'grey.300',
               pr: 3,
@@ -172,7 +172,7 @@ function Content({ title, navbarColor, children }: DashboardContentProps) {
               flex: 1,
               pb: 4,
               overflow: 'auto',
-              backgroundColor: '#293152', /*Dashboard background color */
+              backgroundColor: '#171617', /*Dashboard background color */
 
             }}
             onScroll={() => {
@@ -205,7 +205,7 @@ const NavBarTitleText = ({
     gutterBottom
     sx={{
       fontWeight: '800',
-      color: '#45B8AC',
+      color: '#FFFEFE',
       /**backgroundColor : 'red',**/
       opacity: visible ? 1 : 0,
       transition: 'opacity 0.2s',

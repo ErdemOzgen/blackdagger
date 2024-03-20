@@ -13,7 +13,7 @@ export default function Title(props: TitleProps) {
       gutterBottom
       sx={{
         fontWeight: '800',
-        color: '#EFC050',
+        color: '#FFFEFE',
       }}
     >
       {props.children}

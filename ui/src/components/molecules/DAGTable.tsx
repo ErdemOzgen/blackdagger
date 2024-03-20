@@ -626,7 +626,7 @@ function DAGTable({ DAGs = [], group = '', refreshFn }: Props) {
             {instance.getRowModel().rows.map((row) => (
               <StyledTableRow
                 key={row.id}
-                style={{ height: '44px', backgroundColor: 'white' }}
+                style={{ height: '44px', backgroundColor: '#212121' }}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell

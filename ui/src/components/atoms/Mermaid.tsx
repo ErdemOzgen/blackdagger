@@ -29,7 +29,7 @@ function Mermaid({ def, style = {} }: Props) {
   const ref = React.useRef<HTMLDivElement>(null);
   const mStyle = {
     ...style,
-    //backgroundColor: '#293152' ,
+    //backgroundColor: '#171617' ,
     //<Mermaid def={graph} style={{ backgroundColor: 'yellow' }} />
   };
   const dStyle: CSSProperties = {
