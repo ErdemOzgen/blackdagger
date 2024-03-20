@@ -193,7 +193,7 @@ username ALL=(ALL) NOPASSWD: ALL
 
 It shows the real-time status, logs, and DAG configurations. You can edit DAG configurations on a browser.
 
-  ![example](assets/images/example.png)
+  ![example](assets/images/Demo.png)
 
   You can switch to the vertical graph with the button on the top right corner.
 
@@ -328,7 +328,7 @@ blackdagger version
 
 This example workflow showcases a data pipeline typically implemented in DevOps and Data Engineering scenarios. It demonstrates an end-to-end data processing cycle starting from data acquisition and cleansing to transformation, loading, analysis, reporting, and ultimately, cleanup.
 
-![Details-TD](assets/images/example.png)
+![Details-TD](assets/images/Demo.png)
 
 The YAML code below represents this workflow:
 

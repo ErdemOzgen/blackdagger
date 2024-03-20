@@ -12,8 +12,9 @@ import {
 } from 'recharts';
 import { statusColorMapping } from '../../consts';
 import { DAGStatus, SchedulerStatus, Status } from '../../models';
+import { WorkflowListItem,WorkflowStatus } from '../../models/api';
 
-type Props = { data: DAGStatus[] };
+type Props = { data: DAGStatus[] | WorkflowListItem[] };
 
 type DataFrame = {
   name: string;
@@ -25,7 +26,7 @@ function DashboardTimechart({ data: input }: Props) {
   const [data, setData] = React.useState<DataFrame[]>([]);
   React.useEffect(() => {
     const transformedData: DataFrame[] = input.map((dagStatus) => {
-      const status: Status | undefined = dagStatus.Status;
+      const status: Status | WorkflowStatus | undefined = dagStatus.Status;
       if (!status || status.StartedAt === '-' || !status.FinishedAt) {
         return null;
       }
