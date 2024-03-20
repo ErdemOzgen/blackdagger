@@ -60,9 +60,10 @@ Code Structure
 - ``service``: TBU
 - ``ui``: Frontend code for the Web UI.
 - ``internal``: Contains the internal code for the project.
+
   - ``agent``: Contains the code for runnning the workflows.
   - ``config``: Contains the code for loading the configuration.
-  - ``constants``: 
+  - ``constants``: Constants used in the project.
   - ``dag``: Contains the code for parsing the workflow definition.
   - ``engine``: Contains the for running basic functions of Blackdagger.
   - ``errors``: Contains the code for error handling in commands of DAG.
