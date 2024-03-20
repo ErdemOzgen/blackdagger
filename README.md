@@ -62,6 +62,7 @@ You can find everything about Blackdagger, including this README, in our [docume
 curl -L https://raw.githubusercontent.com/ErdemOzgen/blackdagger/main/scripts/blackdagger-installer.sh | sudo bash
 ```
 
+
 ### Via Docker
 
 

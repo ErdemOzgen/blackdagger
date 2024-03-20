@@ -12,6 +12,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { Typography } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
+
 
 function Icon({ icon }: { icon: IconProp }) {
   return (
@@ -55,7 +57,7 @@ export const mainListItems = (
       external
     />
     <ListItemDoc
-      text="Terminal"
+      text="Documentation"
       icon={<Icon icon={faBook} />}
       to="https://blackdagger.readthedocs.io/en/latest/"
       external
@@ -71,22 +73,19 @@ type ListItemProps = {
 };
 
 function ListItem({ icon, text, to, external }: ListItemProps) {
-  //const listItemProps = external ? { href: to, target: '_blank' } : { to };
   let listItemProps = {};
-  
+
   if (external) {
-    // If the link is external, dynamically construct the URL to include the current hostname and port 8090
     const protocol = window.location.protocol;
     const hostname = window.location.hostname;
     const port = "8090";
     const href = `${protocol}//${hostname}:${port}`;
     listItemProps = { component: "a", href: href, target: '_blank', rel: 'noopener noreferrer' };
   } else {
-    // For internal routing, use your existing logic
-    // This assumes you have a routing setup (e.g., using React Router) that can handle these paths
-    listItemProps = { component: "a", href: to }; // Adjust as needed for your routing library
+    listItemProps = { component: "a", href: to };
   }
-  return (
+
+  const content = (
     <ListItemButton component="a" {...listItemProps}>
       <ListItemIcon sx={{ color: 'black' }}>{icon}</ListItemIcon>
       <ListItemText
@@ -103,7 +102,19 @@ function ListItem({ icon, text, to, external }: ListItemProps) {
       />
     </ListItemButton>
   );
+
+  // If the list item is for the Terminal, wrap it in a Tooltip
+  if (text === "Terminal") {
+    return (
+      <Tooltip title="If you want to access the terminal interface please run `default-gotty-service` dag" arrow>
+        {content}
+      </Tooltip>
+    );
+  }
+
+  return content;
 }
+
 
 function ListItemDoc({ icon, text, to, external }: ListItemProps) {
   let listItemProps = {};
