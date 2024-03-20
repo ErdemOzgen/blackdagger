@@ -42,8 +42,7 @@ fi
 sudo mv "${TMPDIR}/gotty" /usr/local/bin/
 echo "gotty has been downloaded, extracted, and moved to /usr/local/bin successfully."
 
-# Cleanup
-rm -rf "$TMPDIR"
+
 
 # Uncomment to run gotty with passed arguments
 # "./gotty" "$@"
@@ -89,5 +88,6 @@ cp "${TMPDIR}/blackdagger" ./
 
 sudo mv "./blackdagger" /usr/local/bin/
 echo "blackdagger has been downloaded, extracted, and moved to /usr/local/bin successfully."
-
+# Cleanup
+rm -rf "$TMPDIR"
 "blackdagger" "$@"
