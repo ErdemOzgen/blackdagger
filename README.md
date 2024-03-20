@@ -80,10 +80,10 @@ Download the latest binary from the [Releases page](https://github.com/ErdemOzge
 
 ## **Running as a daemon**
 
-** If you need root privallages you can use it **
+### **If you need root privallages you can use it. 3 different choose you can use.**
 
 
-To ensure continuous operation of the process on your system, simply create and execute the following script every minute via cron—no root account required:
+1. To ensure continuous operation of the process on your system, simply create and execute the following script every minute via cron—no root account required:
 
 ```bash
 #!/bin/bash
@@ -100,19 +100,84 @@ fi
 exit
 ```
 
-If running as daemon what you need and you need still root privallages you can run:
+2. If running as daemon something that you can choose and you need still root privallages you can run:
 ```bash
 sudo blackdagger start-all
 ```
 But this will create **.blackdagger** folder in root user. It may cause python package issues and pip related problems.
 
-Last options is adding user account to the /etc/sudoers file with nopasswd permissions, enabling them to execute sudo commands without needing to enter a password. This modification simplifies operations that require elevated privileges by removing the requirement to provide a password for each sudo command.
+3. Last options is adding user account to the /etc/sudoers file with nopasswd permissions, enabling them to execute sudo commands without needing to enter a password. This modification simplifies operations that require elevated privileges by removing the requirement to provide a password for each sudo command.
 
 ```bash
 # In /etc/sudoers
 username ALL=(ALL) NOPASSWD: ALL
 ```
 
+## **Quick Start Guide**
+
+### 1. Launch the Web UI
+
+Start the server and scheduler with the command `blackdagger start-all` or `blackdagger server` and browse to `http://127.0.0.1:8080` to explore the Web UI. 
+
+### 2. Create a New DAG
+
+Navigate to the DAG List page by clicking the menu in the left panel of the Web UI. Then create a DAG by clicking the `New DAG` button at the top of the page. Enter `example` in the dialog.
+
+*Note: DAG (YAML) files will be placed in `~/.blackdagger/dags` by default. See [Configuration Options](https://blackdagger.readthedocs.io/en/latest/config.html) for more details.*
+
+### 3. Edit the DAG
+
+Go to the `SPEC` Tab and hit the `Edit` button. Copy & Paste the following example and click the `Save` button.
+
+Example:
+```yaml
+schedule: "* * * * *" # Run the DAG every minute
+steps:
+  - name: s1
+    command: echo Hello blackdagger
+  - name: s2
+    command: echo done!
+    depends:
+      - s1
+```
+
+### 4. Execute the DAG
+
+You can execute the example by pressing the `Start` button. You can see "Hello blackdagger" in the log page in the Web UI.
+
+## **CLI**
+
+```sh
+# Runs the DAG
+blackdagger start [--params=<params>] <file>
+
+# Displays the current status of the DAG
+blackdagger status <file>
+
+# Re-runs the specified DAG run
+blackdagger retry --req=<request-id> <file>
+
+# Stops the DAG execution
+blackdagger stop <file>
+
+# Restarts the current running DAG
+blackdagger restart <file>
+
+# Dry-runs the DAG
+blackdagger dry [--params=<params>] <file>
+
+# Launches both the web UI server and scheduler process
+blackdagger start-all [--host=<host>] [--port=<port>] [--dags=<path to directory>]
+
+# Launches the blackdagger web UI server
+blackdagger server [--host=<host>] [--port=<port>] [--dags=<path to directory>]
+
+# Starts the scheduler process
+blackdagger scheduler [--dags=<path to directory>]
+
+# Shows the current binary version
+blackdagger version
+```
 
 ## **Table of Contents**
 
@@ -223,71 +288,7 @@ It shows the detail log and standard output of each execution and step.
   ![DAG Log](assets/images/ui-logoutput.png)
 
 
-## **Quick Start Guide**
 
-### 1. Launch the Web UI
-
-Start the server and scheduler with the command `blackdagger start-all` and browse to `http://127.0.0.1:8080` to explore the Web UI.
-
-### 2. Create a New DAG
-
-Navigate to the DAG List page by clicking the menu in the left panel of the Web UI. Then create a DAG by clicking the `New DAG` button at the top of the page. Enter `example` in the dialog.
-
-*Note: DAG (YAML) files will be placed in `~/.blackdagger/dags` by default. See [Configuration Options](https://blackdagger.readthedocs.io/en/latest/config.html) for more details.*
-
-### 3. Edit the DAG
-
-Go to the `SPEC` Tab and hit the `Edit` button. Copy & Paste the following example and click the `Save` button.
-
-Example:
-```yaml
-schedule: "* * * * *" # Run the DAG every minute
-steps:
-  - name: s1
-    command: echo Hello blackdagger
-  - name: s2
-    command: echo done!
-    depends:
-      - s1
-```
-
-### 4. Execute the DAG
-
-You can execute the example by pressing the `Start` button. You can see "Hello blackdagger" in the log page in the Web UI.
-
-## **CLI**
-
-```sh
-# Runs the DAG
-blackdagger start [--params=<params>] <file>
-
-# Displays the current status of the DAG
-blackdagger status <file>
-
-# Re-runs the specified DAG run
-blackdagger retry --req=<request-id> <file>
-
-# Stops the DAG execution
-blackdagger stop <file>
-
-# Restarts the current running DAG
-blackdagger restart <file>
-
-# Dry-runs the DAG
-blackdagger dry [--params=<params>] <file>
-
-# Launches both the web UI server and scheduler process
-blackdagger start-all [--host=<host>] [--port=<port>] [--dags=<path to directory>]
-
-# Launches the blackdagger web UI server
-blackdagger server [--host=<host>] [--port=<port>] [--dags=<path to directory>]
-
-# Starts the scheduler process
-blackdagger scheduler [--dags=<path to directory>]
-
-# Shows the current binary version
-blackdagger version
-```
 
 ## **Documentation**
 
