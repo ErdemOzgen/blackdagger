@@ -8,6 +8,7 @@ import {
   faMagnifyingGlass,
   faTableList,
   faTerminal,
+  faBook,
 } from '@fortawesome/free-solid-svg-icons';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { Typography } from '@mui/material';
@@ -53,6 +54,12 @@ export const mainListItems = (
       to="http://:8090"
       external
     />
+    <ListItemDoc
+      text="Terminal"
+      icon={<Icon icon={faBook} />}
+      to="https://blackdagger.readthedocs.io/en/latest/"
+      external
+    />
   </React.Fragment>
 );
 
@@ -78,6 +85,35 @@ function ListItem({ icon, text, to, external }: ListItemProps) {
     // For internal routing, use your existing logic
     // This assumes you have a routing setup (e.g., using React Router) that can handle these paths
     listItemProps = { component: "a", href: to }; // Adjust as needed for your routing library
+  }
+  return (
+    <ListItemButton component="a" {...listItemProps}>
+      <ListItemIcon sx={{ color: 'black' }}>{icon}</ListItemIcon>
+      <ListItemText
+        primary={
+          <Typography
+            sx={{
+              color: 'black',
+              fontWeight: '400',
+            }}
+          >
+            {text}
+          </Typography>
+        }
+      />
+    </ListItemButton>
+  );
+}
+
+function ListItemDoc({ icon, text, to, external }: ListItemProps) {
+  let listItemProps = {};
+  
+  if (external) {
+    // Directly use the 'to' prop for external links
+    listItemProps = { component: "a", href: to, target: '_blank', rel: 'noopener noreferrer' };
+  } else {
+    // For internal routing, adjust as needed for your routing library
+    listItemProps = { component: "a", href: to }; 
   }
   return (
     <ListItemButton component="a" {...listItemProps}>
