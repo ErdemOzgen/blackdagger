@@ -256,10 +256,11 @@ blackdagger version
 
 ### DAG Details
 
-It shows the real-time status, logs, and DAG configurations. You can edit DAG configurations on a browser.
+  Main index page of blackdagger. It shows dag status and timeline for all dags.
+  
+  ![example](assets/images/dashboard.png)
 
-  ![example](assets/images/Demo.png)
-
+  It shows the real-time status, logs, and DAG configurations. You can edit DAG configurations on a browser.
   You can switch to the vertical graph with the button on the top right corner.
 
   ![Details-TD](assets/images/ui-details.png?raw=true)
