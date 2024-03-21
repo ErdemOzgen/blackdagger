@@ -72,6 +72,7 @@ curl -L https://raw.githubusercontent.com/ErdemOzgen/blackdagger/main/scripts/bl
 docker compose up 
 # You can access web terminal in http://127.0.0.1:8080
 # Also You can access gotty web terminal http://127.0.0.1:8090 username: blackdagger password: blackdagger
+# Do not forget run default-gotty-service dags in http://[::]:8080/dags/default-gotty-service .
 ```
 
 ### ViaGitHubReleasePage
