@@ -71,7 +71,7 @@ curl -L https://raw.githubusercontent.com/ErdemOzgen/blackdagger/main/scripts/bl
 # In Blackdagger repo run this commmands 
 docker compose up 
 # You can access web terminal in http://127.0.0.1:8080
-# Also You can access gotty web terminal http://127.0.0.1:8090
+# Also You can access gotty web terminal http://127.0.0.1:8090 username: blackdagger password: blackdagger
 ```
 
 ### ViaGitHubReleasePage
