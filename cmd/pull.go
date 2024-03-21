@@ -25,7 +25,9 @@ var pullCmd = &cobra.Command{
 		Example: blackdagger pull devops 
 		Example: blackdagger pull cart
 		Example: blackdagger pull mlops
-		Example: blackdagger pull all
+		Example: blackdagger pull mlsecops
+		Example: blackdagger pull devsecops
+		Example: blackdagger pull <category>
 		
 		see
 		`,
@@ -57,7 +59,7 @@ func init() {
 
 func Pulldags(args []string) {
 	// TODO: move to config files
-	jobCategories := []string{"mlops", "default", "devsecops", "devops"}
+	jobCategories := []string{"mlops", "default", "devsecops", "devops", "mlsecops", "cart"}
 	if len(args) > 0 {
 		if CheckCategory(jobCategories, args[0]) {
 			repoName := args[0]                 // Use the first argument as the repository name, e.g., "default"
