@@ -106,7 +106,7 @@ function ListItem({ icon, text, to, external }: ListItemProps) {
   // If the list item is for the Terminal, wrap it in a Tooltip
   if (text === "Terminal") {
     return (
-      <Tooltip title="If you want to access the terminal interface please run `default-gotty-service` dag" arrow>
+      <Tooltip title="If you want to access the terminal interface please make sure `default-gotty-service` dag is running" arrow>
         {content}
       </Tooltip>
     );
