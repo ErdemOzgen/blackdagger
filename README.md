@@ -74,7 +74,7 @@ docker compose up
 # Also You can access gotty web terminal http://127.0.0.1:8090
 ```
 
-### ViaGitHubReleasePage'></a>Via GitHub Release Page 
+### ViaGitHubReleasePage
 
 Download the latest binary from the [Releases page](https://github.com/ErdemOzgen/blackdagger/releases) and place it in your `$PATH` (e.g. `/usr/local/bin`).
 
