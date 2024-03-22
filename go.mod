@@ -10,9 +10,9 @@ require (
 	github.com/go-openapi/errors v0.21.0
 	github.com/go-openapi/loads v0.21.5
 	github.com/go-openapi/runtime v0.27.1
-	github.com/go-openapi/spec v0.20.14
+	github.com/go-openapi/spec v0.21.0
 	github.com/go-openapi/strfmt v0.22.0
-	github.com/go-openapi/swag v0.22.9
+	github.com/go-openapi/swag v0.23.0
 	github.com/go-openapi/validate v0.23.0
 	github.com/go-resty/resty/v2 v2.11.0
 	github.com/google/uuid v1.6.0
@@ -25,7 +25,7 @@ require (
 	github.com/samber/lo v1.39.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	go.uber.org/fx v1.20.1
 	golang.org/x/crypto v0.19.0
 	golang.org/x/exp v0.0.0-20240213143201-ec583247a57a
@@ -48,8 +48,8 @@ require (
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/analysis v0.22.2 // indirect
-	github.com/go-openapi/jsonpointer v0.20.2 // indirect
-	github.com/go-openapi/jsonreference v0.20.4 // indirect
+	github.com/go-openapi/jsonpointer v0.21.0 // indirect
+	github.com/go-openapi/jsonreference v0.21.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
