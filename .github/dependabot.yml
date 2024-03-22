@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # For the Golang application
+  - package-ecosystem: "gomod" # This is for Golang modules
+    directory: "/" # Adjust if your Golang module manifest (go.mod) is in a subdirectory
+    schedule:
+      interval: "weekly" # Dependabot will check for updates weekly
+
+  # For the React application
+  - package-ecosystem: "npm" # This is for npm packages used by your React app
+    directory: "/ui/" # Replace with the path to your React app's directory where package.json is located
+    schedule:
+      interval: "weekly" # Dependabot will check for updates weekly
