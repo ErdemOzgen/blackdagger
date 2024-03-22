@@ -55,7 +55,6 @@ You can find everything about Blackdagger, including this README, in our [docume
 
 ## **Installation**
 
-
 ### Via Bash script
 
 ```sh
@@ -75,16 +74,36 @@ docker compose up
 # Do not forget run default-gotty-service dags in http://[::]:8080/dags/default-gotty-service .
 ```
 
-### ViaGitHubReleasePage
+### Via GitHub Release Page
 
 Download the latest binary from the [Releases page](https://github.com/ErdemOzgen/blackdagger/releases) and place it in your `$PATH` (e.g. `/usr/local/bin`).
 
-## **Running as a daemon**
+#### **IMPORTANT:** 
+In some YAMLs and/or processes that users want to run by using Blackdagger, `sudo` permission may be required. Therefore, users may need to configure a `sudo` permission before running them. Without this permission, process running, maintaining, stopping features and other Blackdagger features may encounter bugs. Below, you can find different options to configure `sudo` permission:
 
-### **If you need root privallages you can use it. 3 different choose you can use.**
+1. First and **suggested option** is adding user account to the /etc/sudoers file with NOPASSWD permissions, enabling them to execute sudo commands without needing to enter a password. This modification simplifies operations that require elevated privileges by removing the requirement to provide a password for each sudo command.
+
+In the terminal, type the following command to open the sudoers file using a text editor:
+```bash
+sudo visudo -f /etc/sudoers
+```
+
+Scroll down to the bottom of the sudoers file.
+Add the following line, replacing "username" with the actual username of the user account you want to grant sudo privileges without a password:
+
+```bash
+username ALL=(ALL) NOPASSWD: ALL
+```
+Save your changes and exit the editor. 
 
 
-1. To ensure continuous operation of the process on your system, simply create and execute the following script every minute via cron—no root account required:
+2. To have root privileges you can run Blackdagger with sudo:
+```bash
+sudo blackdagger start-all
+```
+But this will create **.blackdagger** folder in root user. It may cause python package issues and pip related problems.
+
+3. To ensure continuous operation of the process on your system, simply create and execute the following script every minute via cron—no root account required:
 
 ```bash
 #!/bin/bash
@@ -99,19 +118,6 @@ else
 fi
 
 exit
-```
-
-2. If running as daemon something that you can choose and you need still root privallages you can run:
-```bash
-sudo blackdagger start-all
-```
-But this will create **.blackdagger** folder in root user. It may cause python package issues and pip related problems.
-
-3. Last options is adding user account to the /etc/sudoers file with nopasswd permissions, enabling them to execute sudo commands without needing to enter a password. This modification simplifies operations that require elevated privileges by removing the requirement to provide a password for each sudo command.
-
-```bash
-# In /etc/sudoers
-username ALL=(ALL) NOPASSWD: ALL
 ```
 
 ## **Quick Start Guide**
