@@ -37,7 +37,7 @@ if [ ! -f "${TMPDIR}/gotty" ]; then
     echo "Failed to extract. The gotty binary is not found."
     exit 1
 fi
-
+echo # blank for password promt
 # Move gotty to /usr/local/bin to make it globally accessible
 sudo mv "${TMPDIR}/gotty" /usr/local/bin/
 echo "gotty has been downloaded, extracted, and moved to /usr/local/bin successfully."
@@ -86,6 +86,7 @@ export TAR_FILE="${TMPDIR}${FILE_BASENAME}_$(uname -s)_$ARCHITECTURE.tar.gz"
 tar -xf "$TAR_FILE" -C "$TMPDIR"
 cp "${TMPDIR}/blackdagger" ./
 
+echo # blank for sudo prompt
 sudo mv "./blackdagger" /usr/local/bin/
 echo "blackdagger has been downloaded, extracted, and moved to /usr/local/bin successfully."
 # Cleanup
