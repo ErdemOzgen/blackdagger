@@ -87,6 +87,10 @@ tar -xf "$TAR_FILE" -C "$TMPDIR"
 cp "${TMPDIR}/blackdagger" ./
 
 echo # blank for sudo prompt
+# Check if /usr/local/bin exists, if not, create it
+if [ ! -d "/usr/local/bin" ]; then
+    sudo mkdir -p /usr/local/bin
+fi
 sudo mv "./blackdagger" /usr/local/bin/
 echo "blackdagger has been downloaded, extracted, and moved to /usr/local/bin successfully."
 # Cleanup
