@@ -155,9 +155,9 @@ func UnescapeSpecialchars(str string) string {
 // TODO: Implement this function
 func EscapeSpecialchars(str string) string {
 	repl := strings.NewReplacer(
-		`\t`, `\\t`,
-		`\r`, `\\r`,
-		`\n`, `\\n`,
+		`\t`, `\t`,
+		`\r`, `\r`,
+		`\n`, `\n`,
 	)
 	return repl.Replace(str)
 }
