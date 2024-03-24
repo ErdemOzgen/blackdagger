@@ -133,15 +133,26 @@ func ExtractParamNames(command string) []string {
 	return params
 }
 
+// func UnescapeSpecialchars(str string) string {
+// 	repl := strings.NewReplacer(
+// 		`\\t`, `\t`,
+// 		`\\r`, `\r`,
+// 		`\\n`, `\n`,
+// 	)
+// 	return repl.Replace(str)
+// }
+
+// TODO: Implement this function
 func UnescapeSpecialchars(str string) string {
 	repl := strings.NewReplacer(
-		`\\t`, `\t`,
-		`\\r`, `\r`,
-		`\\n`, `\n`,
+		`\t`, `\t`,
+		`\r`, `\r`,
+		`\n`, `\n`,
 	)
 	return repl.Replace(str)
 }
 
+// TODO: Implement this function
 func EscapeSpecialchars(str string) string {
 	repl := strings.NewReplacer(
 		`\t`, `\\t`,
@@ -150,6 +161,15 @@ func EscapeSpecialchars(str string) string {
 	)
 	return repl.Replace(str)
 }
+
+// func EscapeSpecialchars(str string) string {
+// 	repl := strings.NewReplacer(
+// 		`\t`, `\\t`,
+// 		`\r`, `\\r`,
+// 		`\n`, `\\n`,
+// 	)
+// 	return repl.Replace(str)
+// }
 
 // FileExists returns true if file exists.
 func FileExists(file string) bool {
@@ -357,8 +377,18 @@ func ParseParams(input string, executeCommandSubstitution bool) ([]Parameter, er
 	return params, nil
 }
 
+// func StringifyParam(param Parameter) string {
+// 	escapedValue := strings.ReplaceAll(param.Value, `"`, `\"`)
+// 	quotedValue := fmt.Sprintf(`"%s"`, escapedValue)
+
+// 	if param.Name != "" {
+// 		return fmt.Sprintf("%s=%s", param.Name, quotedValue)
+// 	}
+// 	return quotedValue
+// }
+
 func StringifyParam(param Parameter) string {
-	escapedValue := strings.ReplaceAll(param.Value, `"`, `\"`)
+	escapedValue := strings.ReplaceAll(param.Value, `"`, `"`)
 	quotedValue := fmt.Sprintf(`"%s"`, escapedValue)
 
 	if param.Name != "" {
@@ -367,16 +397,34 @@ func StringifyParam(param Parameter) string {
 	return quotedValue
 }
 
+// func EscapeArg(input string, doubleQuotes bool) string {
+// 	escaped := strings.Builder{}
+
+// 	for _, char := range input {
+// 		if char == '\r' {
+// 			escaped.WriteString("\\r")
+// 		} else if char == '\n' {
+// 			escaped.WriteString("\\n")
+// 		} else if char == '"' && doubleQuotes {
+// 			escaped.WriteString("\\\"")
+// 		} else {
+// 			escaped.WriteRune(char)
+// 		}
+// 	}
+
+// 	return escaped.String()
+// }
+
 func EscapeArg(input string, doubleQuotes bool) string {
 	escaped := strings.Builder{}
 
 	for _, char := range input {
 		if char == '\r' {
-			escaped.WriteString("\\r")
+			escaped.WriteString("\r")
 		} else if char == '\n' {
-			escaped.WriteString("\\n")
+			escaped.WriteString("\n")
 		} else if char == '"' && doubleQuotes {
-			escaped.WriteString("\\\"")
+			escaped.WriteString("\"")
 		} else {
 			escaped.WriteRune(char)
 		}
@@ -384,6 +432,39 @@ func EscapeArg(input string, doubleQuotes bool) string {
 
 	return escaped.String()
 }
+
+// func UnescapeArg(input string) (string, error) {
+// 	escaped := strings.Builder{}
+// 	length := len(input)
+// 	i := 0
+
+// 	for i < length {
+// 		char := input[i]
+
+// 		if char == '\\' {
+// 			i++
+// 			if i >= length {
+// 				return "", fmt.Errorf("unexpected end of input after escape character")
+// 			}
+
+// 			switch input[i] {
+// 			case 'n':
+// 				escaped.WriteRune('\n')
+// 			case 'r':
+// 				escaped.WriteRune('\r')
+// 			case '"':
+// 				escaped.WriteRune('"')
+// 			default:
+// 				return "", fmt.Errorf("unknown escape sequence '\\%c'", input[i])
+// 			}
+// 		} else {
+// 			escaped.WriteByte(char)
+// 		}
+// 		i++
+// 	}
+
+// 	return escaped.String(), nil
+// }
 
 func UnescapeArg(input string) (string, error) {
 	escaped := strings.Builder{}
@@ -414,6 +495,6 @@ func UnescapeArg(input string) (string, error) {
 		}
 		i++
 	}
-
-	return escaped.String(), nil
+	// TODO: Implement this function return escaped.String(), nil
+	return input, nil // Return the input directly, no unescaping.
 }
