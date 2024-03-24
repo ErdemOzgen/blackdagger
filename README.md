@@ -52,6 +52,11 @@ What sets Blackdagger apart is its simplicity and versatility. Unlike traditiona
 
 You can find everything about Blackdagger, including this README, in our [documentation](https://blackdagger.readthedocs.io).
 
+Below, you can find the videos that can help you to get started with Blackdagger:
+
+| Installation and Setup of Blackdagger | Usage of Blackdagger | DAG Creation and Running in Blackdagger |
+|:-:|:-:|:-:|
+| [![Installation and Setup of Blackdagger](https://img.youtube.com/vi/GnFJlfEfxSk/0.jpg)](https://www.youtube.com/watch?v=GnFJlfEfxSk) | [![Usage of Blackdagger](https://img.youtube.com/vi/ezeudtCWI3w/0.jpg)](https://www.youtube.com/watch?v=ezeudtCWI3w) | [![DAG Creation and Running in Blackdagger](https://img.youtube.com/vi/1oVbahg1R5I/0.jpg)](https://www.youtube.com/watch?v=1oVbahg1R5I) |
 
 ## **Installation**
 
@@ -119,6 +124,26 @@ fi
 
 exit
 ```
+
+### Get Example YAMLs For Various Purposes
+After the installation, you can use YAMLs that we created for various purposes. 
+We created these YAMLs to help you about mechanisms you can use in Blackdagger and give you inspiration for creating your own YAMLs or modifying ours for your purposes.
+
+For now, we have these categories of YAMLs:
+* Default: Default YAMLs that consist of general mechanisms that you can use in any YAML file, such as parallel job running and conditional mechanisms.
+* DevSecOps: YAMLs that will help you to setup an environment and install common tools for DevSecOps, along with language specific YAML files that you can use to run DevSecOps processes on your projects.
+* CART: YAMLs that will help you to prepare, plan and perform CART processes. We advise you to use these YAMLs in [Blackcart](https://github.com/ErdemOzgen/blackcart) since there is a pre-configured environment and a whole arsenal for CART purposes.
+* DevOps: TBU
+* MLOps: TBU
+* MLSecOps: TBU
+
+After installing Blackdagger, you can download these YAMLs by their categories by running the command:
+```bash
+# Categories: mlops, default, devsecops, devops, mlsecops, cart
+blackdagger pull <category>
+```
+
+
 
 ## **Quick Start Guide**
 
