@@ -38,14 +38,14 @@ if [ ! -f "${TMPDIR}/gotty" ]; then
     exit 1
 fi
 
-# Check if /usr/bin exists, if not, create it
+# Check if /usr/bin/ exists, if not, create it
 if [ ! -d "/usr/bin/" ]; then
     sudo mkdir -p /usr/bin/
 fi
 
 # Move gotty to /usr/bin to make it globally accessible
 sudo mv "${TMPDIR}/gotty" /usr/bin/
-echo "gotty has been downloaded, extracted, and moved to /usr/bin successfully."
+echo "gotty has been downloaded, extracted, and moved to /usr/bin/ successfully."
 
 # Cleanup
 rm -rf "$TMPDIR"
