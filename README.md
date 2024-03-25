@@ -16,6 +16,9 @@
     <img src="https://godoc.org/github.com/ErdemOzgen/blackdagger?status.svg" />
   </a>
   <img src="https://github.com/ErdemOzgen/blackdagger/actions/workflows/test.yaml/badge.svg" />
+  <a href="https://hub.docker.com/r/erdemozgen/blackdagger">
+    <img src="https://img.shields.io/docker/v/erdemozgen/blackdagger?label=docker&logo=docker" />
+  </a>
 </p>
 
 <div align="center">

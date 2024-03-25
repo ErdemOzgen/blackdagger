@@ -6,7 +6,7 @@ DST_DIR=$(SRC_DIR)/internal
 BUILD_VERSION=$(shell date +'%y%m%d%H%M%S')
 LDFLAGS=-X 'main.version=$(BUILD_VERSION)'
 
-VERSION=1.0.2
+VERSION=1.0.4
 
 DOCKER_USERNAME=erdemozgen
 IMAGE_NAME=blackdagger
