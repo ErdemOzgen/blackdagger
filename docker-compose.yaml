@@ -19,7 +19,7 @@ services:
       - ./logs/:/home/blackdagger/.blackdagger/logs
       - ./suspend/:/home/blackdagger/.blackdagger/suspend
     #command: ["bash", "/home/blackdagger/startservices.sh"] # Custom command to start the services
-    command: ["sh", "-c", "/startservices.sh"]
+    command: ["sh", "-c", "./startservices.sh"]
 
 volumes:
   blackdagger: {}
