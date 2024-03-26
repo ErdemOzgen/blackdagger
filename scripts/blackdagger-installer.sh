@@ -1,5 +1,12 @@
 #!/bin/sh
 
+# Check if the script is running as root
+if [ "$(id -u)" -ne 0 ]; then
+  echo "This script must be run as root. Please use sudo or log in as root."
+  exit 1
+fi
+
+
 RELEASES_URL="https://github.com/yudai/gotty/releases"
 GOTTY_TARGET_VERSION="v1.0.1"
 
@@ -37,10 +44,10 @@ if [ ! -f "${TMPDIR}/gotty" ]; then
     echo "Failed to extract. The gotty binary is not found."
     exit 1
 fi
-echo # blank for password promt
-# Move gotty to /usr/local/bin to make it globally accessible
-sudo mv "${TMPDIR}/gotty" /usr/local/bin/
-echo "gotty has been downloaded, extracted, and moved to /usr/local/bin successfully."
+echo "GOTTY"
+# Move gotty to /usr/bin to make it globally accessible
+sudo mv "${TMPDIR}/gotty" /usr/bin/
+echo "gotty has been downloaded, extracted, and moved to /usr/bin successfully."
 
 
 
@@ -86,11 +93,7 @@ export TAR_FILE="${TMPDIR}${FILE_BASENAME}_$(uname -s)_$ARCHITECTURE.tar.gz"
 tar -xf "$TAR_FILE" -C "$TMPDIR"
 cp "${TMPDIR}/blackdagger" ./
 
-echo # blank for sudo prompt
-# Check if /usr/bin/ exists, if not, create it
-if [ ! -d "/usr/bin" ]; then
-    sudo mkdir -p /usr/bin/
-fi
+
 sudo mv "./blackdagger" /usr/bin/
 echo "blackdagger has been downloaded, extracted, and moved to /usr/bin/ successfully."
 # Cleanup
