@@ -133,9 +133,9 @@ After the installation, you can use YAMLs that we created for various purposes.
 We created these YAMLs to help you about mechanisms you can use in Blackdagger and give you inspiration for creating your own YAMLs or modifying ours for your purposes.
 
 For now, we have these categories of YAMLs:
-* Default: Default YAMLs that consist of general mechanisms that you can use in any YAML file, such as parallel job running and conditional mechanisms.
-* DevSecOps: YAMLs that will help you to setup an environment and install common tools for DevSecOps, along with language specific YAML files that you can use to run DevSecOps processes on your projects.
-* CART: YAMLs that will help you to prepare, plan and perform CART processes. We advise you to use these YAMLs in [Blackcart](https://github.com/ErdemOzgen/blackcart) since there is a pre-configured environment and a whole arsenal for CART purposes.
+* [Default](https://github.com/ErdemOzgen/blackdagger-default): Default YAMLs that consist of general mechanisms that you can use in any YAML file, such as parallel job running and conditional mechanisms.
+* [DevSecOps](https://github.com/ErdemOzgen/blackdagger-devsecops): YAMLs that will help you to setup an environment and install common tools for DevSecOps, along with language specific YAML files that you can use to run DevSecOps processes on your projects.
+* [CART](https://github.com/ErdemOzgen/blackdagger-cart): YAMLs that will help you to prepare, plan and perform CART processes. We advise you to use these YAMLs in [Blackcart](https://github.com/ErdemOzgen/blackcart) since there is a pre-configured environment and a whole arsenal for CART purposes.
 * DevOps: TBU
 * MLOps: TBU
 * MLSecOps: TBU
@@ -145,6 +145,8 @@ After installing Blackdagger, you can download these YAMLs by their categories b
 # Categories: mlops, default, devsecops, devops, mlsecops, cart
 blackdagger pull <category>
 ```
+
+This command pulls YAML files from our repositories that you can find above. We created YAML files that are suitable with Blackdagger YAML format and useful for various cases. These YAML files are also tested many times to provide you a fast option to perform your desired actions.
 
 
 
