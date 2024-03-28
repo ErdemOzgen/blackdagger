@@ -6,6 +6,12 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
+if ! command -v git &>/dev/null; then
+    echo "Git is not installed."
+    echo "Please install git if you want to pull default yamls !!!"
+else
+    echo "Git is already installed. It will pull default yamls"
+fi
 
 RELEASES_URL="https://github.com/yudai/gotty/releases"
 GOTTY_TARGET_VERSION="v1.0.1"
