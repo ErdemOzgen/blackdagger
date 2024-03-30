@@ -2,7 +2,7 @@
 FROM --platform=$BUILDPLATFORM ubuntu:latest
 
 ARG TARGETARCH
-ARG VERSION=1.0.4
+ARG VERSION=1.0.5
 ARG RELEASES_URL="https://github.com/ErdemOzgen/blackdagger/releases"
 ARG TARGET_FILE="blackdagger_${VERSION}_linux_${TARGETARCH}.tar.gz"
 
