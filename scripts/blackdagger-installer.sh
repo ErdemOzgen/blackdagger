@@ -13,8 +13,8 @@ else
     echo "Git is already installed. It will pull default yamls"
 fi
 
-RELEASES_URL="https://github.com/yudai/gotty/releases"
-GOTTY_TARGET_VERSION="v1.0.1"
+RELEASES_URL="https://github.com/sorenisanerd/gotty/releases"
+GOTTY_TARGET_VERSION="v1.5.0"
 
 echo "Preparing to download gotty $GOTTY_TARGET_VERSION..."
 
@@ -30,7 +30,7 @@ case "$ARCH" in
     *) echo "Unsupported architecture: $ARCH"; exit 1 ;;
 esac
 
-TAR_FILE="gotty_${OS}_${ARCH}.tar.gz"
+TAR_FILE="gotty_${GOTTY_TARGET_VERSION}_${OS}_${ARCH}.tar.gz"
 DOWNLOAD_URL="$RELEASES_URL/download/$GOTTY_TARGET_VERSION/$TAR_FILE"
 TMPDIR=$(mktemp -d)
 DOWNLOAD_PATH="${TMPDIR}/${TAR_FILE}"
