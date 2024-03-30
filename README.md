@@ -77,6 +77,8 @@ curl -L https://raw.githubusercontent.com/ErdemOzgen/blackdagger/main/scripts/bl
 ```sh
 # In Blackdagger repo run this commmands 
 docker compose up 
+# If docker compose does not work please try to docker compose build
+#docker compose build
 # You can access web terminal in http://127.0.0.1:8080
 # Also You can access gotty web terminal http://127.0.0.1:8090 username: blackdagger password: blackdagger
 # Do not forget run default-gotty-service dags in http://[::]:8080/dags/default-gotty-service .
