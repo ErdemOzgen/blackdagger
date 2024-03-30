@@ -70,38 +70,46 @@ FILE_BASENAME="blackdagger"
 
 echo "Downloading the latest binary to the current directory..."
 
-test -z "$VERSION" && VERSION="$(curl -sfL -o /dev/null -w %{url_effective} "$RELEASES_URL/latest" |
-		rev |
-		cut -f1 -d'/'|
-		rev)"
+VERSION=$(curl -sfL -o /dev/null -w %{url_effective} "$RELEASES_URL/latest" | rev | cut -f1 -d'/' | rev)
 
-test -z "$VERSION" && {
-	echo "Unable to get blackdagger version." >&2
-	exit 1
-}
-
-if [ "$( uname -m )" = "x86_64" ]
-then
-	ARCHITECTURE="amd64"
-else
-	ARCHITECTURE="$( uname -m )"
+if [ -z "$VERSION" ]; then
+    echo "Unable to get blackdagger version." >&2
+    exit 1
 fi
 
-test -z "$TMPDIR" && TMPDIR="$(mktemp -d)"
-export TAR_FILE="${TMPDIR}${FILE_BASENAME}_$(uname -s)_$ARCHITECTURE.tar.gz"
+if [ "$(uname -m)" = "x86_64" ]; then
+    ARCHITECTURE="amd64"
+else
+    ARCHITECTURE="$(uname -m)"
+fi
 
-(
-	cd "$TMPDIR"
-	echo "Downloading blackdagger $VERSION..."
-	curl -sfLo "$TAR_FILE" "$RELEASES_URL/download/$VERSION/${FILE_BASENAME}_${VERSION:1}_$(uname -s)_$ARCHITECTURE.tar.gz"
-)
+TMPDIR=$(mktemp -d)
+TAR_FILE="${TMPDIR}/${FILE_BASENAME}_$(uname -s)_${ARCHITECTURE}.tar.gz"
 
+echo "Downloading blackdagger $VERSION to $TMPDIR..."
+curl -sfLo "$TAR_FILE" "$RELEASES_URL/download/$VERSION/${FILE_BASENAME}_${VERSION:1}_$(uname -s)_${ARCHITECTURE}.tar.gz"
+
+if [ ! -f "$TAR_FILE" ]; then
+    echo "Failed to download $TAR_FILE. Please check the URL and try again."
+    exit 1
+fi
+
+echo "Extracting $TAR_FILE to $TMPDIR..."
 tar -xf "$TAR_FILE" -C "$TMPDIR"
-cp "${TMPDIR}/blackdagger" ./
 
+if [ ! -f "${TMPDIR}/blackdagger" ]; then
+    echo "Failed to extract. The blackdagger binary is not found."
+    exit 1
+fi
 
-sudo mv "./blackdagger" /usr/bin/
+# Forcefully remove any existing file or directory named blackdagger in /usr/bin and then move the new binary
+if [ -f "/usr/bin/blackdagger" ] || [ -d "/usr/bin/blackdagger" ]; then
+    sudo rm -rf "/usr/bin/blackdagger"
+fi
+sudo mv "${TMPDIR}/blackdagger" /usr/bin/
 echo "blackdagger has been downloaded, extracted, and moved to /usr/bin/ successfully."
+
 # Cleanup
 rm -rf "$TMPDIR"
+
 "blackdagger" "$@"
