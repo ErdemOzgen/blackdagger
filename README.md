@@ -23,7 +23,7 @@
 
 <div align="center">
 
-[Installation](#installation) | [Quick Start Docs](https://blackdagger.readthedocs.io/en/latest/quickstart.html#launch-the-web-ui) | [Blackdagger YAML Creator GPT](https://chat.openai.com/g/g-joF9jRCLD-blackdagger-yaml-creator)
+[Installation](#installation) | [Quick Start Docs](https://blackdagger.readthedocs.io/en/latest/quickstart.html#launch-the-web-ui) | [Blackdagger YAML Creator GPT4](https://chat.openai.com/g/g-joF9jRCLD-blackdagger-yaml-creator)
 
 </div>
 
