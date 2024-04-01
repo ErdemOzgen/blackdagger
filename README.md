@@ -55,9 +55,9 @@ What sets Blackdagger apart is its simplicity and versatility. Unlike traditiona
 
 You can find everything about Blackdagger, including this README, in our [documentation](https://blackdagger.readthedocs.io).
 
-Below, you can find the videos that can help you to get started with Blackdagger:
+Below, you can find the **videos** that can help you to get started with Blackdagger:
 
-| Installation and Setup of Blackdagger | Usage of Blackdagger | DAG Creation and Running in Blackdagger |
+| Installation and Setup of Blackdagger Video | Usage of Blackdagger Video | DAG Creation and Running in Blackdagger Video|
 |:-:|:-:|:-:|
 | [![Installation and Setup of Blackdagger](https://img.youtube.com/vi/GnFJlfEfxSk/0.jpg)](https://www.youtube.com/watch?v=GnFJlfEfxSk) | [![Usage of Blackdagger](https://img.youtube.com/vi/ezeudtCWI3w/0.jpg)](https://www.youtube.com/watch?v=ezeudtCWI3w) | [![DAG Creation and Running in Blackdagger](https://img.youtube.com/vi/1oVbahg1R5I/0.jpg)](https://www.youtube.com/watch?v=1oVbahg1R5I) |
 
