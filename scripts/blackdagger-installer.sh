@@ -1,11 +1,10 @@
 #!/bin/sh
 
-sudo -v 
-# Check if sudo succeeded
- if [ $? -ne 0 ]; then
-     echo "Root privileges are required. Exiting."
-     exit 1
- fi
+# Check if the script is running as root
+if [ "$(id -u)" -ne 0 ]; then
+  echo "This script must be run as root. Please use sudo or log in as root."
+  exit 1
+fi
 
 if ! command -v git &>/dev/null; then
     echo "Git is not installed."
