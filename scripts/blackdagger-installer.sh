@@ -1,5 +1,5 @@
 #!/bin/sh
-echo Installation script is downloaded successfully.
+echo \n\n\n\n\nInstallation script is downloaded successfully.
 
 sudo -v
 # Check if the script is running as root
