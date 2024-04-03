@@ -1,5 +1,5 @@
 #!/bin/sh
-echo \n\n\n\n\nInstallation script is downloaded successfully.
+echo Installation script is downloaded successfully.
 
 sudo -v
 
