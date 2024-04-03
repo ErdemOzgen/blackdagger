@@ -69,11 +69,11 @@ Below, you can find the **videos** that can help you to get started with Blackda
 # Step 1: Download the script
 curl -L https://raw.githubusercontent.com/ErdemOzgen/blackdagger/main/scripts/blackdagger-installer.sh -o blackdagger-installer.sh
 
-# Step 2: Make the script executable
+# Step 2: Make the script executable if needed
 chmod +x blackdagger-installer.sh
 
 # Step 3: Run the script with sudo
-sudo ./blackdagger-installer.sh
+sudo bash blackdagger-installer.sh
 
 ```
 **Important Note:** Within the Blackdagger server, to access the GoTTY web terminal, you must manually start the `default-gotty-service` DAG found in the DAGs section. Blackdagger utilizes GoTTY for web terminal functionality, which, for security reasons, does not automatically start upon system initialization.
