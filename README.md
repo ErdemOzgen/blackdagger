@@ -142,6 +142,9 @@ exit
 After the installation, you can use YAMLs that we created for various purposes. 
 We created these YAMLs to help you about mechanisms you can use in Blackdagger and give you inspiration for creating your own YAMLs or modifying ours for your purposes.
 
+![blackdaggerdomains.png](./assets/images/blackdaggerdomains.png)
+
+
 For now, we have these categories of YAMLs:
 * [Default](https://github.com/ErdemOzgen/blackdagger-default): Default YAMLs that consist of general mechanisms that you can use in any YAML file, such as parallel job running and conditional mechanisms.
 * [DevSecOps](https://github.com/ErdemOzgen/blackdagger-devsecops): YAMLs that will help you to setup an environment and install common tools for DevSecOps, along with language specific YAML files that you can use to run DevSecOps processes on your projects.
