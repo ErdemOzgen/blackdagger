@@ -94,7 +94,7 @@ docker compose up
 
 ### Via GitHub Release Page
 
-Download the latest binary from the [Releases page](https://github.com/ErdemOzgen/blackdagger/releases) and place it in your `$PATH` (e.g. `/usr/local/bin`).
+Download the latest binary from the [Releases page](https://github.com/ErdemOzgen/blackdagger/releases) and place it in your `$PATH` (e.g. `/usr/bin`).
 
 #### **IMPORTANT:** 
 In some YAMLs and/or processes that users want to run by using Blackdagger, `sudo` permission may be required. Therefore, users may need to configure a `sudo` permission before running them. Without this permission, process running, maintaining, stopping features and other Blackdagger features may encounter bugs. Below, you can find different options to configure `sudo` permission:
@@ -227,6 +227,10 @@ blackdagger scheduler [--dags=<path to directory>]
 
 # Shows the current binary version
 blackdagger version
+
+# Pulls yamls from remote repository it can be default,devsecops,cart currently 
+# mlops,mlsecops and devops will be added asap
+blackdagger pull <repo domain name>
 ```
 
 ## **Table of Contents**
