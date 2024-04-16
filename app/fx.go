@@ -1,13 +1,14 @@
 package app
 
 import (
+	"os"
+
 	"github.com/ErdemOzgen/blackdagger/internal/config"
 	"github.com/ErdemOzgen/blackdagger/internal/engine"
 	"github.com/ErdemOzgen/blackdagger/internal/logger"
 	"github.com/ErdemOzgen/blackdagger/internal/persistence/client"
 	"github.com/ErdemOzgen/blackdagger/service/frontend"
 	"go.uber.org/fx"
-	"os"
 )
 
 var (
@@ -17,9 +18,7 @@ var (
 		fx.Provide(logger.NewSlogLogger),
 		fx.Provide(client.NewDataStoreFactory),
 	)
-)
 
-var (
 	cfgInstance *config.Config = nil
 )
 

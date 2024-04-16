@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ErdemOzgen/blackdagger/internal/persistence"
 	"log"
 	"net/http"
 	"os"
@@ -14,6 +13,8 @@ import (
 	"sync/atomic"
 	"syscall"
 	"time"
+
+	"github.com/ErdemOzgen/blackdagger/internal/persistence"
 
 	"github.com/ErdemOzgen/blackdagger/internal/constants"
 	"github.com/ErdemOzgen/blackdagger/internal/dag"
@@ -111,16 +112,16 @@ func (a *Agent) Status() *model.Status {
 	status.RequestId = a.requestId
 	status.Log = a.logManager.logFilename
 	if node := a.scheduler.HandlerNode(constants.OnExit); node != nil {
-		status.OnExit = model.FromNode(node)
+		status.OnExit = model.FromNode(node.State(), node.Step)
 	}
 	if node := a.scheduler.HandlerNode(constants.OnSuccess); node != nil {
-		status.OnSuccess = model.FromNode(node)
+		status.OnSuccess = model.FromNode(node.State(), node.Step)
 	}
 	if node := a.scheduler.HandlerNode(constants.OnFailure); node != nil {
-		status.OnFailure = model.FromNode(node)
+		status.OnFailure = model.FromNode(node.State(), node.Step)
 	}
 	if node := a.scheduler.HandlerNode(constants.OnCancel); node != nil {
-		status.OnCancel = model.FromNode(node)
+		status.OnCancel = model.FromNode(node.State(), node.Step)
 	}
 	return status
 }

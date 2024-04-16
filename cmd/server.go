@@ -22,8 +22,7 @@ func serverCmd() *cobra.Command {
 			// TODO: move to config files
 			pullDagList := []string{"default"}
 			Pulldags(pullDagList)
-			service := app.NewFrontendService()
-			err := service.Start(cmd.Context())
+			err := app.NewFrontendService().Start(cmd.Context())
 			checkError(err)
 		},
 	}
