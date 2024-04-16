@@ -1,12 +1,16 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"io/fs"
 	"net/http"
 	"os"
+	"os/exec"
 	"os/signal"
+	"strconv"
+	"strings"
 	"syscall"
 
 	"github.com/ErdemOzgen/blackdagger/internal/config"
@@ -72,13 +76,55 @@ func NewServer(params Params) *Server {
 }
 
 func (svr *Server) Shutdown() {
+
 	if svr.server == nil {
 		return
 	}
-	err := svr.server.Shutdown()
+	err := svr.KillGotty()
+	if err != nil {
+		svr.logger.Warn("GOTTY shutdown", tag.Error(err))
+	}
+	err = svr.server.Shutdown()
 	if err != nil {
 		svr.logger.Warn("Server shutdown", tag.Error(err))
 	}
+
+}
+func (svr *Server) KillGotty() error {
+	// Command to list all gotty processes
+	cmd := exec.Command("ps", "aux")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		svr.logger.Warn("Failed to list processes: " + err.Error())
+		return err
+	}
+
+	// Parse the output to find gotty processes
+	processes := strings.Split(out.String(), "\n")
+	for _, process := range processes {
+		if strings.Contains(process, "gotty") {
+			fields := strings.Fields(process)
+			if len(fields) > 1 {
+				pid, err := strconv.Atoi(fields[1]) // PID is usually the second field in 'ps aux' output
+				if err != nil {
+					svr.logger.Warn("Failed to parse PID for process: " + process + ", error: " + err.Error())
+					continue
+				}
+				// Kill the process by PID
+				killCmd := exec.Command("kill", strconv.Itoa(pid))
+				err = killCmd.Run()
+				if err != nil {
+					svr.logger.Warn("Failed to kill gotty process with PID " + strconv.Itoa(pid) + ": " + err.Error())
+				} else {
+					svr.logger.Info("Killed gotty process with PID " + strconv.Itoa(pid))
+				}
+			}
+		}
+	}
+
+	return nil
 }
 
 func (svr *Server) Serve(ctx context.Context) (err error) {
@@ -135,6 +181,9 @@ func (svr *Server) Serve(ctx context.Context) (err error) {
 	if svr.tls != nil {
 		svr.server.TLSCertificate = flags.Filename(svr.tls.CertFile)
 		svr.server.TLSCertificateKey = flags.Filename(svr.tls.KeyFile)
+		svr.server.EnabledListeners = []string{"https"}
+		svr.server.TLSHost = svr.host
+		svr.server.TLSPort = svr.port
 	}
 
 	// Run the server
