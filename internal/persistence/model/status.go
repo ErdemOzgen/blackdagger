@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/ErdemOzgen/blackdagger/internal/dag"
@@ -45,6 +46,7 @@ type Status struct {
 	FinishedAt string           `json:"FinishedAt"`
 	Log        string           `json:"Log"`
 	Params     string           `json:"Params"`
+	mu         sync.RWMutex
 }
 
 type StatusFile struct {
@@ -62,12 +64,21 @@ func StatusFromJson(s string) (*Status, error) {
 }
 
 func NewStatusDefault(d *dag.DAG) *Status {
-	return NewStatus(d, nil, scheduler.Status_None, int(PidNotRunning), nil, nil)
+	return NewStatus(d, nil, scheduler.StatusNone, int(PidNotRunning), nil, nil)
+}
+
+func Time(t time.Time) *time.Time {
+	return &t
+}
+
+type NodeStepPair struct {
+	Node scheduler.NodeState
+	Step dag.Step
 }
 
 func NewStatus(
 	d *dag.DAG,
-	nodes []*scheduler.Node,
+	nodes []NodeStepPair,
 	status scheduler.Status,
 	pid int,
 	startTime, endTime *time.Time,
@@ -93,7 +104,14 @@ func NewStatus(
 	}
 }
 
-func nodesOrSteps(nodes []*scheduler.Node, steps []*dag.Step) []*Node {
+func nodeOrNil(s *dag.Step) *Node {
+	if s == nil {
+		return nil
+	}
+	return NewNode(*s)
+}
+
+func nodesOrSteps(nodes []NodeStepPair, steps []dag.Step) []*Node {
 	if len(nodes) != 0 {
 		return FromNodes(nodes)
 	}
@@ -101,20 +119,22 @@ func nodesOrSteps(nodes []*scheduler.Node, steps []*dag.Step) []*Node {
 }
 
 func formatTime(val *time.Time) string {
-	if val == nil {
+	if val == nil || val.IsZero() {
 		return ""
 	}
 	return utils.FormatTime(*val)
 }
 
 func (st *Status) CorrectRunningStatus() {
-	if st.Status == scheduler.Status_Running {
-		st.Status = scheduler.Status_Error
+	if st.Status == scheduler.StatusRunning {
+		st.Status = scheduler.StatusError
 		st.StatusText = st.Status.String()
 	}
 }
 
 func (st *Status) ToJson() ([]byte, error) {
+	st.mu.RLock()
+	defer st.mu.RUnlock()
 	js, err := json.Marshal(st)
 	if err != nil {
 		return []byte{}, err

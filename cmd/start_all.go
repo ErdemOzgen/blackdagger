@@ -13,7 +13,7 @@ import (
 func startAllCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "start-all",
-		Short: "Launches both the Blackdagger web UI server and the scheduler process.",
+		Short: "Launches both the blackdagger web UI server and the scheduler process.",
 		Long:  `blackdagger start-all [--dags=<DAGs dir>] [--host=<host>] [--port=<port>]`,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			_ = viper.BindPFlag("port", cmd.Flags().Lookup("port"))
@@ -23,22 +23,18 @@ func startAllCmd() *cobra.Command {
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			ctx := cmd.Context()
-			// TODO: move to config files
-			pullDagList := []string{"default"}
-			Pulldags(pullDagList)
+
 			go func() {
 				config.Get().DAGs = getFlagString(cmd, "dags", config.Get().DAGs)
 				err := core.NewScheduler(app.TopLevelModule).Start(cmd.Context())
-
 				if err != nil {
-					log.Fatal(err)
+					log.Fatal(err) // nolint // deep-exit
 				}
 			}()
 
 			service := app.NewFrontendService()
 			err := service.Start(ctx)
 			checkError(err)
-
 		},
 	}
 	bindStartAllCommandFlags(cmd)

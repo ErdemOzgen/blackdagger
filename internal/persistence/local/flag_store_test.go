@@ -1,9 +1,10 @@
 package local
 
 import (
-	"github.com/ErdemOzgen/blackdagger/internal/persistence/local/storage"
 	"os"
 	"testing"
+
+	"github.com/ErdemOzgen/blackdagger/internal/persistence/local/storage"
 
 	"github.com/ErdemOzgen/blackdagger/internal/utils"
 	"github.com/stretchr/testify/require"

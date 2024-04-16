@@ -36,10 +36,10 @@ func TestMustGetwd(t *testing.T) {
 
 func TestFormatTime(t *testing.T) {
 	tm := time.Date(2022, 2, 1, 2, 2, 2, 0, time.Now().Location())
-	fomatted := utils.FormatTime(tm)
-	require.Equal(t, "2022-02-01 02:02:02", fomatted)
+	formatted := utils.FormatTime(tm)
+	require.Equal(t, "2022-02-01 02:02:02", formatted)
 
-	parsed, err := utils.ParseTime(fomatted)
+	parsed, err := utils.ParseTime(formatted)
 	require.NoError(t, err)
 	require.Equal(t, tm, parsed)
 
@@ -87,8 +87,8 @@ func TestOpenFile(t *testing.T) {
 	require.NoError(t, err)
 
 	defer func() {
-		f.Close()
-		os.Remove(name)
+		_ = f.Close()
+		_ = os.Remove(name)
 	}()
 
 	_, _ = f.WriteString("test")
@@ -108,14 +108,14 @@ func TestOpenOrCreateFile(t *testing.T) {
 	require.NoError(t, err)
 
 	defer func() {
-		f.Close()
-		os.Remove(name)
+		_ = f.Close()
+		_ = os.Remove(name)
 	}()
 
 	require.True(t, utils.FileExists(name))
 
-	f.Close()
-	os.Remove(name)
+	_ = f.Close()
+	_ = os.Remove(name)
 
 	_, err = utils.OpenFile(name)
 	require.Error(t, err)
@@ -178,7 +178,7 @@ func TestIgnoreErr(t *testing.T) {
 
 	utils.LogErr("test action", errors.New("test error"))
 	os.Stdout = origStdout
-	w.Close()
+	_ = w.Close()
 
 	var buf bytes.Buffer
 	_, err = io.Copy(&buf, r)
@@ -206,9 +206,9 @@ func TestMatchExtension(t *testing.T) {
 
 func TestFixedTIme(t *testing.T) {
 	tm := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
-	utils.FixedTime = tm
+	utils.SetFixedTime(tm)
 	require.Equal(t, tm, utils.Now())
-	utils.FixedTime = time.Time{}
+	utils.SetFixedTime(time.Time{})
 	require.NotEqual(t, tm, utils.Now())
 }
 

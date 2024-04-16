@@ -61,17 +61,17 @@ func TestWriteAndFindFiles(t *testing.T) {
 		Timestamp time.Time
 	}{
 		{
-			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.StatusNone, 10000, nil, nil),
 			"request-id-1",
 			time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
 		},
 		{
-			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.StatusNone, 10000, nil, nil),
 			"request-id-2",
 			time.Date(2022, 1, 2, 0, 0, 0, 0, time.Local),
 		},
 		{
-			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.StatusNone, 10000, nil, nil),
 			"request-id-3",
 			time.Date(2022, 1, 3, 0, 0, 0, 0, time.Local),
 		},
@@ -106,17 +106,17 @@ func TestWriteAndFindByRequestId(t *testing.T) {
 		Timestamp time.Time
 	}{
 		{
-			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.StatusNone, 10000, nil, nil),
 			"request-id-1",
 			time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
 		},
 		{
-			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.StatusNone, 10000, nil, nil),
 			"request-id-2",
 			time.Date(2022, 1, 2, 0, 0, 0, 0, time.Local),
 		},
 		{
-			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.StatusNone, 10000, nil, nil),
 			"request-id-3",
 			time.Date(2022, 1, 3, 0, 0, 0, 0, time.Local),
 		},
@@ -149,17 +149,17 @@ func TestRemoveOldFiles(t *testing.T) {
 		Timestamp time.Time
 	}{
 		{
-			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.StatusNone, 10000, nil, nil),
 			"request-id-1",
 			time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
 		},
 		{
-			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.StatusNone, 10000, nil, nil),
 			"request-id-2",
 			time.Date(2022, 1, 2, 0, 0, 0, 0, time.Local),
 		},
 		{
-			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.StatusNone, 10000, nil, nil),
 			"request-id-3",
 			time.Date(2022, 1, 3, 0, 0, 0, 0, time.Local),
 		},
@@ -198,11 +198,11 @@ func TestReadLatestStatus(t *testing.T) {
 		_ = dw.close()
 	}()
 
-	status := model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil)
+	status := model.NewStatus(d, nil, scheduler.StatusNone, 10000, nil, nil)
 	err = dw.write(status)
 	require.NoError(t, err)
 
-	status.Status = scheduler.Status_Success
+	status.Status = scheduler.StatusSuccess
 	status.Pid = 20000
 	_ = dw.write(status)
 
@@ -229,17 +229,17 @@ func TestReadStatusN(t *testing.T) {
 		Timestamp time.Time
 	}{
 		{
-			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.StatusNone, 10000, nil, nil),
 			"request-id-1",
 			time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
 		},
 		{
-			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.StatusNone, 10000, nil, nil),
 			"request-id-2",
 			time.Date(2022, 1, 2, 0, 0, 0, 0, time.Local),
 		},
 		{
-			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.StatusNone, 10000, nil, nil),
 			"request-id-3",
 			time.Date(2022, 1, 3, 0, 0, 0, 0, time.Local),
 		},
@@ -275,18 +275,18 @@ func TestCompactFile(t *testing.T) {
 		Status *model.Status
 	}{
 		{model.NewStatus(
-			d, nil, scheduler.Status_Running, 10000, nil, nil)},
+			d, nil, scheduler.StatusRunning, 10000, nil, nil)},
 		{model.NewStatus(
-			d, nil, scheduler.Status_Cancel, 10000, nil, nil)},
+			d, nil, scheduler.StatusCancel, 10000, nil, nil)},
 		{model.NewStatus(
-			d, nil, scheduler.Status_Success, 10000, nil, nil)},
+			d, nil, scheduler.StatusSuccess, 10000, nil, nil)},
 	} {
 		require.NoError(t, dw.write(data.Status))
 	}
 
 	_ = dw.close()
 
-	var s *model.StatusFile = nil
+	var s *model.StatusFile
 	if h := db.ReadStatusRecent(d.Location, 1); len(h) > 0 {
 		s = h[0]
 	}
@@ -297,7 +297,7 @@ func TestCompactFile(t *testing.T) {
 	require.False(t, utils.FileExists(s.File))
 	require.NoError(t, err)
 
-	var s2 *model.StatusFile = nil
+	var s2 *model.StatusFile
 	if h := db2.ReadStatusRecent(d.Location, 1); len(h) > 0 {
 		s2 = h[0]
 	}
@@ -406,7 +406,7 @@ func TestReadLine(t *testing.T) {
 	require.NoError(t, err)
 
 	_, _ = f.Seek(0, 0)
-	var offset int64 = 0
+	var offset int64
 	for _, tt := range []struct {
 		Want []byte
 	}{

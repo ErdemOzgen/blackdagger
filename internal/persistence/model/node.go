@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/ErdemOzgen/blackdagger/internal/dag"
@@ -8,8 +9,12 @@ import (
 	"github.com/ErdemOzgen/blackdagger/internal/utils"
 )
 
+var (
+	errNodeProcessing = errors.New("node processing error")
+)
+
 type Node struct {
-	*dag.Step  `json:"Step"`
+	dag.Step   `json:"Step"`
 	Log        string               `json:"Log"`
 	StartedAt  string               `json:"StartedAt"`
 	FinishedAt string               `json:"FinishedAt"`
@@ -23,21 +28,18 @@ type Node struct {
 func (n *Node) ToNode() *scheduler.Node {
 	startedAt, _ := utils.ParseTime(n.StartedAt)
 	finishedAt, _ := utils.ParseTime(n.FinishedAt)
-	return &scheduler.Node{
-		Step: n.Step,
-		NodeState: scheduler.NodeState{
-			Status:     n.Status,
-			Log:        n.Log,
-			StartedAt:  startedAt,
-			FinishedAt: finishedAt,
-			RetryCount: n.RetryCount,
-			DoneCount:  n.DoneCount,
-			Error:      errFromText(n.Error),
-		},
-	}
+	return scheduler.NewNode(n.Step, scheduler.NodeState{
+		Status:     n.Status,
+		Log:        n.Log,
+		StartedAt:  startedAt,
+		FinishedAt: finishedAt,
+		RetryCount: n.RetryCount,
+		DoneCount:  n.DoneCount,
+		Error:      errFromText(n.Error),
+	})
 }
 
-func FromNode(n scheduler.NodeState, step *dag.Step) *Node {
+func FromNode(n scheduler.NodeState, step dag.Step) *Node {
 	return &Node{
 		Step:       step,
 		Log:        n.Log,
@@ -55,7 +57,7 @@ func errFromText(err string) error {
 	if err == "" {
 		return nil
 	}
-	return fmt.Errorf(err)
+	return fmt.Errorf("%w: %s", errNodeProcessing, err)
 }
 
 func errText(err error) string {
@@ -65,35 +67,28 @@ func errText(err error) string {
 	return err.Error()
 }
 
-func FromNodes(nodes []*scheduler.Node) []*Node {
+func FromNodes(nodes []NodeStepPair) []*Node {
 	var ret []*Node
 	for _, n := range nodes {
-		ret = append(ret, FromNode(n.State(), n.Step))
+		ret = append(ret, FromNode(n.Node, n.Step))
 	}
 	return ret
 }
 
-func FromSteps(steps []*dag.Step) []*Node {
+func FromSteps(steps []dag.Step) []*Node {
 	var ret []*Node
 	for _, s := range steps {
-		ret = append(ret, nodeOrNil(s))
+		ret = append(ret, NewNode(s))
 	}
 	return ret
 }
 
-func NewNode(step *dag.Step) *Node {
+func NewNode(step dag.Step) *Node {
 	return &Node{
 		Step:       step,
 		StartedAt:  "-",
 		FinishedAt: "-",
-		Status:     scheduler.NodeStatus_None,
-		StatusText: scheduler.NodeStatus_None.String(),
+		Status:     scheduler.NodeStatusNone,
+		StatusText: scheduler.NodeStatusNone.String(),
 	}
-}
-
-func nodeOrNil(s *dag.Step) *Node {
-	if s == nil {
-		return nil
-	}
-	return NewNode(s)
 }

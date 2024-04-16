@@ -18,8 +18,7 @@ var (
 		fx.Provide(logger.NewSlogLogger),
 		fx.Provide(client.NewDataStoreFactory),
 	)
-
-	cfgInstance *config.Config = nil
+	cfgInstance *config.Config
 )
 
 func ConfigProvider() *config.Config {
@@ -42,5 +41,6 @@ func NewFrontendService() *fx.App {
 		TopLevelModule,
 		frontend.Module,
 		fx.Invoke(frontend.LifetimeHooks),
+		fx.NopLogger,
 	)
 }

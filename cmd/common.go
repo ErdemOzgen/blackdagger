@@ -2,16 +2,17 @@ package cmd
 
 import (
 	"context"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/ErdemOzgen/blackdagger/internal/agent"
 	"github.com/ErdemOzgen/blackdagger/internal/config"
 	"github.com/ErdemOzgen/blackdagger/internal/dag"
 	"github.com/ErdemOzgen/blackdagger/internal/engine"
 	"github.com/ErdemOzgen/blackdagger/internal/persistence/client"
 	"github.com/spf13/cobra"
-	"log"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 func execDAG(ctx context.Context, e engine.Engine, cmd *cobra.Command, args []string, dry bool) {
@@ -23,7 +24,7 @@ func execDAG(ctx context.Context, e engine.Engine, cmd *cobra.Command, args []st
 
 	err = start(ctx, e, loadedDAG, dry)
 	if err != nil {
-		log.Fatalf("Failed to start DAG: %v", err)
+		log.Fatalf("Failed to start DAG: %v", err) // nolint // deep-exit
 	}
 }
 
@@ -41,12 +42,11 @@ type signalListener interface {
 }
 
 var (
-	signalChan chan os.Signal
+	signalChan = make(chan os.Signal, 100)
 )
 
 func listenSignals(ctx context.Context, a signalListener) {
 	go func() {
-		signalChan = make(chan os.Signal, 100)
 		signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
 
 		select {
@@ -58,6 +58,7 @@ func listenSignals(ctx context.Context, a signalListener) {
 	}()
 }
 
+// nolint // deep-exit
 func checkError(err error) {
 	if err != nil {
 		log.Fatal(err)

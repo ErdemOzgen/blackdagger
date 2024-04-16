@@ -1,13 +1,14 @@
 package cmd
 
 import (
-	"github.com/ErdemOzgen/blackdagger/internal/constants"
 	"testing"
+
+	"github.com/ErdemOzgen/blackdagger/internal/constants"
 )
 
 func TestVersionCommand(t *testing.T) {
-	constants.Version = "1.2.3"
+	constants.Version = "1.0.5"
 	testRunCommand(t, versionCmd(), cmdTest{
 		args:        []string{"version"},
-		expectedOut: []string{"1.2.3"}})
+		expectedOut: []string{"1.0.5"}})
 }

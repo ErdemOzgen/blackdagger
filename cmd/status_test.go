@@ -26,7 +26,7 @@ func TestStatusCommand(t *testing.T) {
 	time.Sleep(time.Millisecond * 50)
 
 	// TODO: do not use history store directly.
-	testLastStatusEventual(t, df.NewHistoryStore(), dagFile, scheduler.Status_Running)
+	testLastStatusEventual(t, df.NewHistoryStore(), dagFile, scheduler.StatusRunning)
 
 	// Check the current status.
 	testRunCommand(t, statusCmd(), cmdTest{

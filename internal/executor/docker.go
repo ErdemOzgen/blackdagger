@@ -4,6 +4,7 @@ package executor
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -20,13 +21,15 @@ import (
 type DockerExecutor struct {
 	image           string
 	autoRemove      bool
-	step            *dag.Step
+	step            dag.Step
 	containerConfig *container.Config
 	hostConfig      *container.HostConfig
 	stdout          io.Writer
 	context         context.Context
 	cancel          func()
 }
+
+var errImageMustBeString = errors.New("image must be string")
 
 func (e *DockerExecutor) SetStdout(out io.Writer) {
 	e.stdout = out
@@ -74,7 +77,7 @@ func (e *DockerExecutor) Run() error {
 		return err
 	}
 
-	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
+	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
 		return err
 	}
 
@@ -87,7 +90,7 @@ func (e *DockerExecutor) Run() error {
 	case <-statusCh:
 	}
 
-	out, err := cli.ContainerLogs(ctx, resp.ID, container.LogsOptions{ShowStdout: true})
+	out, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{ShowStdout: true})
 	if err != nil {
 		return err
 	}
@@ -96,14 +99,14 @@ func (e *DockerExecutor) Run() error {
 	utils.LogErr("docker executor: stdcopy", err)
 
 	if e.autoRemove {
-		err := cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{})
+		err := cli.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{})
 		utils.LogErr("docker executor: remove container", err)
 	}
 
 	return nil
 }
 
-func CreateDockerExecutor(ctx context.Context, step *dag.Step) (Executor, error) {
+func CreateDockerExecutor(ctx context.Context, step dag.Step) (Executor, error) {
 	containerConfig := &container.Config{}
 	hostConfig := &container.HostConfig{}
 	execCfg := step.ExecutorConfig
@@ -164,7 +167,7 @@ func CreateDockerExecutor(ctx context.Context, step *dag.Step) (Executor, error)
 			return exec, nil
 		}
 	}
-	return nil, fmt.Errorf("image must be string")
+	return nil, errImageMustBeString
 }
 
 func init() {

@@ -2,11 +2,12 @@ package persistence
 
 import (
 	"fmt"
+	"path/filepath"
+	"time"
+
 	"github.com/ErdemOzgen/blackdagger/internal/dag"
 	"github.com/ErdemOzgen/blackdagger/internal/grep"
 	"github.com/ErdemOzgen/blackdagger/internal/persistence/model"
-	"path/filepath"
-	"time"
 )
 
 var (

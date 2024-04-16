@@ -27,7 +27,7 @@ func TestStopCommand(t *testing.T) {
 
 	// Wait for the DAG running.
 	// TODO: Do not use history store.
-	testLastStatusEventual(t, ds.NewHistoryStore(), dagFile, scheduler.Status_Running)
+	testLastStatusEventual(t, ds.NewHistoryStore(), dagFile, scheduler.StatusRunning)
 
 	// Stop the DAG.
 	testRunCommand(t, stopCmd(), cmdTest{
@@ -36,6 +36,6 @@ func TestStopCommand(t *testing.T) {
 
 	// Check the last execution is cancelled.
 	// TODO: Do not use history store.
-	testLastStatusEventual(t, ds.NewHistoryStore(), dagFile, scheduler.Status_Cancel)
+	testLastStatusEventual(t, ds.NewHistoryStore(), dagFile, scheduler.StatusCancel)
 	<-done
 }
