@@ -2,7 +2,6 @@ package jsondb
 
 import (
 	"fmt"
-	"github.com/ErdemOzgen/blackdagger/internal/persistence/model"
 	"io"
 	"os"
 	"path"
@@ -10,6 +9,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/ErdemOzgen/blackdagger/internal/persistence/model"
 
 	"github.com/ErdemOzgen/blackdagger/internal/dag"
 	"github.com/ErdemOzgen/blackdagger/internal/scheduler"
@@ -60,17 +61,17 @@ func TestWriteAndFindFiles(t *testing.T) {
 		Timestamp time.Time
 	}{
 		{
-			model.NewStatus(d, nil, scheduler.SchedulerStatus_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
 			"request-id-1",
 			time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
 		},
 		{
-			model.NewStatus(d, nil, scheduler.SchedulerStatus_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
 			"request-id-2",
 			time.Date(2022, 1, 2, 0, 0, 0, 0, time.Local),
 		},
 		{
-			model.NewStatus(d, nil, scheduler.SchedulerStatus_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
 			"request-id-3",
 			time.Date(2022, 1, 3, 0, 0, 0, 0, time.Local),
 		},
@@ -105,17 +106,17 @@ func TestWriteAndFindByRequestId(t *testing.T) {
 		Timestamp time.Time
 	}{
 		{
-			model.NewStatus(d, nil, scheduler.SchedulerStatus_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
 			"request-id-1",
 			time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
 		},
 		{
-			model.NewStatus(d, nil, scheduler.SchedulerStatus_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
 			"request-id-2",
 			time.Date(2022, 1, 2, 0, 0, 0, 0, time.Local),
 		},
 		{
-			model.NewStatus(d, nil, scheduler.SchedulerStatus_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
 			"request-id-3",
 			time.Date(2022, 1, 3, 0, 0, 0, 0, time.Local),
 		},
@@ -148,17 +149,17 @@ func TestRemoveOldFiles(t *testing.T) {
 		Timestamp time.Time
 	}{
 		{
-			model.NewStatus(d, nil, scheduler.SchedulerStatus_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
 			"request-id-1",
 			time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
 		},
 		{
-			model.NewStatus(d, nil, scheduler.SchedulerStatus_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
 			"request-id-2",
 			time.Date(2022, 1, 2, 0, 0, 0, 0, time.Local),
 		},
 		{
-			model.NewStatus(d, nil, scheduler.SchedulerStatus_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
 			"request-id-3",
 			time.Date(2022, 1, 3, 0, 0, 0, 0, time.Local),
 		},
@@ -197,11 +198,11 @@ func TestReadLatestStatus(t *testing.T) {
 		_ = dw.close()
 	}()
 
-	status := model.NewStatus(d, nil, scheduler.SchedulerStatus_None, 10000, nil, nil)
+	status := model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil)
 	err = dw.write(status)
 	require.NoError(t, err)
 
-	status.Status = scheduler.SchedulerStatus_Success
+	status.Status = scheduler.Status_Success
 	status.Pid = 20000
 	_ = dw.write(status)
 
@@ -228,17 +229,17 @@ func TestReadStatusN(t *testing.T) {
 		Timestamp time.Time
 	}{
 		{
-			model.NewStatus(d, nil, scheduler.SchedulerStatus_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
 			"request-id-1",
 			time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
 		},
 		{
-			model.NewStatus(d, nil, scheduler.SchedulerStatus_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
 			"request-id-2",
 			time.Date(2022, 1, 2, 0, 0, 0, 0, time.Local),
 		},
 		{
-			model.NewStatus(d, nil, scheduler.SchedulerStatus_None, 10000, nil, nil),
+			model.NewStatus(d, nil, scheduler.Status_None, 10000, nil, nil),
 			"request-id-3",
 			time.Date(2022, 1, 3, 0, 0, 0, 0, time.Local),
 		},
@@ -274,11 +275,11 @@ func TestCompactFile(t *testing.T) {
 		Status *model.Status
 	}{
 		{model.NewStatus(
-			d, nil, scheduler.SchedulerStatus_Running, 10000, nil, nil)},
+			d, nil, scheduler.Status_Running, 10000, nil, nil)},
 		{model.NewStatus(
-			d, nil, scheduler.SchedulerStatus_Cancel, 10000, nil, nil)},
+			d, nil, scheduler.Status_Cancel, 10000, nil, nil)},
 		{model.NewStatus(
-			d, nil, scheduler.SchedulerStatus_Success, 10000, nil, nil)},
+			d, nil, scheduler.Status_Success, 10000, nil, nil)},
 	} {
 		require.NoError(t, dw.write(data.Status))
 	}

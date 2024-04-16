@@ -1,14 +1,15 @@
 package cmd
 
 import (
+	"os"
+	"testing"
+	"time"
+
 	"github.com/ErdemOzgen/blackdagger/internal/config"
 	"github.com/ErdemOzgen/blackdagger/internal/engine"
 	"github.com/ErdemOzgen/blackdagger/internal/persistence/client"
 	"github.com/ErdemOzgen/blackdagger/internal/scheduler"
 	"github.com/stretchr/testify/require"
-	"os"
-	"testing"
-	"time"
 )
 
 func TestRestartCommand(t *testing.T) {
@@ -27,7 +28,7 @@ func TestRestartCommand(t *testing.T) {
 	time.Sleep(time.Millisecond * 100)
 
 	// Wait for the DAG running.
-	testStatusEventual(t, e, dagFile, scheduler.SchedulerStatus_Running)
+	testStatusEventual(t, e, dagFile, scheduler.Status_Running)
 
 	// Restart the DAG.
 	done := make(chan struct{})
@@ -39,7 +40,7 @@ func TestRestartCommand(t *testing.T) {
 	time.Sleep(time.Millisecond * 100)
 
 	// Wait for the DAG running again.
-	testStatusEventual(t, e, dagFile, scheduler.SchedulerStatus_Running)
+	testStatusEventual(t, e, dagFile, scheduler.Status_Running)
 
 	// Stop the restarted DAG.
 	testRunCommand(t, stopCmd(), cmdTest{args: []string{"stop", dagFile}})
@@ -47,7 +48,7 @@ func TestRestartCommand(t *testing.T) {
 	time.Sleep(time.Millisecond * 100)
 
 	// Wait for the DAG is stopped.
-	testStatusEventual(t, e, dagFile, scheduler.SchedulerStatus_None)
+	testStatusEventual(t, e, dagFile, scheduler.Status_None)
 
 	// Check parameter was the same as the first execution
 	d, err := loadDAG(dagFile, "")

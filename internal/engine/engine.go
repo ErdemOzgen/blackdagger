@@ -3,16 +3,17 @@ package engine
 import (
 	"errors"
 	"fmt"
+	"os"
+	"os/exec"
+	"syscall"
+	"time"
+
 	"github.com/ErdemOzgen/blackdagger/internal/dag"
 	"github.com/ErdemOzgen/blackdagger/internal/persistence"
 	"github.com/ErdemOzgen/blackdagger/internal/persistence/model"
 	"github.com/ErdemOzgen/blackdagger/internal/scheduler"
 	"github.com/ErdemOzgen/blackdagger/internal/sock"
 	"github.com/ErdemOzgen/blackdagger/internal/utils"
-	"os"
-	"os/exec"
-	"syscall"
-	"time"
 )
 
 type Engine interface {
@@ -216,7 +217,7 @@ func (e *engineImpl) UpdateStatus(dag *dag.DAG, status *model.Status) error {
 	} else {
 		ss, _ := model.StatusFromJson(res)
 		if ss != nil && ss.RequestId == status.RequestId &&
-			ss.Status == scheduler.SchedulerStatus_Running {
+			ss.Status == scheduler.Status_Running {
 			return fmt.Errorf("the DAG is running")
 		}
 	}

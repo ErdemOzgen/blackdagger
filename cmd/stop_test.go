@@ -1,10 +1,11 @@
 package cmd
 
 import (
-	"github.com/ErdemOzgen/blackdagger/internal/scheduler"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/ErdemOzgen/blackdagger/internal/scheduler"
 )
 
 func TestStopCommand(t *testing.T) {
@@ -26,7 +27,7 @@ func TestStopCommand(t *testing.T) {
 
 	// Wait for the DAG running.
 	// TODO: Do not use history store.
-	testLastStatusEventual(t, ds.NewHistoryStore(), dagFile, scheduler.SchedulerStatus_Running)
+	testLastStatusEventual(t, ds.NewHistoryStore(), dagFile, scheduler.Status_Running)
 
 	// Stop the DAG.
 	testRunCommand(t, stopCmd(), cmdTest{
@@ -35,6 +36,6 @@ func TestStopCommand(t *testing.T) {
 
 	// Check the last execution is cancelled.
 	// TODO: Do not use history store.
-	testLastStatusEventual(t, ds.NewHistoryStore(), dagFile, scheduler.SchedulerStatus_Cancel)
+	testLastStatusEventual(t, ds.NewHistoryStore(), dagFile, scheduler.Status_Cancel)
 	<-done
 }
