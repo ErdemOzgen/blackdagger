@@ -1,11 +1,12 @@
 package scheduler
 
 import (
+	"time"
+
 	"github.com/ErdemOzgen/blackdagger/internal/dag"
 	"github.com/ErdemOzgen/blackdagger/internal/engine"
 	"github.com/ErdemOzgen/blackdagger/service/core/scheduler/job"
 	"github.com/ErdemOzgen/blackdagger/service/core/scheduler/scheduler"
-	"time"
 )
 
 type jobFactory struct {
@@ -14,9 +15,9 @@ type jobFactory struct {
 	EngineFactory engine.Factory
 }
 
-func (jf jobFactory) NewJob(dag *dag.DAG, next time.Time) scheduler.Job {
+func (jf jobFactory) NewJob(d *dag.DAG, next time.Time) scheduler.Job {
 	return &job.Job{
-		DAG:           dag,
+		DAG:           d,
 		Command:       jf.Command,
 		WorkDir:       jf.WorkDir,
 		Next:          next,

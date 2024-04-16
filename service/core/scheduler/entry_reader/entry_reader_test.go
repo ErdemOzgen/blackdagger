@@ -26,18 +26,18 @@ var (
 func setupTest(t *testing.T) (string, engine.Factory) {
 	t.Helper()
 
-	tmpDir := utils.MustTempDir("blackdagger_test")
+	tmpDir := utils.MustTempDir("dagu_test")
 	_ = os.Setenv("HOME", tmpDir)
 	_ = config.LoadConfig(tmpDir)
 
 	ds := client.NewDataStoreFactory(&config.Config{
-		DataDir:         path.Join(tmpDir, ".blackdagger", "data"),
+		DataDir:         path.Join(tmpDir, ".dagu", "data"),
 		DAGs:            testdataDir,
 		SuspendFlagsDir: tmpDir,
 	})
 
 	ef := engine.NewFactory(ds, &config.Config{
-		Command: path.Join(utils.MustGetwd(), "../../bin/blackdagger"),
+		Command: path.Join(utils.MustGetwd(), "../../bin/dagu"),
 	})
 
 	return tmpDir, ef
@@ -94,14 +94,10 @@ func TestReadEntries(t *testing.T) {
 	require.Equal(t, len(entries)-1, len(lives))
 }
 
-// TODO: fix to use mock library
-type mockJobFactory struct {
-}
+type mockJobFactory struct{}
 
 func (f *mockJobFactory) NewJob(d *dag.DAG, next time.Time) scheduler.Job {
-	return &mockJob{
-		DAG: d,
-	}
+	return &mockJob{DAG: d}
 }
 
 // TODO: fix to use mock library

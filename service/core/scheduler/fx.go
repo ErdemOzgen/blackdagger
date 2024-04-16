@@ -2,9 +2,10 @@ package scheduler
 
 import (
 	"context"
+
 	"github.com/ErdemOzgen/blackdagger/internal/config"
 	"github.com/ErdemOzgen/blackdagger/internal/engine"
-	"github.com/ErdemOzgen/blackdagger/internal/logger"
+	blackdaggerlogger "github.com/ErdemOzgen/blackdagger/internal/logger"
 	"github.com/ErdemOzgen/blackdagger/service/core/scheduler/entry_reader"
 	"github.com/ErdemOzgen/blackdagger/service/core/scheduler/scheduler"
 	"go.uber.org/fx"
@@ -20,7 +21,7 @@ type Params struct {
 	fx.In
 
 	Config      *config.Config
-	Logger      logger.Logger
+	Logger      blackdaggerlogger.Logger
 	EntryReader scheduler.EntryReader
 }
 
@@ -28,7 +29,7 @@ func EntryReaderProvider(
 	cfg *config.Config,
 	engineFactory engine.Factory,
 	jf entry_reader.JobFactory,
-	logger logger.Logger,
+	logger blackdaggerlogger.Logger,
 ) scheduler.EntryReader {
 	return entry_reader.New(entry_reader.Params{
 		EngineFactory: engineFactory,
