@@ -24,7 +24,7 @@ type DAG struct {
 	Env               []string
 	LogDir            string
 	HandlerOn         HandlerOn
-	Steps             []*Step
+	Steps             []Step
 	MailOn            *MailOn
 	ErrorMail         *MailConfig
 	InfoMail          *MailConfig
@@ -75,9 +75,9 @@ func (d *DAG) SockAddr() string {
 	s := strings.ReplaceAll(d.Location, " ", "_")
 	name := strings.Replace(path.Base(s), path.Ext(path.Base(s)), "", 1)
 	h := md5.New()
-	h.Write([]byte(s))
+	_, _ = h.Write([]byte(s))
 	bs := h.Sum(nil)
-	return path.Join("/tmp", fmt.Sprintf("@blackdagger-%s-%x.sock", name, bs))
+	return path.Join("/tmp", fmt.Sprintf("@dagu-%s-%x.sock", name, bs))
 }
 
 func (d *DAG) Clone() *DAG {
@@ -113,18 +113,6 @@ func (d *DAG) setDefaults() {
 	}
 	if d.MaxCleanUpTime == 0 {
 		d.MaxCleanUpTime = time.Second * 60
-	}
-	if d.Env == nil {
-		d.Env = []string{}
-	}
-	if d.Steps == nil {
-		d.Steps = []*Step{}
-	}
-	if d.Params == nil {
-		d.Params = []string{}
-	}
-	if d.Preconditions == nil {
-		d.Preconditions = []*Condition{}
 	}
 }
 

@@ -28,12 +28,12 @@ var testdataDir = path.Join(utils.MustGetwd(), "testdata")
 func setupTest(t *testing.T) (string, engine.Engine, persistence.DataStoreFactory) {
 	t.Helper()
 
-	tmpDir := utils.MustTempDir("blackdagger_test")
+	tmpDir := utils.MustTempDir("dagu_test")
 	_ = os.Setenv("HOME", tmpDir)
 	_ = config.LoadConfig(tmpDir)
 
 	ds := client.NewDataStoreFactory(&config.Config{
-		DataDir: path.Join(tmpDir, ".blackdagger", "data"),
+		DataDir: path.Join(tmpDir, ".dagu", "data"),
 	})
 
 	e := engine.NewFactory(ds, nil).Create()

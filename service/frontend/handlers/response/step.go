@@ -6,7 +6,7 @@ import (
 	"github.com/samber/lo"
 )
 
-func ToStepObject(step *dag.Step) *models.StepObject {
+func ToStepObject(step dag.Step) *models.StepObject {
 	return &models.StepObject{
 		Args:        step.Args,
 		CmdWithArgs: lo.ToPtr(step.CmdWithArgs),

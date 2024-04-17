@@ -106,7 +106,7 @@ func LoadConfig(userHomeDir string) error {
 		command = ex
 	}
 
-	viper.SetDefault("host", "127.0.0.1")
+	viper.SetDefault("host", "0.0.0.0")
 	viper.SetDefault("port", "8080")
 	viper.SetDefault("command", command)
 	viper.SetDefault("dags", path.Join(appHome, "dags"))

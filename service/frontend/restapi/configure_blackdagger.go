@@ -6,16 +6,16 @@ import (
 	"crypto/tls"
 	"net/http"
 
-	pkgmiddleware "github.com/ErdemOzgen/blackdaggerservice/frontend/middleware"
+	pkgmiddleware "github.com/ErdemOzgen/blackdagger/service/frontend/middleware"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/ErdemOzgen/blackdaggerservice/frontend/restapi/operations"
+	"github.com/ErdemOzgen/blackdagger/service/frontend/restapi/operations"
 )
 
-//go:generate swagger generate server --target ../../frontend --name Blackdagger --spec ../../../swagger.yaml --principal interface{} --exclude-main
+//go:generate swagger generate server --target ../../frontend --name Dagu --spec ../../../swagger.yaml --principal interface{} --exclude-main
 
 func configureFlags(api *operations.BlackdaggerAPI) {
 	// handlers.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
