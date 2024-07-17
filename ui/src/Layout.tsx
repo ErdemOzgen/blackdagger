@@ -155,7 +155,7 @@ function Content({ title, navbarColor, children }: DashboardContentProps) {
   </AppBarContext.Consumer>
   <Link to="/dashboard">
 
-  <NavBarTitleText>{title || 'Black Dagger'}</NavBarTitleText> {/* Title */}
+  <NavBarTitleText>{title || 'Blackdagger'}</NavBarTitleText> {/* Title */}
   </Link>
   <Link to="/dashboard">
  

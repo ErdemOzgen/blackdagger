@@ -1,4 +1,4 @@
-.PHONY: build server scheduler test proto certs swagger docker-build
+.PHONY: build server scheduler test certs swagger docker-build
 
 ########## Variables ##########
 SRC_DIR=./
@@ -6,7 +6,7 @@ DST_DIR=$(SRC_DIR)/internal
 BUILD_VERSION=$(shell date +'%y%m%d%H%M%S')
 LDFLAGS=-X 'main.version=$(BUILD_VERSION)'
 
-VERSION=1.0.4
+VERSION=1.0.5
 
 DOCKER_USERNAME=erdemozgen
 IMAGE_NAME=blackdagger
@@ -29,21 +29,19 @@ watch:
 	nodemon --watch . --ext go,gohtml --verbose --signal SIGINT --exec 'make server'
 
 test:
-	@go test ./...
+	@go test --race ./...
 
 test-clean:
 	@go clean -testcache
-	@go test ./...
+	@go test --race ./...
 
-install-tools: install-protobuf install-nodemon install-swagger
-
-proto: gen-pb
+install-tools: install-nodemon install-swagger
 
 swagger: clean-swagger gen-swagger
 
 certs: cert-dir gencerts-ca gencerts-server gencerts-client gencert-check
 
-build: build-ui build-dir gen-pb go-lint build-bin
+build: build-ui build-dir go-lint build-bin
 
 build-image:
 ifeq ($(VERSION),)
@@ -64,9 +62,6 @@ scheduler: go-lint build-dir build-bin
 	./bin/blackdagger scheduler
 
 ########## Tools ##########
-
-gen-pb:
-	protoc -I=$(SRC_DIR) --go_out=$(DST_DIR) $(SRC_DIR)/internal/proto/*.proto
 
 build-bin:
 	go build -ldflags="$(LDFLAGS)" -o ./bin/blackdagger .
@@ -90,7 +85,7 @@ go-lint:
 	@golangci-lint run ./...
 
 cert-dir:
-	@mkdir ./cert
+	@mkdir -p ./cert
 
 gencerts-ca:
 	@openssl req -x509 -newkey rsa:4096 \
@@ -131,12 +126,6 @@ gen-swagger:
 	@swagger generate server -t service/frontend --server-package=restapi --exclude-main -f ./swagger.yaml -A blackdagger
 	@echo "Running go mod tidy"
 	@go mod tidy
-
-install-protobuf:
-	brew install protobuf
-	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
 install-nodemon:
 	npm install -g nodemon

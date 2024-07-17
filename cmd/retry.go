@@ -17,7 +17,7 @@ func retryCmd() *cobra.Command {
 		Long:  `blackdagger retry --req=<request-id> <DAG file>`,
 		Args:  cobra.ExactArgs(1),
 		PreRun: func(cmd *cobra.Command, args []string) {
-			cobra.CheckErr(config.LoadConfig(homeDir))
+			cobra.CheckErr(config.LoadConfig())
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			f, _ := filepath.Abs(args[0])
@@ -26,7 +26,7 @@ func retryCmd() *cobra.Command {
 
 			// TODO: use engine.Engine instead of client.DataStoreFactory
 			df := client.NewDataStoreFactory(config.Get())
-			e := engine.NewFactory(df, nil).Create()
+			e := engine.NewFactory(df, config.Get()).Create()
 
 			hs := df.NewHistoryStore()
 

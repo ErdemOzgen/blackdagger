@@ -15,7 +15,7 @@ import (
 	"github.com/ErdemOzgen/blackdagger/service/frontend/restapi/operations"
 )
 
-//go:generate swagger generate server --target ../../frontend --name blackdagger --spec ../../../swagger.yaml --principal interface{} --exclude-main
+//go:generate swagger generate server --target ../../frontend --name Blackdagger --spec ../../../swagger.yaml --principal interface{} --exclude-main
 
 func configureFlags(api *operations.BlackdaggerAPI) {
 	// handlers.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
