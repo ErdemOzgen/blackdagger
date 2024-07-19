@@ -19,7 +19,7 @@ func main() {
 
 }
 
-var version = "0.0.0"
+var version = "1.0.6"
 
 func init() {
 	constants.Version = version

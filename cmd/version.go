@@ -27,6 +27,7 @@ func versionCmd() *cobra.Command {
 			cobra.CheckErr(config.LoadConfig())
 		},
 		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Print(AsciiArt)
 			fmt.Println(constants.Version)
 		},
 	}

@@ -4,7 +4,7 @@
 SRC_DIR=./
 DST_DIR=$(SRC_DIR)/internal
 BUILD_VERSION=$(shell date +'%y%m%d%H%M%S')
-LDFLAGS=-X 'main.version=$(BUILD_VERSION)'
+LDFLAGS=-X 'main.version=$(VERSION)'
 
 VERSION=1.0.6
 
