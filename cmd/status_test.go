@@ -1,10 +1,11 @@
 package cmd
 
 import (
-	"github.com/ErdemOzgen/blackdagger/internal/scheduler"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/ErdemOzgen/blackdagger/internal/scheduler"
 )
 
 func TestStatusCommand(t *testing.T) {
@@ -25,10 +26,10 @@ func TestStatusCommand(t *testing.T) {
 	time.Sleep(time.Millisecond * 50)
 
 	// TODO: do not use history store directly.
-	testLastStatusEventual(t, df.NewHistoryStore(), dagFile, scheduler.SchedulerStatus_Running)
+	testLastStatusEventual(t, df.NewHistoryStore(), dagFile, scheduler.StatusRunning)
 
 	// Check the current status.
-	testRunCommand(t, createStatusCommand(), cmdTest{
+	testRunCommand(t, statusCmd(), cmdTest{
 		args:        []string{"status", dagFile},
 		expectedOut: []string{"Status=running"},
 	})

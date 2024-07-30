@@ -41,7 +41,7 @@ type stepDef struct {
 	Description   string
 	Dir           string
 	Executor      interface{}
-	Command       string
+	Command       interface{}
 	Script        string
 	Stdout        string
 	Stderr        string
@@ -55,6 +55,8 @@ type stepDef struct {
 	SignalOnStop  *string
 	Env           string
 	Call          *callFuncDef
+	Run           string // Run is a sub workflow to run
+	Params        string // Params is a string of parameters to pass to the sub workflow
 }
 
 type funcDef struct {

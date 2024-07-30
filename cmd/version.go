@@ -24,7 +24,7 @@ func versionCmd() *cobra.Command {
 		Short: "Display the binary version",
 		Long:  `blackdagger version`,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			cobra.CheckErr(config.LoadConfig(homeDir))
+			cobra.CheckErr(config.LoadConfig())
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println(AsciiArt)

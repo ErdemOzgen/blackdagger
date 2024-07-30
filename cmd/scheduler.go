@@ -1,25 +1,24 @@
 package cmd
 
 import (
-	"github.com/ErdemOzgen/blackdagger/app"
 	"github.com/ErdemOzgen/blackdagger/internal/config"
-	"github.com/ErdemOzgen/blackdagger/service/core"
+	scheduler "github.com/ErdemOzgen/blackdagger/service"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-func createSchedulerCommand() *cobra.Command {
+func schedulerCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "scheduler",
 		Short: "Start the scheduler",
 		Long:  `blackdagger scheduler [--dags=<DAGs dir>]`,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			cobra.CheckErr(config.LoadConfig(homeDir))
+			cobra.CheckErr(config.LoadConfig())
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			config.Get().DAGs = getFlagString(cmd, "dags", config.Get().DAGs)
 
-			err := core.NewScheduler(app.TopLevelModule).Start(cmd.Context())
+			err := scheduler.New(topLevelModule).Start(cmd.Context())
 			checkError(err)
 		},
 	}

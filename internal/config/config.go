@@ -8,7 +8,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ErdemOzgen/blackdagger/internal/utils"
 	"github.com/spf13/viper"
 )
 
@@ -16,7 +15,7 @@ type Config struct {
 	Host               string
 	Port               int
 	DAGs               string
-	Command            string
+	Executable         string
 	WorkDir            string
 	IsBasicAuth        bool
 	BasicAuthUsername  string
@@ -29,10 +28,15 @@ type Config struct {
 	BaseConfig         string
 	NavbarColor        string
 	NavbarTitle        string
-	Env                map[string]string
+	Env                sync.Map
 	TLS                *TLS
 	IsAuthToken        bool
 	AuthToken          string
+	LatestStatusToday  bool
+}
+
+func (cfg *Config) GetAPIBaseURL() string {
+	return "/api/v1"
 }
 
 type TLS struct {
@@ -40,32 +44,45 @@ type TLS struct {
 	KeyFile  string
 }
 
-var instance *Config = nil
-
-func Get() *Config {
-	if instance == nil {
-		home, _ := os.UserHomeDir()
-		if err := LoadConfig(home); err != nil {
-			panic(err)
-		}
-	}
-	return instance
-}
-
 var (
-	mu sync.Mutex
+	cache = &configCache{}
 )
 
-func LoadConfig(userHomeDir string) error {
+type configCache struct {
+	instance *Config
+	mu       sync.RWMutex
+}
 
-	mu.Lock()
-	defer mu.Unlock()
-	appHome := appHomeDir(userHomeDir)
+func (cc *configCache) getConfig() *Config {
+	cc.mu.RLock()
+	defer cc.mu.RUnlock()
+	return cc.instance
+}
+
+func (cc *configCache) setConfig(cfg *Config) {
+	cc.mu.Lock()
+	defer cc.mu.Unlock()
+	cc.instance = cfg
+}
+
+func Get() *Config {
+	cfg := cache.getConfig()
+	if cfg != nil {
+		return cfg
+	}
+	if err := LoadConfig(); err != nil {
+		panic(err)
+	}
+	return cache.getConfig()
+}
+
+func LoadConfig() error {
+	appHome := appHomeDir()
 
 	viper.SetEnvPrefix("blackdagger")
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 
-	_ = viper.BindEnv("command", "BLACKDAGGER_EXECUTABLE")
+	_ = viper.BindEnv("executable", "BLACKDAGGER_EXECUTABLE")
 	_ = viper.BindEnv("dags", "BLACKDAGGER_DAGS_DIR")
 	_ = viper.BindEnv("workDir", "BLACKDAGGER_WORK_DIR")
 	_ = viper.BindEnv("isBasicAuth", "BLACKDAGGER_IS_BASICAUTH")
@@ -83,14 +100,16 @@ func LoadConfig(userHomeDir string) error {
 	_ = viper.BindEnv("tls.keyFile", "BLACKDAGGER_KEY_FILE")
 	_ = viper.BindEnv("isAuthToken", "BLACKDAGGER_IS_AUTHTOKEN")
 	_ = viper.BindEnv("authToken", "BLACKDAGGER_AUTHTOKEN")
-	command := "blackdagger"
-	if ex, err := os.Executable(); err == nil {
-		command = ex
+	_ = viper.BindEnv("latestStatusToday", "BLACKDAGGER_LATEST_STATUS")
+
+	executable, err := os.Executable()
+	if err != nil {
+		return fmt.Errorf("failed to get executable path: %w", err)
 	}
 
 	viper.SetDefault("host", "0.0.0.0")
 	viper.SetDefault("port", "8080")
-	viper.SetDefault("command", command)
+	viper.SetDefault("executable", executable)
 	viper.SetDefault("dags", path.Join(appHome, "dags"))
 	viper.SetDefault("workDir", "")
 	viper.SetDefault("isBasicAuth", "0")
@@ -106,52 +125,50 @@ func LoadConfig(userHomeDir string) error {
 	viper.SetDefault("navbarTitle", "Blackdagger")
 	viper.SetDefault("isAuthToken", "0")
 	viper.SetDefault("authToken", "0")
+	viper.SetDefault("latestStatusToday", "0")
 
 	viper.AutomaticEnv()
 
 	_ = viper.ReadInConfig()
 
 	cfg := &Config{}
-	err := viper.Unmarshal(cfg)
-	if err != nil {
+	if err := viper.Unmarshal(cfg); err != nil {
 		return fmt.Errorf("failed to unmarshal cfg file: %w", err)
 	}
-	instance = cfg
-	loadLegacyEnvs()
-	loadEnvs()
+	loadLegacyEnvs(cfg)
+	loadEnvs(cfg)
+
+	cache.setConfig(cfg)
 
 	return nil
 }
 
-func (cfg *Config) GetAPIBaseURL() string {
-	return "/api/v1"
+func homeDir() string {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		panic(err)
+	}
+	return home
 }
 
-func loadEnvs() {
-	if instance.Env == nil {
-		instance.Env = map[string]string{}
-	}
-	for k, v := range instance.Env {
-		_ = os.Setenv(k, v)
-	}
-	for k, v := range utils.DefaultEnv() {
-		if _, ok := instance.Env[k]; !ok {
-			instance.Env[k] = v
-		}
-	}
+func loadEnvs(cfg *Config) {
+	cfg.Env.Range(func(k, v interface{}) bool {
+		_ = os.Setenv(k.(string), v.(string))
+		return true
+	})
 }
 
-func loadLegacyEnvs() {
+func loadLegacyEnvs(cfg *Config) {
 	// For backward compatibility.
-	instance.NavbarColor = getEnv("BLACKDAGGER__ADMIN_NAVBAR_COLOR", instance.NavbarColor)
-	instance.NavbarTitle = getEnv("BLACKDAGGER__ADMIN_NAVBAR_TITLE", instance.NavbarTitle)
-	instance.Port = getEnvI("BLACKDAGGER__ADMIN_PORT", instance.Port)
-	instance.Host = getEnv("BLACKDAGGER__ADMIN_HOST", instance.Host)
-	instance.DataDir = getEnv("BLACKDAGGER__DATA", instance.DataDir)
-	instance.LogDir = getEnv("BLACKDAGGER__DATA", instance.LogDir)
-	instance.SuspendFlagsDir = getEnv("BLACKDAGGER__SUSPEND_FLAGS_DIR", instance.SuspendFlagsDir)
-	instance.BaseConfig = getEnv("BLACKDAGGER__SUSPEND_FLAGS_DIR", instance.BaseConfig)
-	instance.AdminLogsDir = getEnv("blackdagger__ADMIN_LOGS_DIR", instance.AdminLogsDir)
+	cfg.NavbarColor = getEnv("BLACKDAGGER__ADMIN_NAVBAR_COLOR", cfg.NavbarColor)
+	cfg.NavbarTitle = getEnv("BLACKDAGGER__ADMIN_NAVBAR_TITLE", cfg.NavbarTitle)
+	cfg.Port = getEnvI("BLACKDAGGER__ADMIN_PORT", cfg.Port)
+	cfg.Host = getEnv("BLACKDAGGER__ADMIN_HOST", cfg.Host)
+	cfg.DataDir = getEnv("BLACKDAGGER__DATA", cfg.DataDir)
+	cfg.LogDir = getEnv("BLACKDAGGER__DATA", cfg.LogDir)
+	cfg.SuspendFlagsDir = getEnv("BLACKDAGGER__SUSPEND_FLAGS_DIR", cfg.SuspendFlagsDir)
+	cfg.BaseConfig = getEnv("BLACKDAGGER__SUSPEND_FLAGS_DIR", cfg.BaseConfig)
+	cfg.AdminLogsDir = getEnv("BLACKDAGGER__ADMIN_LOGS_DIR", cfg.AdminLogsDir)
 }
 
 func getEnv(env, def string) string {
@@ -180,10 +197,10 @@ const (
 	appHomeDefault = ".blackdagger"
 )
 
-func appHomeDir(userHomeDir string) string {
+func appHomeDir() string {
 	appDir := os.Getenv(appHomeEnv)
 	if appDir == "" {
-		return path.Join(userHomeDir, appHomeDefault)
+		return path.Join(homeDir(), appHomeDefault)
 	}
 	return appDir
 }

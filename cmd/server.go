@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/ErdemOzgen/blackdagger/app"
 	"github.com/ErdemOzgen/blackdagger/internal/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -16,15 +15,12 @@ func serverCmd() *cobra.Command {
 			_ = viper.BindPFlag("port", cmd.Flags().Lookup("port"))
 			_ = viper.BindPFlag("host", cmd.Flags().Lookup("host"))
 			_ = viper.BindPFlag("dags", cmd.Flags().Lookup("dags"))
-			cobra.CheckErr(config.LoadConfig(homeDir))
+			cobra.CheckErr(config.LoadConfig())
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			// TODO: move to config files
 			pullDagList := []string{"default"}
 			Pulldags(pullDagList)
-			service := app.NewFrontendService()
-			err := service.Start(cmd.Context())
-			checkError(err)
+			checkError(newFrontend().Start(cmd.Context()))
 		},
 	}
 	bindServerCommandFlags(cmd)
