@@ -2,10 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/ErdemOzgen/blackdagger/internal/scheduler"
-	"github.com/stretchr/testify/require"
 	"os"
 	"testing"
+
+	"github.com/ErdemOzgen/blackdagger/internal/scheduler"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRetryCommand(t *testing.T) {
@@ -22,7 +23,7 @@ func TestRetryCommand(t *testing.T) {
 	// Find the request ID.
 	s, err := e.GetStatus(dagFile)
 	require.NoError(t, err)
-	require.Equal(t, s.Status.Status, scheduler.SchedulerStatus_Success)
+	require.Equal(t, s.Status.Status, scheduler.StatusSuccess)
 	require.NotNil(t, s.Status)
 
 	reqID := s.Status.RequestId

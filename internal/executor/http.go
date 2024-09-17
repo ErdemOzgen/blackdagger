@@ -3,6 +3,7 @@ package executor
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -30,6 +31,8 @@ type HTTPConfig struct {
 	Body        string            `json:"body"`
 	Silent      bool              `json:"silent"`
 }
+
+var errHttpStatusCode = errors.New("http status code not 2xx")
 
 func (e *HTTPExecutor) SetStdout(out io.Writer) {
 	e.stdout = out
@@ -64,12 +67,12 @@ func (e *HTTPExecutor) Run() error {
 		return err
 	}
 	if isErr {
-		return fmt.Errorf("http status code not 2xx: %d", resCode)
+		return fmt.Errorf("%w: %d", errHttpStatusCode, resCode)
 	}
 	return nil
 }
 
-func CreateHTTPExecutor(ctx context.Context, step *dag.Step) (Executor, error) {
+func CreateHTTPExecutor(ctx context.Context, step dag.Step) (Executor, error) {
 	var reqCfg HTTPConfig
 	if len(step.Script) > 0 {
 		if err := decodeHTTPConfigFromString(step.Script, &reqCfg); err != nil {

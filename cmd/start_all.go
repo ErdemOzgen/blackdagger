@@ -3,9 +3,9 @@ package cmd
 import (
 	"log"
 
-	"github.com/ErdemOzgen/blackdagger/app"
+	scheduler "github.com/ErdemOzgen/blackdagger/service"
+
 	"github.com/ErdemOzgen/blackdagger/internal/config"
-	"github.com/ErdemOzgen/blackdagger/service/core"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -19,26 +19,20 @@ func startAllCmd() *cobra.Command {
 			_ = viper.BindPFlag("port", cmd.Flags().Lookup("port"))
 			_ = viper.BindPFlag("host", cmd.Flags().Lookup("host"))
 			_ = viper.BindPFlag("dags", cmd.Flags().Lookup("dags"))
-			cobra.CheckErr(config.LoadConfig(homeDir))
+			cobra.CheckErr(config.LoadConfig())
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			ctx := cmd.Context()
-			// TODO: move to config files
-			pullDagList := []string{"default"}
-			Pulldags(pullDagList)
+
 			go func() {
 				config.Get().DAGs = getFlagString(cmd, "dags", config.Get().DAGs)
-				err := core.NewScheduler(app.TopLevelModule).Start(cmd.Context())
-
+				err := scheduler.New(topLevelModule).Start(cmd.Context())
 				if err != nil {
-					log.Fatal(err)
+					log.Fatal(err) // nolint // deep-exit
 				}
 			}()
 
-			service := app.NewFrontendService()
-			err := service.Start(ctx)
-			checkError(err)
-
+			checkError(newFrontend().Start(ctx))
 		},
 	}
 	bindStartAllCommandFlags(cmd)

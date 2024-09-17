@@ -2,10 +2,11 @@ package local
 
 import (
 	"fmt"
-	"github.com/ErdemOzgen/blackdagger/internal/persistence"
-	"github.com/ErdemOzgen/blackdagger/internal/persistence/local/storage"
 	"regexp"
 	"strings"
+
+	"github.com/ErdemOzgen/blackdagger/internal/persistence"
+	"github.com/ErdemOzgen/blackdagger/internal/persistence/local/storage"
 )
 
 type flagStoreImpl struct {

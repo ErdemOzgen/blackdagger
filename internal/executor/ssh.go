@@ -2,6 +2,7 @@ package executor
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -21,12 +22,14 @@ type SSHConfig struct {
 }
 
 type SSHExecutor struct {
-	step      *dag.Step
+	step      dag.Step
 	config    *SSHConfig
 	sshConfig *ssh.ClientConfig
 	stdout    io.Writer
 	session   *ssh.Session
 }
+
+var errStrictHostKey = errors.New("StrictHostKeyChecking is not supported yet")
 
 func (e *SSHExecutor) SetStdout(out io.Writer) {
 	e.stdout = out
@@ -65,7 +68,7 @@ func (e *SSHExecutor) Run() error {
 	return session.Run(command)
 }
 
-func CreateSSHExecutor(ctx context.Context, step *dag.Step) (Executor, error) {
+func CreateSSHExecutor(ctx context.Context, step dag.Step) (Executor, error) {
 	cfg := &SSHConfig{}
 	md, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{Result: cfg})
 
@@ -82,7 +85,7 @@ func CreateSSHExecutor(ctx context.Context, step *dag.Step) (Executor, error) {
 	}
 
 	if cfg.StrictHostKeyChecking {
-		return nil, fmt.Errorf("StrictHostKeyChecking is not supported yet")
+		return nil, errStrictHostKey
 	}
 
 	// Create the Signer for this private key.

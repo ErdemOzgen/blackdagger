@@ -2,11 +2,12 @@ package persistence
 
 import (
 	"fmt"
+	"path/filepath"
+	"time"
+
 	"github.com/ErdemOzgen/blackdagger/internal/dag"
 	"github.com/ErdemOzgen/blackdagger/internal/grep"
 	"github.com/ErdemOzgen/blackdagger/internal/persistence/model"
-	"path/filepath"
-	"time"
 )
 
 var (
@@ -46,6 +47,7 @@ type (
 		Rename(oldName, newName string) error
 		GetSpec(name string) (string, error)
 		UpdateSpec(name string, spec []byte) error
+		FindByName(name string) (*dag.DAG, error)
 	}
 
 	FlagStore interface {

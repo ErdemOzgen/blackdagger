@@ -25,59 +25,50 @@ var (
 	}
 )
 
-const legacyPath = ".blackdagger"
-
 func customHelpFunc(cmd *cobra.Command, strings []string) {
 	fmt.Print(AsciiArt)
 	fmt.Println(cmd.UsageString())
 }
 
+const configPath = ".blackdagger"
+
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	//fmt.Println(AsciiArt)
-	err := rootCmd.Execute()
-	if err != nil {
-		os.Exit(1)
-	}
+func Execute() error {
+	return rootCmd.Execute()
 }
 
 func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.blackdagger/admin.yaml)")
 
-	cobra.OnInitialize(initConfig)
 	rootCmd.SetHelpFunc(customHelpFunc)
+	cobra.OnInitialize(initialize)
 	registerCommands(rootCmd)
 }
 
-var (
-	homeDir string
-)
-
 func init() {
-	home, err := os.UserHomeDir()
+	_, err := os.UserHomeDir()
 	if err != nil {
 		cobra.CheckErr(err)
 	}
-	homeDir = home
 }
 
-func initConfig() {
-	setConfigFile(homeDir)
-}
-
-func setConfigFile(home string) {
+func initialize() {
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
 	} else {
-		setDefaultConfigPath(home)
+		setDefaultConfigPath()
 		viper.SetConfigType("yaml")
 		viper.SetConfigName("admin")
 	}
 }
 
-func setDefaultConfigPath(home string) {
-	viper.AddConfigPath(path.Join(home, legacyPath))
+func setDefaultConfigPath() {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		panic("could not determine home directory")
+	}
+	viper.AddConfigPath(path.Join(homeDir, configPath))
 }
 
 func loadDAG(dagFile, params string) (d *dag.DAG, err error) {
@@ -97,10 +88,10 @@ func registerCommands(root *cobra.Command) {
 	rootCmd.AddCommand(stopCmd())
 	rootCmd.AddCommand(restartCmd())
 	rootCmd.AddCommand(dryCmd())
-	rootCmd.AddCommand(createStatusCommand())
+	rootCmd.AddCommand(statusCmd())
 	rootCmd.AddCommand(versionCmd())
 	rootCmd.AddCommand(serverCmd())
-	rootCmd.AddCommand(createSchedulerCommand())
+	rootCmd.AddCommand(schedulerCmd())
 	rootCmd.AddCommand(retryCmd())
 	rootCmd.AddCommand(startAllCmd())
 }

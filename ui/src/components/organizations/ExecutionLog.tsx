@@ -1,5 +1,6 @@
 import { Box, Stack } from '@mui/material';
 import React from 'react';
+import Ansi from 'ansi-to-react'; // Import the ansi-to-react library
 import { LogFile } from '../../models/api';
 import BorderedBox from '../atoms/BorderedBox';
 import LabeledItem from '../atoms/LabeledItem';
@@ -52,7 +53,7 @@ function ExecutionLog({ log }: Props) {
             fontFamily: 'Courier New, Courier, monospace',
           }}
         >
-          {log.Content || '<No log output>'}
+          <Ansi>{log.Content || '<No log output>'}</Ansi>
         </pre>
       </BorderedBox>
     </Box>

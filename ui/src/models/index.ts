@@ -8,7 +8,6 @@ export enum SchedulerStatus {
   Cancel,
   Success,
   Skipped_Unused,
-  Warning,
 }
 
 export type Status = {
@@ -165,7 +164,6 @@ export enum NodeStatus {
   Cancel,
   Success,
   Skipped,
-  ValidSkip,
 }
 
 export type Node = {
@@ -202,6 +200,8 @@ export type Step = {
   RepeatPolicy: RepeatPolicy;
   MailOnError: boolean;
   Preconditions: Condition[];
+  Run: string;
+  Params: string;
 };
 
 export type RetryPolicy = {

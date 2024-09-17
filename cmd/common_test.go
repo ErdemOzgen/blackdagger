@@ -30,15 +30,14 @@ func setupTest(t *testing.T) (string, engine.Engine, persistence.DataStoreFactor
 		DataDir: path.Join(tmpDir, ".blackdagger", "data"),
 	})
 
-	e := engine.NewFactory(ds, nil).Create()
+	e := engine.NewFactory(ds, config.Get()).Create()
 
 	return tmpDir, e, ds
 }
 
 func changeHomeDir(dir string) {
-	homeDir = dir
 	_ = os.Setenv("HOME", dir)
-	_ = config.LoadConfig(dir)
+	_ = config.LoadConfig()
 }
 
 type cmdTest struct {
@@ -101,7 +100,7 @@ func testDAGFile(name string) string {
 	return path.Join(d, name)
 }
 
-func testStatusEventual(t *testing.T, e engine.Engine, dagFile string, expected scheduler.SchedulerStatus) {
+func testStatusEventual(t *testing.T, e engine.Engine, dagFile string, expected scheduler.Status) {
 	t.Helper()
 
 	d, err := loadDAG(dagFile, "")
@@ -114,10 +113,9 @@ func testStatusEventual(t *testing.T, e engine.Engine, dagFile string, expected 
 	}, time.Millisecond*5000, time.Millisecond*50)
 }
 
-func testLastStatusEventual(t *testing.T, hs persistence.HistoryStore, dag string, expected scheduler.SchedulerStatus) {
+func testLastStatusEventual(t *testing.T, hs persistence.HistoryStore, dag string, expected scheduler.Status) {
 	t.Helper()
 	require.Eventually(t, func() bool {
-		// TODO: do not use history store directly.
 		status := hs.ReadStatusRecent(dag, 1)
 		if len(status) < 1 {
 			return false

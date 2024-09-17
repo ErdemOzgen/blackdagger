@@ -2,15 +2,16 @@ package dag
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
 
-	"dario.cat/mergo"
 	"github.com/ErdemOzgen/blackdagger/internal/utils"
-
+	"github.com/imdario/mergo"
 	"github.com/mitchellh/mapstructure"
 
 	"gopkg.in/yaml.v2"
@@ -20,6 +21,11 @@ import (
 type Loader struct {
 	BaseConfig string
 }
+
+var (
+	errConfigFileRequired = errors.New("config file was not specified")
+	errReadFile           = errors.New("failed to read file")
+)
 
 // Load loads config from file.
 func (cl *Loader) Load(f, params string) (*DAG, error) {
@@ -84,7 +90,6 @@ func (cl *Loader) loadBaseConfig(file string, opts *BuildDAGOptions) (*DAG, erro
 
 	buildOpts := *opts
 	buildOpts.loadMetadataOnly = false
-	buildOpts.defaultEnvs = utils.DefaultEnv()
 	b := &DAGBuilder{
 		options: buildOpts,
 	}
@@ -138,7 +143,7 @@ func (cl *Loader) loadDAG(f string, opts *BuildDAGOptions) (*DAG, error) {
 // prepareFilepath prepares the filepath for the given file.
 func (cl *Loader) prepareFilepath(f string) (string, error) {
 	if f == "" {
-		return "", fmt.Errorf("config file was not specified")
+		return "", errConfigFileRequired
 	}
 	if !strings.HasSuffix(f, ".yaml") && !strings.HasSuffix(f, ".yml") {
 		f = fmt.Sprintf("%s.yaml", f)
@@ -192,7 +197,7 @@ type fileLoader struct{}
 func (fl *fileLoader) readFile(file string) (config map[string]interface{}, err error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %v", file, err)
+		return nil, fmt.Errorf("%w %s: %v", errReadFile, file, err)
 	}
 	return fl.unmarshalData(data)
 }
@@ -201,6 +206,9 @@ func (fl *fileLoader) readFile(file string) (config map[string]interface{}, err 
 func (fl *fileLoader) unmarshalData(data []byte) (map[string]interface{}, error) {
 	var cm map[string]interface{}
 	err := yaml.NewDecoder(bytes.NewReader(data)).Decode(&cm)
+	if errors.Is(err, io.EOF) {
+		err = nil
+	}
 	return cm, err
 }
 

@@ -2,20 +2,31 @@ package executor
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
+	"sync"
 	"syscall"
+
+	"github.com/ErdemOzgen/blackdagger/internal/utils"
 
 	"github.com/ErdemOzgen/blackdagger/internal/dag"
 )
 
 type CommandExecutor struct {
-	cmd *exec.Cmd
+	cmd  *exec.Cmd
+	lock sync.Mutex
 }
 
 func (e *CommandExecutor) Run() error {
-	return e.cmd.Run()
+	e.lock.Lock()
+	err := e.cmd.Start()
+	e.lock.Unlock()
+	if err != nil {
+		return err
+	}
+	return e.cmd.Wait()
 }
 
 func (e *CommandExecutor) SetStdout(out io.Writer) {
@@ -27,15 +38,21 @@ func (e *CommandExecutor) SetStderr(out io.Writer) {
 }
 
 func (e *CommandExecutor) Kill(sig os.Signal) error {
+	e.lock.Lock()
+	defer e.lock.Unlock()
 	if e.cmd == nil || e.cmd.Process == nil {
 		return nil
 	}
 	return syscall.Kill(-e.cmd.Process.Pid, sig.(syscall.Signal))
 }
 
-func CreateCommandExecutor(ctx context.Context, step *dag.Step) (Executor, error) {
+func CreateCommandExecutor(ctx context.Context, step dag.Step) (Executor, error) {
 	cmd := exec.CommandContext(ctx, step.Command, step.Args...)
+	if len(step.Dir) > 0 && !utils.FileExists(step.Dir) {
+		return nil, fmt.Errorf("directory %q does not exist", step.Dir)
+	}
 	cmd.Dir = step.Dir
+	cmd.Env = append(cmd.Env, os.Environ()...)
 	cmd.Env = append(cmd.Env, step.Variables...)
 	step.OutputVariables.Range(func(key, value interface{}) bool {
 		cmd.Env = append(cmd.Env, value.(string))

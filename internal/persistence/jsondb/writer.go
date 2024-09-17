@@ -2,11 +2,12 @@ package jsondb
 
 import (
 	"bufio"
-	"github.com/ErdemOzgen/blackdagger/internal/persistence/model"
 	"os"
 	"path"
 	"strings"
 	"sync"
+
+	"github.com/ErdemOzgen/blackdagger/internal/persistence/model"
 
 	"github.com/ErdemOzgen/blackdagger/internal/utils"
 )

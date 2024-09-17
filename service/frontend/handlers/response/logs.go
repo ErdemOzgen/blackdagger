@@ -1,13 +1,14 @@
 package response
 
 import (
+	"sort"
+	"strings"
+
 	"github.com/ErdemOzgen/blackdagger/internal/constants"
 	domain "github.com/ErdemOzgen/blackdagger/internal/persistence/model"
 	"github.com/ErdemOzgen/blackdagger/internal/scheduler"
 	"github.com/ErdemOzgen/blackdagger/service/frontend/models"
 	"github.com/samber/lo"
-	"sort"
-	"strings"
 )
 
 func ToDagLogResponse(logs []*domain.StatusFile) *models.DagLogResponse {

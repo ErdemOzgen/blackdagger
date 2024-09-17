@@ -2,10 +2,11 @@ package jsondb
 
 import (
 	"fmt"
-	"github.com/ErdemOzgen/blackdagger/internal/persistence/model"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/ErdemOzgen/blackdagger/internal/persistence/model"
 
 	"github.com/ErdemOzgen/blackdagger/internal/dag"
 	"github.com/ErdemOzgen/blackdagger/internal/scheduler"
@@ -30,7 +31,7 @@ func TestWriteStatusToFile(t *testing.T) {
 		_ = db.RemoveOld(d.Location, 0)
 	}()
 
-	status := model.NewStatus(d, nil, scheduler.SchedulerStatus_Running, 10000, nil, nil)
+	status := model.NewStatus(d, nil, scheduler.StatusRunning, 10000, nil, nil)
 	status.RequestId = fmt.Sprintf("request-id-%d", time.Now().Unix())
 	require.NoError(t, dw.write(status))
 	require.Regexp(t, ".*test_write_status.*", file)
@@ -76,24 +77,24 @@ func TestWriteStatusToExistingFile(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, dw.open())
 
-	status := model.NewStatus(d, nil, scheduler.SchedulerStatus_Cancel, 10000, nil, nil)
+	status := model.NewStatus(d, nil, scheduler.StatusCancel, 10000, nil, nil)
 	status.RequestId = "request-id-test-write-status-to-existing-file"
 	require.NoError(t, dw.write(status))
-	dw.close()
+	_ = dw.close()
 
 	data, err := db.FindByRequestId(d.Location, status.RequestId)
 	require.NoError(t, err)
-	require.Equal(t, data.Status.Status, scheduler.SchedulerStatus_Cancel)
+	require.Equal(t, data.Status.Status, scheduler.StatusCancel)
 	require.Equal(t, file, data.File)
 
 	dw = &writer{target: file}
 	require.NoError(t, dw.open())
-	status.Status = scheduler.SchedulerStatus_Success
+	status.Status = scheduler.StatusSuccess
 	require.NoError(t, dw.write(status))
-	dw.close()
+	_ = dw.close()
 
 	data, err = db.FindByRequestId(d.Location, status.RequestId)
 	require.NoError(t, err)
-	require.Equal(t, data.Status.Status, scheduler.SchedulerStatus_Success)
+	require.Equal(t, data.Status.Status, scheduler.StatusSuccess)
 	require.Equal(t, file, data.File)
 }
