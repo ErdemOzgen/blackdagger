@@ -1,29 +1,57 @@
 package cmd
 
 import (
-	"github.com/ErdemOzgen/blackdagger/app"
+	"log"
+
 	"github.com/ErdemOzgen/blackdagger/internal/config"
-	"github.com/ErdemOzgen/blackdagger/service/core"
+	"github.com/ErdemOzgen/blackdagger/internal/logger"
+	"github.com/ErdemOzgen/blackdagger/internal/scheduler"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-func createSchedulerCommand() *cobra.Command {
+func schedulerCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "scheduler",
 		Short: "Start the scheduler",
 		Long:  `blackdagger scheduler [--dags=<DAGs dir>]`,
-		PreRun: func(cmd *cobra.Command, args []string) {
-			cobra.CheckErr(config.LoadConfig(homeDir))
-		},
-		Run: func(cmd *cobra.Command, args []string) {
-			config.Get().DAGs = getFlagString(cmd, "dags", config.Get().DAGs)
+		Run: func(cmd *cobra.Command, _ []string) {
+			cfg, err := config.Load()
+			if err != nil {
+				log.Fatalf("Configuration load failed: %v", err)
+			}
+			logger := logger.NewLogger(logger.NewLoggerArgs{
+				Debug:  cfg.Debug,
+				Format: cfg.LogFormat,
+			})
 
-			err := core.NewScheduler(app.TopLevelModule).Start(cmd.Context())
-			checkError(err)
+			if dagsOpt, _ := cmd.Flags().GetString("dags"); dagsOpt != "" {
+				cfg.DAGs = dagsOpt
+			}
+
+			logger.Info("Scheduler initialization",
+				"specsDirectory", cfg.DAGs,
+				"logFormat", cfg.LogFormat)
+
+			ctx := cmd.Context()
+			dataStore := newDataStores(cfg)
+			cli := newClient(cfg, dataStore, logger)
+			sc := scheduler.New(cfg, logger, cli)
+			if err := sc.Start(ctx); err != nil {
+				logger.Fatal(
+					"Scheduler initialization failed",
+					"error",
+					err,
+					"specsDirectory",
+					cfg.DAGs,
+				)
+			}
 		},
 	}
-	cmd.Flags().StringP("dags", "d", "", "location of DAG files (default is $HOME/.blackdagger/dags)")
+
+	cmd.Flags().StringP(
+		"dags", "d", "", "location of DAG files (default is $HOME/.config/blackdagger/dags)",
+	)
 	_ = viper.BindPFlag("dags", cmd.Flags().Lookup("dags"))
 
 	return cmd

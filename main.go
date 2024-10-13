@@ -1,19 +1,21 @@
-/*
-Copyright © 2024 Mahmut Erdem Ozgen
-Forked from Dagu-dev
-*/
 package main
 
 import (
-	cmd "github.com/ErdemOzgen/blackdagger/cmd"
+	"os"
+
+	"github.com/ErdemOzgen/blackdagger/cmd"
 	"github.com/ErdemOzgen/blackdagger/internal/constants"
 )
 
 func main() {
-	cmd.Execute()
+	err := cmd.Execute()
+	if err != nil {
+		os.Exit(1)
+	}
+
 }
 
-var version = "1.0.5"
+var version = "1.0.6"
 
 func init() {
 	constants.Version = version

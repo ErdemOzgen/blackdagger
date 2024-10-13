@@ -32,10 +32,12 @@ var pullCmd = &cobra.Command{
 		see
 		`,
 	PreRun: func(cmd *cobra.Command, args []string) {
-		_ = viper.BindPFlag("dags", cmd.Flags().Lookup("dags"))       // /home/erdem/.blackdagger/dags
-		_ = viper.BindPFlag("logDir", cmd.Flags().Lookup("logDir"))   // /home/erdem/.blackdagger/logs
-		_ = viper.BindPFlag("dataDir", cmd.Flags().Lookup("dataDir")) // /home/erdem/.blackdagger/data
-		cobra.CheckErr(config.LoadConfig(homeDir))
+		_ = viper.BindPFlag("dags", cmd.Flags().Lookup("dags"))
+		_ = viper.BindPFlag("logDir", cmd.Flags().Lookup("logDir"))
+		_ = viper.BindPFlag("dataDir", cmd.Flags().Lookup("dataDir"))
+		_, err := config.Load()
+		cobra.CheckErr(err)
+
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Starting to pull the repository...")
@@ -162,7 +164,14 @@ func CopyYAMLFiles(srcDir, destDir string) {
 			if err != nil {
 				panic(err)
 			}
+
 			fmt.Printf("Copied %s to %s\n", srcPath, destPath)
+
 		}
 	}
+	err = os.RemoveAll(srcDir)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Pulled YAMLs are ready to use")
 }

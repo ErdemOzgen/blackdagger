@@ -1,26 +1,27 @@
 package local
 
 import (
-	"github.com/ErdemOzgen/blackdagger/internal/persistence/local/storage"
 	"os"
 	"testing"
 
-	"github.com/ErdemOzgen/blackdagger/internal/utils"
+	"github.com/ErdemOzgen/blackdagger/internal/persistence/local/storage"
+
+	"github.com/ErdemOzgen/blackdagger/internal/util"
 	"github.com/stretchr/testify/require"
 )
 
 func TestFlagStore(t *testing.T) {
-	tmpDir := utils.MustTempDir("test-suspend-checker")
+	tmpDir := util.MustTempDir("test-suspend-checker")
 	defer func() {
 		_ = os.RemoveAll(tmpDir)
 	}()
 
-	fs := NewFlagStore(storage.NewStorage(tmpDir))
+	flagStore := NewFlagStore(storage.NewStorage(tmpDir))
 
-	require.False(t, fs.IsSuspended("test"))
+	require.False(t, flagStore.IsSuspended("test"))
 
-	err := fs.ToggleSuspend("test", true)
+	err := flagStore.ToggleSuspend("test", true)
 	require.NoError(t, err)
 
-	require.True(t, fs.IsSuspended("test"))
+	require.True(t, flagStore.IsSuspended("test"))
 }

@@ -1,15 +1,46 @@
 package model
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/ErdemOzgen/blackdagger/internal/dag"
-	"github.com/ErdemOzgen/blackdagger/internal/scheduler"
-	"github.com/ErdemOzgen/blackdagger/internal/utils"
+	"github.com/ErdemOzgen/blackdagger/internal/dag/scheduler"
+	"github.com/ErdemOzgen/blackdagger/internal/util"
 )
 
+func FromSteps(steps []dag.Step) []*Node {
+	var ret []*Node
+	for _, s := range steps {
+		ret = append(ret, NewNode(s))
+	}
+	return ret
+}
+
+func FromNodes(nodes []scheduler.NodeData) []*Node {
+	var ret []*Node
+	for _, node := range nodes {
+		ret = append(ret, FromNode(node))
+	}
+	return ret
+}
+
+func FromNode(node scheduler.NodeData) *Node {
+	return &Node{
+		Step:       node.Step,
+		Log:        node.State.Log,
+		StartedAt:  util.FormatTime(node.State.StartedAt),
+		FinishedAt: util.FormatTime(node.State.FinishedAt),
+		Status:     node.State.Status,
+		StatusText: node.State.Status.String(),
+		RetryCount: node.State.RetryCount,
+		DoneCount:  node.State.DoneCount,
+		Error:      errText(node.State.Error),
+	}
+}
+
 type Node struct {
-	*dag.Step  `json:"Step"`
+	Step       dag.Step             `json:"Step"`
 	Log        string               `json:"Log"`
 	StartedAt  string               `json:"StartedAt"`
 	FinishedAt string               `json:"FinishedAt"`
@@ -21,72 +52,41 @@ type Node struct {
 }
 
 func (n *Node) ToNode() *scheduler.Node {
-	startedAt, _ := utils.ParseTime(n.StartedAt)
-	finishedAt, _ := utils.ParseTime(n.FinishedAt)
-	var err error = nil
-	if n.Error != "" {
-		err = fmt.Errorf(n.Error)
-	}
-	ret := &scheduler.Node{
-		Step: n.Step,
-		NodeState: scheduler.NodeState{
-			Status:     n.Status,
-			Log:        n.Log,
-			StartedAt:  startedAt,
-			FinishedAt: finishedAt,
-			RetryCount: n.RetryCount,
-			DoneCount:  n.DoneCount,
-			Error:      err,
-		},
-	}
-	return ret
-}
-
-func FromNode(n *scheduler.Node) *Node {
-	node := &Node{
-		Step:       n.Step,
+	startedAt, _ := util.ParseTime(n.StartedAt)
+	finishedAt, _ := util.ParseTime(n.FinishedAt)
+	return scheduler.NewNode(n.Step, scheduler.NodeState{
+		Status:     n.Status,
 		Log:        n.Log,
-		StartedAt:  utils.FormatTime(n.StartedAt),
-		FinishedAt: utils.FormatTime(n.FinishedAt),
-		Status:     n.ReadStatus(),
-		StatusText: n.ReadStatus().String(),
-		RetryCount: n.ReadRetryCount(),
-		DoneCount:  n.ReadDoneCount(),
-	}
-	if n.Error != nil {
-		node.Error = n.Error.Error()
-	}
-	return node
+		StartedAt:  startedAt,
+		FinishedAt: finishedAt,
+		RetryCount: n.RetryCount,
+		DoneCount:  n.DoneCount,
+		Error:      errFromText(n.Error),
+	})
 }
 
-func FromNodes(nodes []*scheduler.Node) []*Node {
-	ret := []*Node{}
-	for _, n := range nodes {
-		ret = append(ret, FromNode(n))
-	}
-	return ret
-}
-
-func FromSteps(steps []*dag.Step) []*Node {
-	ret := []*Node{}
-	for _, s := range steps {
-		ret = append(ret, fromStepWithDefValues(s))
-	}
-	return ret
-}
-
-func fromStepWithDefValues(s *dag.Step) *Node {
-	if s == nil {
-		return nil
-	}
-	step := &Node{
-		Step:       s,
-		Log:        "",
+func NewNode(step dag.Step) *Node {
+	return &Node{
+		Step:       step,
 		StartedAt:  "-",
 		FinishedAt: "-",
-		Status:     scheduler.NodeStatus_None,
-		StatusText: scheduler.NodeStatus_None.String(),
-		RetryCount: 0,
+		Status:     scheduler.NodeStatusNone,
+		StatusText: scheduler.NodeStatusNone.String(),
 	}
-	return step
+}
+
+var errNodeProcessing = errors.New("node processing error")
+
+func errFromText(err string) error {
+	if err == "" {
+		return nil
+	}
+	return fmt.Errorf("%w: %s", errNodeProcessing, err)
+}
+
+func errText(err error) string {
+	if err == nil {
+		return ""
+	}
+	return err.Error()
 }

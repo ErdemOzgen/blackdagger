@@ -1,64 +1,76 @@
 package cmd
 
 import (
-	"github.com/ErdemOzgen/blackdagger/internal/config"
-	"github.com/ErdemOzgen/blackdagger/internal/engine"
-	"github.com/ErdemOzgen/blackdagger/internal/persistence/client"
-	"github.com/ErdemOzgen/blackdagger/internal/scheduler"
-	"github.com/stretchr/testify/require"
-	"os"
 	"testing"
 	"time"
+
+	"github.com/ErdemOzgen/blackdagger/internal/dag"
+	"github.com/ErdemOzgen/blackdagger/internal/dag/scheduler"
+	"github.com/ErdemOzgen/blackdagger/internal/logger"
+	"github.com/ErdemOzgen/blackdagger/internal/test"
+	"github.com/stretchr/testify/require"
+)
+
+const (
+	waitForStatusUpdate = time.Millisecond * 100
 )
 
 func TestRestartCommand(t *testing.T) {
-	tmpDir, e, _ := setupTest(t)
-	defer func() {
-		_ = os.RemoveAll(tmpDir)
-	}()
+	t.Run("RestartDAG", func(t *testing.T) {
+		setup := test.SetupTest(t)
+		defer setup.Cleanup()
 
-	dagFile := testDAGFile("restart.yaml")
+		dagFile := testDAGFile("restart.yaml")
 
-	// Start the DAG.
-	go func() {
-		testRunCommand(t, startCmd(), cmdTest{args: []string{"start", `--params="foo"`, dagFile}})
-	}()
+		// Start the DAG.
+		go func() {
+			testRunCommand(
+				t,
+				startCmd(),
+				cmdTest{args: []string{"start", `--params="foo"`, dagFile}},
+			)
+		}()
 
-	time.Sleep(time.Millisecond * 100)
+		time.Sleep(waitForStatusUpdate)
+		cli := setup.Client()
 
-	// Wait for the DAG running.
-	testStatusEventual(t, e, dagFile, scheduler.SchedulerStatus_Running)
+		// Wait for the DAG running.
+		testStatusEventual(t, cli, dagFile, scheduler.StatusRunning)
 
-	// Restart the DAG.
-	done := make(chan struct{})
-	go func() {
-		testRunCommand(t, restartCmd(), cmdTest{args: []string{"restart", dagFile}})
-		close(done)
-	}()
+		// Restart the DAG.
+		done := make(chan struct{})
+		go func() {
+			testRunCommand(t, restartCmd(), cmdTest{args: []string{"restart", dagFile}})
+			close(done)
+		}()
 
-	time.Sleep(time.Millisecond * 100)
+		time.Sleep(waitForStatusUpdate)
 
-	// Wait for the DAG running again.
-	testStatusEventual(t, e, dagFile, scheduler.SchedulerStatus_Running)
+		// Wait for the DAG running again.
+		testStatusEventual(t, cli, dagFile, scheduler.StatusRunning)
 
-	// Stop the restarted DAG.
-	testRunCommand(t, stopCmd(), cmdTest{args: []string{"stop", dagFile}})
+		// Stop the restarted DAG.
+		testRunCommand(t, stopCmd(), cmdTest{args: []string{"stop", dagFile}})
 
-	time.Sleep(time.Millisecond * 100)
+		time.Sleep(waitForStatusUpdate)
 
-	// Wait for the DAG is stopped.
-	testStatusEventual(t, e, dagFile, scheduler.SchedulerStatus_None)
+		// Wait for the DAG is stopped.
+		testStatusEventual(t, cli, dagFile, scheduler.StatusNone)
 
-	// Check parameter was the same as the first execution
-	d, err := loadDAG(dagFile, "")
-	require.NoError(t, err)
+		// Check parameter was the same as the first execution
+		workflow, err := dag.Load(setup.Config.BaseConfig, dagFile, "")
+		require.NoError(t, err)
 
-	df := client.NewDataStoreFactory(config.Get())
-	e = engine.NewFactory(df, nil).Create()
+		dataStore := newDataStores(setup.Config)
+		recentHistory := newClient(
+			setup.Config,
+			dataStore,
+			logger.Default,
+		).GetRecentHistory(workflow, 2)
 
-	sts := e.GetRecentHistory(d, 2)
-	require.Len(t, sts, 2)
-	require.Equal(t, sts[0].Status.Params, sts[1].Status.Params)
+		require.Len(t, recentHistory, 2)
+		require.Equal(t, recentHistory[0].Status.Params, recentHistory[1].Status.Params)
 
-	<-done
+		<-done
+	})
 }

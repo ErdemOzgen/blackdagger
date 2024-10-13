@@ -2,86 +2,73 @@ package persistence
 
 import (
 	"fmt"
-	"github.com/ErdemOzgen/blackdagger/internal/dag"
-	"github.com/ErdemOzgen/blackdagger/internal/grep"
-	"github.com/ErdemOzgen/blackdagger/internal/persistence/model"
-	"path/filepath"
 	"time"
+
+	"github.com/ErdemOzgen/blackdagger/internal/dag"
+	"github.com/ErdemOzgen/blackdagger/internal/persistence/grep"
+	"github.com/ErdemOzgen/blackdagger/internal/persistence/model"
 )
 
 var (
-	ErrRequestIdNotFound = fmt.Errorf("request id not found")
+	ErrRequestIDNotFound = fmt.Errorf("request id not found")
 	ErrNoStatusDataToday = fmt.Errorf("no status data today")
 	ErrNoStatusData      = fmt.Errorf("no status data")
 )
 
-type (
-	DataStoreFactory interface {
-		NewHistoryStore() HistoryStore
-		NewDAGStore() DAGStore
-		NewFlagStore() FlagStore
-	}
+type DataStores interface {
+	HistoryStore() HistoryStore
+	DAGStore() DAGStore
+	FlagStore() FlagStore
+}
 
-	HistoryStore interface {
-		Open(dagFile string, t time.Time, requestId string) error
-		Write(st *model.Status) error
-		Close() error
-		Update(dagFile, requestId string, st *model.Status) error
-		ReadStatusRecent(dagFile string, n int) []*model.StatusFile
-		ReadStatusToday(dagFile string) (*model.Status, error)
-		FindByRequestId(dagFile string, requestId string) (*model.StatusFile, error)
-		RemoveAll(dagFile string) error
-		RemoveOld(dagFile string, retentionDays int) error
-		Rename(oldName, newName string) error
-	}
+type HistoryStore interface {
+	Open(dagFile string, t time.Time, requestID string) error
+	Write(status *model.Status) error
+	Close() error
+	Update(dagFile, requestID string, st *model.Status) error
+	ReadStatusRecent(dagFile string, n int) []*model.StatusFile
+	ReadStatusToday(dagFile string) (*model.Status, error)
+	FindByRequestID(dagFile string, requestID string) (*model.StatusFile, error)
+	RemoveAll(dagFile string) error
+	RemoveOld(dagFile string, retentionDays int) error
+	Rename(oldName, newName string) error
+}
 
-	DAGStore interface {
-		Create(name string, spec []byte) (string, error)
-		Delete(name string) error
-		List() (ret []*dag.DAG, errs []string, err error)
-		GetMetadata(name string) (*dag.DAG, error)
-		GetDetails(name string) (*dag.DAG, error)
-		Grep(pattern string) (ret []*GrepResult, errs []string, err error)
-		Load(name string) (*dag.DAG, error)
-		Rename(oldName, newName string) error
-		GetSpec(name string) (string, error)
-		UpdateSpec(name string, spec []byte) error
-	}
+type DAGStore interface {
+	Create(name string, spec []byte) (string, error)
+	Delete(name string) error
+	List() (ret []*dag.DAG, errs []string, err error)
+	ListPagination(params DAGListPaginationArgs) (*DagListPaginationResult, error)
+	GetMetadata(name string) (*dag.DAG, error)
+	GetDetails(name string) (*dag.DAG, error)
+	Grep(pattern string) (ret []*GrepResult, errs []string, err error)
+	Rename(oldID, newID string) error
+	GetSpec(name string) (string, error)
+	UpdateSpec(name string, spec []byte) error
+	Find(name string) (*dag.DAG, error)
+	TagList() ([]string, []string, error)
+}
 
-	FlagStore interface {
-		ToggleSuspend(id string, suspend bool) error
-		IsSuspended(id string) bool
-	}
+type DAGListPaginationArgs struct {
+	Page  int
+	Limit int
+	Name  *string
+	Tag   *string
+}
 
-	GrepResult struct {
-		Name    string
-		DAG     *dag.DAG
-		Matches []*grep.Match
-	}
+type DagListPaginationResult struct {
+	DagList   []*dag.DAG
+	Count     int
+	ErrorList []string
+}
 
-	DAGStatus struct {
-		File      string
-		Dir       string
-		DAG       *dag.DAG
-		Status    *model.Status
-		Suspended bool
-		Error     error
-		ErrorT    *string
-	}
-)
+type GrepResult struct {
+	Name    string
+	DAG     *dag.DAG
+	Matches []*grep.Match
+}
 
-func NewDAGStatus(d *dag.DAG, s *model.Status, suspended bool, err error) *DAGStatus {
-	ret := &DAGStatus{
-		File:      filepath.Base(d.Location),
-		Dir:       filepath.Dir(d.Location),
-		DAG:       d,
-		Status:    s,
-		Suspended: suspended,
-		Error:     err,
-	}
-	if err != nil {
-		errT := err.Error()
-		ret.ErrorT = &errT
-	}
-	return ret
+type FlagStore interface {
+	ToggleSuspend(id string, suspend bool) error
+	IsSuspended(id string) bool
 }

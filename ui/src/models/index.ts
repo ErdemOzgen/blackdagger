@@ -8,7 +8,6 @@ export enum SchedulerStatus {
   Cancel,
   Success,
   Skipped_Unused,
-  Warning,
 }
 
 export type Status = {
@@ -62,7 +61,7 @@ export type DAG = {
   HandlerOn: HandlerOn;
   Steps: Step[];
   HistRetentionDays: number;
-  Preconditions: Condition[];
+  Preconditions: Condition[] | null;
   MaxActiveRuns: number;
   Params: string[];
   DefaultParams?: string;
@@ -165,7 +164,6 @@ export enum NodeStatus {
   Cancel,
   Success,
   Skipped,
-  ValidSkip,
 }
 
 export type Node = {
@@ -201,7 +199,9 @@ export type Step = {
   RetryPolicy?: RetryPolicy;
   RepeatPolicy: RepeatPolicy;
   MailOnError: boolean;
-  Preconditions: Condition[];
+  Preconditions: Condition[] | null;
+  Run: string;
+  Params: string;
 };
 
 export type RetryPolicy = {

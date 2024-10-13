@@ -14,33 +14,62 @@ import (
 
 // Mailer is a mailer that sends emails.
 type Mailer struct {
-	*Config
+	host     string
+	port     string
+	username string
+	password string
 }
 
-// Config is a config for SMTP mailer.
-type Config struct {
+// NewMailerArgs is a config for SMTP mailer.
+type NewMailerArgs struct {
 	Host     string
 	Port     string
 	Username string
 	Password string
 }
 
+func New(cfg *NewMailerArgs) *Mailer {
+	return &Mailer{
+		host:     cfg.Host,
+		port:     cfg.Port,
+		username: cfg.Username,
+		password: cfg.Password,
+	}
+}
+
 var (
-	replacer = strings.NewReplacer("\r\n", "", "\r", "", "\n", "", "%0a", "", "%0d", "")
-	boundary = "==simple-boundary-blackdagger-mailer"
+	replacer = strings.NewReplacer(
+		"\r\n", "", "\r", "", "\n", "", "%0a", "", "%0d", "",
+	)
+	boundary     = "==simple-boundary-blackdagger-mailer"
+	errFileEmpty = errors.New("file is empty")
 )
 
 // SendMail sends an email.
-func (m *Mailer) SendMail(from string, to []string, subject, body string, attachments []string) error {
-	log.Printf("Sending an email to %s, subject is \"%s\"", strings.Join(to, ","), subject)
-	if m.Username == "" && m.Password == "" {
+func (m *Mailer) Send(
+	from string,
+	to []string,
+	subject, body string,
+	attachments []string,
+) error {
+	log.Printf(
+		"Sending an email to %s, subject is \"%s\"",
+		strings.Join(to, ","),
+		subject,
+	)
+	if m.username == "" && m.password == "" {
 		return m.sendWithNoAuth(from, to, subject, body, attachments)
 	}
 	return m.sendWithAuth(from, to, subject, body, attachments)
 }
 
-func (m *Mailer) sendWithNoAuth(from string, to []string, subject, body string, attachments []string) error {
-	c, err := smtp.Dial(m.Host + ":" + m.Port)
+func (m *Mailer) sendWithNoAuth(
+	from string,
+	to []string,
+	subject, body string,
+	attachments []string,
+) error {
+	c, err := smtp.Dial(m.host + ":" + m.port)
 	if err != nil {
 		return err
 	}
@@ -73,16 +102,23 @@ func (m *Mailer) sendWithNoAuth(from string, to []string, subject, body string, 
 	return c.Quit()
 }
 
-func (m *Mailer) sendWithAuth(from string, to []string, subject, body string, attachments []string) error {
-	auth := smtp.PlainAuth("", m.Username, m.Password, m.Host)
+func (m *Mailer) sendWithAuth(
+	from string,
+	to []string,
+	subject, body string,
+	attachments []string,
+) error {
+	auth := smtp.PlainAuth("", m.username, m.password, m.host)
 	body = newlineToBrTag(body)
 	return smtp.SendMail(
-		m.Host+":"+m.Port, auth, from, to,
+		m.host+":"+m.port, auth, from, to,
 		m.composeMail(to, from, subject, body, attachments),
 	)
 }
 
-func (m *Mailer) composeHeader(to []string, from string, subject string) string {
+func (*Mailer) composeHeader(
+	to []string, from string, subject string,
+) string {
 	return "To: " + strings.Join(to, ",") + "\r\n" +
 		"From: " + from + "\r\n" +
 		"Subject: " + subject + "\r\n" +
@@ -94,13 +130,17 @@ func (m *Mailer) composeHeader(to []string, from string, subject string) string 
 		"Content-Transfer-Encoding: base64\r\n"
 }
 
-func (m *Mailer) composeMail(to []string, from, subject, body string, attachments []string) (b []byte) {
+func (m *Mailer) composeMail(
+	to []string,
+	from, subject, body string,
+	attachments []string,
+) (b []byte) {
 	msg := m.composeHeader(to, from, subject) +
 		"\r\n" + base64.StdEncoding.EncodeToString([]byte(body))
 	b = joinBytes([]byte(msg), addAttachments(attachments))
 	b = joinBytes(b, []byte("\r\n\r\n--"+boundary+"--\r\n\r\n"))
 	b = joinBytes(b, []byte("\r\n\r\n"))
-	return
+	return b
 }
 
 func joinBytes(s ...[]byte) []byte {
@@ -117,7 +157,9 @@ func joinBytes(s ...[]byte) []byte {
 }
 
 func newlineToBrTag(body string) string {
-	return strings.NewReplacer(`\r\n`, "<br />", `\r`, "<br />", `\n`, "<br />").Replace(body)
+	return strings.NewReplacer(
+		`\r\n`, "<br />", `\r`, "<br />", `\n`, "<br />",
+	).Replace(body)
 }
 
 func addAttachments(attachments []string) []byte {
@@ -125,14 +167,17 @@ func addAttachments(attachments []string) []byte {
 	for _, fileName := range attachments {
 		data, err := readFile(fileName)
 		if err == nil {
-			buf.WriteString(fmt.Sprintf("\r\n\n--%s\r\n", boundary))
-			buf.WriteString("Content-Type: text/plain;" + "\r\n")
-			buf.WriteString("Content-Transfer-Encoding: base64" + "\r\n")
-			buf.WriteString("Content-Disposition: attachment; filename=" + filepath.Base(fileName) + "\r\n")
-			buf.WriteString("Content-Transfer-Encoding: base64\r\n\n")
+			_, _ = buf.WriteString(fmt.Sprintf("\r\n\n--%s\r\n", boundary))
+			_, _ = buf.WriteString("Content-Type: text/plain;" + "\r\n")
+			_, _ = buf.WriteString("Content-Transfer-Encoding: base64" + "\r\n")
+			_, _ = buf.WriteString(
+				"Content-Disposition: attachment; filename=" +
+					filepath.Base(fileName) + "\r\n",
+			)
+			_, _ = buf.WriteString("Content-Transfer-Encoding: base64\r\n\n")
 			b := make([]byte, base64.StdEncoding.EncodedLen(len(data)))
 			base64.StdEncoding.Encode(b, data)
-			buf.Write(b)
+			_, _ = buf.Write(b)
 		}
 	}
 	return buf.Bytes()
@@ -142,10 +187,10 @@ func readFile(fileName string) (data []byte, err error) {
 	data, err = os.ReadFile(fileName)
 	if err != nil {
 		return nil, err
-	} else {
-		if len(data) == 0 {
-			err = errors.New("file is empty")
-		}
 	}
-	return
+	if len(data) == 0 {
+		return nil, errFileEmpty
+	}
+
+	return data, nil
 }

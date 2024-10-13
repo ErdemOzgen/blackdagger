@@ -12,19 +12,7 @@ export const statusColorMapping: statusColorMapping = {
   [SchedulerStatus.Cancel]: { backgroundColor: 'pink' },
   [SchedulerStatus.Success]: { backgroundColor: 'green', color: 'white' },
   [SchedulerStatus.Skipped_Unused]: { backgroundColor: 'gray', color: 'white' },
-  [SchedulerStatus.Warning]: { backgroundColor: 'orange', color: 'white' },
 };
-
-
-// export const nodeStatusColorMapping = {
-//   [NodeStatus.None]: statusColorMapping[SchedulerStatus.None],
-//   [NodeStatus.Running]: statusColorMapping[SchedulerStatus.Running],
-//   [NodeStatus.Error]: statusColorMapping[SchedulerStatus.Error],
-//   [NodeStatus.Cancel]: statusColorMapping[SchedulerStatus.Cancel],
-//   [NodeStatus.Success]: statusColorMapping[SchedulerStatus.Success],
-//   [NodeStatus.Skipped]: statusColorMapping[SchedulerStatus.Skipped_Unused],
-// };
-
 
 export const nodeStatusColorMapping = {
   [NodeStatus.None]: statusColorMapping[SchedulerStatus.None],
@@ -33,7 +21,6 @@ export const nodeStatusColorMapping = {
   [NodeStatus.Cancel]: statusColorMapping[SchedulerStatus.Cancel],
   [NodeStatus.Success]: statusColorMapping[SchedulerStatus.Success],
   [NodeStatus.Skipped]: statusColorMapping[SchedulerStatus.Skipped_Unused],
-  [NodeStatus.ValidSkip]: statusColorMapping[SchedulerStatus.Warning],
 };
 
 export const stepTabColStyles = [

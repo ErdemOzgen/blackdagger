@@ -1,39 +1,41 @@
 package cmd
 
 import (
-	"github.com/ErdemOzgen/blackdagger/internal/scheduler"
-	"os"
 	"testing"
-	"time"
+
+	"github.com/ErdemOzgen/blackdagger/internal/dag/scheduler"
+	"github.com/ErdemOzgen/blackdagger/internal/test"
 )
 
 func TestStatusCommand(t *testing.T) {
-	tmpDir, _, df := setupTest(t)
-	defer func() {
-		_ = os.RemoveAll(tmpDir)
-	}()
+	t.Run("StatusDAG", func(t *testing.T) {
+		setup := test.SetupTest(t)
+		defer setup.Cleanup()
 
-	dagFile := testDAGFile("status.yaml")
+		dagFile := testDAGFile("long.yaml")
 
-	// Start the DAG.
-	done := make(chan struct{})
-	go func() {
-		testRunCommand(t, startCmd(), cmdTest{args: []string{"start", dagFile}})
-		close(done)
-	}()
+		// Start the DAG.
+		done := make(chan struct{})
+		go func() {
+			testRunCommand(t, startCmd(), cmdTest{args: []string{"start", dagFile}})
+			close(done)
+		}()
 
-	time.Sleep(time.Millisecond * 50)
+		testLastStatusEventual(
+			t,
+			setup.DataStore().HistoryStore(),
+			dagFile,
+			scheduler.StatusRunning,
+		)
 
-	// TODO: do not use history store directly.
-	testLastStatusEventual(t, df.NewHistoryStore(), dagFile, scheduler.SchedulerStatus_Running)
+		// Check the current status.
+		testRunCommand(t, statusCmd(), cmdTest{
+			args:        []string{"status", dagFile},
+			expectedOut: []string{"Status=running"},
+		})
 
-	// Check the current status.
-	testRunCommand(t, createStatusCommand(), cmdTest{
-		args:        []string{"status", dagFile},
-		expectedOut: []string{"Status=running"},
+		// Stop the DAG.
+		testRunCommand(t, stopCmd(), cmdTest{args: []string{"stop", dagFile}})
+		<-done
 	})
-
-	// Stop the DAG.
-	testRunCommand(t, stopCmd(), cmdTest{args: []string{"stop", dagFile}})
-	<-done
 }
