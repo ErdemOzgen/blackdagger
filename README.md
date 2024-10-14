@@ -19,6 +19,9 @@
   <a href="https://hub.docker.com/r/erdemozgen/blackdagger">
     <img src="https://img.shields.io/docker/v/erdemozgen/blackdagger?label=docker&logo=docker" />
   </a>
+  <a href="https://www.blackhat.com/us-24/arsenal/schedule/index.html#blackdagger-39274">
+    <img src="https://github.com/toolswatch/badges/blob/master/arsenal/usa/2024.svg" />
+  </a>
 </p>
 
 <div align="center">
