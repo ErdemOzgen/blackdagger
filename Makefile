@@ -4,7 +4,7 @@
 # Arguments
 ##############################################################################
 
-VERSION=
+VERSION=1.0.6
 
 ##############################################################################
 # Variables
@@ -22,7 +22,7 @@ CONFIG_DIR=$(SCRIPT_DIR)/config
 
 # Local build settings
 BIN_DIR=$(SCRIPT_DIR)/bin
-BUILD_VERSION=$(shell date +'%y%m%d%H%M%S')
+BUILD_VERSION=1.0.6
 LDFLAGS=-X 'main.version=$(BUILD_VERSION)'
 
 # Application name
@@ -30,7 +30,7 @@ APP_NAME=blackdagger
 
 # Docker image build configuration
 
-VERSION=1.0.4
+VERSION=1.0.6
 
 DOCKER_USERNAME=erdemozgen
 IMAGE_NAME=blackdagger
