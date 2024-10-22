@@ -39,8 +39,10 @@ func startAllCmd() *cobra.Command {
 			dataStore := newDataStores(cfg)
 			cli := newClient(cfg, dataStore, logger)
 
-			pullDagList := []string{"default"}
-			Pulldags(pullDagList)
+			/*
+				pullDagList := []string{"default"}
+				Pulldags(pullDagList)
+			*/
 
 			go func() {
 				logger.Info("Scheduler initialization", "dags", cfg.DAGs)
