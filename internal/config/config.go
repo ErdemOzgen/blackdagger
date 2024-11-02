@@ -123,7 +123,7 @@ func setupViper() error {
 	viper.SetDefault("logDir", r.logsDir)
 	viper.SetDefault("adminLogsDir", r.adminLogsDir)
 	viper.SetDefault("baseConfig", r.baseConfigFile)
-
+	viper.SetDefault("latestStatusToday", true)
 	// Logging configurations
 	viper.SetDefault("logLevel", "info")
 	viper.SetDefault("logFormat", "text")

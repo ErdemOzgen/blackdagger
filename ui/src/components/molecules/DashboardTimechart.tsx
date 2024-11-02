@@ -6,13 +6,15 @@ import {
   BarChart,
   Cell,
   LabelList,
+  LabelProps,
   ResponsiveContainer,
   XAxis,
   YAxis,
 } from 'recharts';
 import { statusColorMapping } from '../../consts';
-import { DAGStatus, SchedulerStatus, Status } from '../../models';
-import { WorkflowListItem,WorkflowStatus } from '../../models/api';
+import { DAGStatus } from '../../models';
+import { SchedulerStatus } from '../../models';
+import { WorkflowListItem } from '../../models/api';
 
 type Props = { data: DAGStatus[] | WorkflowListItem[] };
 
@@ -25,22 +27,30 @@ type DataFrame = {
 function DashboardTimechart({ data: input }: Props) {
   const [data, setData] = React.useState<DataFrame[]>([]);
   React.useEffect(() => {
-    const transformedData: DataFrame[] = input.map((dagStatus) => {
-      const status: Status | WorkflowStatus | undefined = dagStatus.Status;
-      if (!status || status.StartedAt === '-' || !status.FinishedAt) {
-        return null;
+    const ret: DataFrame[] = [];
+    const now = moment();
+    const startOfDayUnix = moment().startOf('day').unix();
+    input.forEach((wf) => {
+      const status = wf.Status;
+      const start = status?.StartedAt;
+      if (start && start != '-') {
+        const startUnix = Math.max(moment(start).unix(), startOfDayUnix);
+        const end = status.FinishedAt;
+        let to = now.unix();
+        if (end && end != '-') {
+          to = moment(end).unix();
+        }
+        ret.push({
+          name: status.Name,
+          status: status.Status,
+          values: [startUnix, to],
+        });
       }
-      const startUnix = Math.max(moment(status.StartedAt).unix(), moment().startOf('day').unix());
-      const endUnix = status.FinishedAt && status.FinishedAt !== '-' ? moment(status.FinishedAt).unix() : moment().unix();
-
-      return {
-        name: status.Name,
-        status: status.Status,
-        values: [startUnix, endUnix],
-      };
-    }).filter((item): item is DataFrame => item !== null);
-
-    setData(transformedData.sort((a, b) => a.values[0] - b.values[0]));
+    });
+    const sorted = ret.sort((a, b) => {
+      return a.values[0] < b.values[0] ? -1 : 1;
+    });
+    setData(sorted);
   }, [input]);
 
   const now = moment();
