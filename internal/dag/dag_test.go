@@ -1,57 +1,42 @@
 package dag
 
 import (
-	"os"
-	"path"
+	"path/filepath"
 	"testing"
 
-	"github.com/ErdemOzgen/blackdagger/internal/config"
-	"github.com/ErdemOzgen/blackdagger/internal/utils"
+	"github.com/ErdemOzgen/blackdagger/internal/util"
 	"github.com/stretchr/testify/require"
 )
 
 var (
-	testdataDir = path.Join(utils.MustGetwd(), "testdata")
-	testHomeDir = path.Join(utils.MustGetwd(), "testdata/home")
+	testdataDir = filepath.Join(util.MustGetwd(), "testdata")
 )
 
-func TestMain(m *testing.M) {
-	changeHomeDir(testHomeDir)
-	code := m.Run()
-	os.Exit(code)
+func TestDAG_String(t *testing.T) {
+	t.Run("DefaltConfig", func(t *testing.T) {
+		dg, err := Load("", filepath.Join(testdataDir, "default.yaml"), "")
+		require.NoError(t, err)
+
+		ret := dg.String()
+		require.Contains(t, ret, "Name: default")
+	})
 }
 
-func changeHomeDir(homeDir string) {
-	_ = os.Setenv("HOME", homeDir)
-	_ = config.LoadConfig()
-}
-
-func TestToString(t *testing.T) {
-	l := &Loader{}
-
-	d, err := l.Load(path.Join(testdataDir, "default.yaml"), "")
-	require.NoError(t, err)
-
-	ret := d.String()
-	require.Contains(t, ret, "Name: default")
-}
-
-func TestReadingFile(t *testing.T) {
-	tmpDir := utils.MustTempDir("read-config-test")
-	defer func() {
-		_ = os.RemoveAll(tmpDir)
-	}()
-
-	tmpFile := path.Join(tmpDir, "DAG.yaml")
-	input := `
-steps:
-  - name: step 1
-    command: echo test
-`
-	err := os.WriteFile(tmpFile, []byte(input), 0644)
-	require.NoError(t, err)
-
-	ret, err := ReadFile(tmpFile)
-	require.NoError(t, err)
-	require.Equal(t, input, ret)
+func TestDAG_SockAddr(t *testing.T) {
+	t.Run("UnixSocketLocation", func(t *testing.T) {
+		workflow := &DAG{Location: "testdata/testDag.yml"}
+		require.Regexp(t, `^/tmp/@blackdagger-testDag-[0-9a-f]+\.sock$`, workflow.SockAddr())
+	})
+	t.Run("MaxUnixSocketLength", func(t *testing.T) {
+		workflow := &DAG{
+			Location: "testdata/testDagVeryLongNameThatExceedsUnixSocketLengthMaximum-testDagVeryLongNameThatExceedsUnixSocketLengthMaximum.yml",
+		}
+		// 108 is the maximum length of a unix socket address
+		require.Greater(t, 108, len(workflow.SockAddr()))
+		require.Equal(
+			t,
+			"/tmp/@blackdagger-testDagVeryLongNameThatExceedsUnixSocketLengthMax-b92b711162d6012f025a76d0cf0b40c2.sock",
+			workflow.SockAddr(),
+		)
+	})
 }

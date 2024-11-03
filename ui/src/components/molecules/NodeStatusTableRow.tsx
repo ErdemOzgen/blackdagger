@@ -22,7 +22,7 @@ function NodeStatusTableRow({
   file,
   onRequireModal,
 }: Props) {
-  const url = `/dags/${name}/log?file=${file}&step=${node.Step.Name}`;
+  const url = `/dags/${name}/log?file=${file}&step=${encodeURIComponent(node.Step.Name)}`;
   const buttonStyle = {
     margin: '0px',
     padding: '0px',
@@ -30,6 +30,11 @@ function NodeStatusTableRow({
     background: 'none',
     outline: 'none',
   };
+  let args = '';
+  if (node.Step.Args) {
+    // Use uninterpolated args to avoid render issues with very long params
+    args = node.Step.CmdWithArgs.replace(node.Step.Command, '').trimStart();
+  }
   return (
     <StyledTableRow>
       <TableCell> {rownum} </TableCell>
@@ -38,7 +43,7 @@ function NodeStatusTableRow({
         <MultilineText>{node.Step.Description}</MultilineText>
       </TableCell>
       <TableCell> {node.Step.Command} </TableCell>
-      <TableCell> {node.Step.Args ? node.Step.Args.join(' ') : ''} </TableCell>
+      <TableCell> {args} </TableCell>
       <TableCell> {node.StartedAt} </TableCell>
       <TableCell> {node.FinishedAt} </TableCell>
       <TableCell>

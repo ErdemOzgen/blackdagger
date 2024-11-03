@@ -2,35 +2,36 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"testing"
 
-	"github.com/ErdemOzgen/blackdagger/internal/scheduler"
+	"github.com/ErdemOzgen/blackdagger/internal/dag/scheduler"
+	"github.com/ErdemOzgen/blackdagger/internal/test"
 	"github.com/stretchr/testify/require"
 )
 
 func TestRetryCommand(t *testing.T) {
-	tmpDir, e, _ := setupTest(t)
-	defer func() {
-		_ = os.RemoveAll(tmpDir)
-	}()
+	t.Run("RetryDAG", func(t *testing.T) {
+		setup := test.SetupTest(t)
+		defer setup.Cleanup()
 
-	dagFile := testDAGFile("retry.yaml")
+		dagFile := testDAGFile("retry.yaml")
 
-	// Run a DAG.
-	testRunCommand(t, startCmd(), cmdTest{args: []string{"start", `--params="foo"`, dagFile}})
+		// Run a DAG.
+		testRunCommand(t, startCmd(), cmdTest{args: []string{"start", `--params="foo"`, dagFile}})
 
-	// Find the request ID.
-	s, err := e.GetStatus(dagFile)
-	require.NoError(t, err)
-	require.Equal(t, s.Status.Status, scheduler.StatusSuccess)
-	require.NotNil(t, s.Status)
+		// Find the request ID.
+		cli := setup.Client()
+		status, err := cli.GetStatus(dagFile)
+		require.NoError(t, err)
+		require.Equal(t, status.Status.Status, scheduler.StatusSuccess)
+		require.NotNil(t, status.Status)
 
-	reqID := s.Status.RequestId
+		requestID := status.Status.RequestID
 
-	// Retry with the request ID.
-	testRunCommand(t, retryCmd(), cmdTest{
-		args:        []string{"retry", fmt.Sprintf("--req=%s", reqID), dagFile},
-		expectedOut: []string{"param is foo"},
+		// Retry with the request ID.
+		testRunCommand(t, retryCmd(), cmdTest{
+			args:        []string{"retry", fmt.Sprintf("--req=%s", requestID), dagFile},
+			expectedOut: []string{"param is foo"},
+		})
 	})
 }

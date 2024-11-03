@@ -1,23 +1,24 @@
 package cmd
 
 import (
-	"os"
 	"testing"
 	"time"
+
+	"github.com/ErdemOzgen/blackdagger/internal/test"
 )
 
 func TestSchedulerCommand(t *testing.T) {
-	tmpDir, _, _ := setupTest(t)
-	defer func() {
-		_ = os.RemoveAll(tmpDir)
-	}()
+	t.Run("StartScheduler", func(t *testing.T) {
+		setup := test.SetupTest(t)
+		defer setup.Cleanup()
 
-	go func() {
-		testRunCommand(t, schedulerCmd(), cmdTest{
-			args:        []string{"scheduler"},
-			expectedOut: []string{"starting blackdagger scheduler"},
-		})
-	}()
+		go func() {
+			testRunCommand(t, schedulerCmd(), cmdTest{
+				args:        []string{"scheduler"},
+				expectedOut: []string{"starting blackdagger scheduler"},
+			})
+		}()
 
-	time.Sleep(time.Millisecond * 500)
+		time.Sleep(time.Millisecond * 500)
+	})
 }

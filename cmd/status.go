@@ -4,33 +4,43 @@ import (
 	"log"
 
 	"github.com/ErdemOzgen/blackdagger/internal/config"
-	"github.com/ErdemOzgen/blackdagger/internal/engine"
-	"github.com/ErdemOzgen/blackdagger/internal/persistence/client"
-	"github.com/ErdemOzgen/blackdagger/internal/persistence/model"
+	"github.com/ErdemOzgen/blackdagger/internal/dag"
+	"github.com/ErdemOzgen/blackdagger/internal/logger"
 	"github.com/spf13/cobra"
 )
 
 func statusCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "status <DAG file>",
+		Use:   "status /path/to/spec.yaml",
 		Short: "Display current status of the DAG",
-		Long:  `blackdagger status <DAG file>`,
+		Long:  `blackdagger status /path/to/spec.yaml`,
 		Args:  cobra.ExactArgs(1),
-		PreRun: func(cmd *cobra.Command, args []string) {
-			cobra.CheckErr(config.LoadConfig())
-		},
-		Run: func(cmd *cobra.Command, args []string) {
-			loadedDAG, err := loadDAG(args[0], "")
-			checkError(err)
+		Run: func(_ *cobra.Command, args []string) {
+			cfg, err := config.Load()
+			if err != nil {
+				log.Fatalf("Configuration load failed: %v", err)
+			}
+			logger := logger.NewLogger(logger.NewLoggerArgs{
+				Debug:  cfg.Debug,
+				Format: cfg.LogFormat,
+			})
 
-			df := client.NewDataStoreFactory(config.Get())
-			e := engine.NewFactory(df, config.Get()).Create()
+			// Load the DAG file and get the current running status.
+			workflow, err := dag.Load(cfg.BaseConfig, args[0], "")
+			if err != nil {
+				logger.Fatal("Workflow load failed", "error", err, "file", args[0])
+			}
 
-			status, err := e.GetCurrentStatus(loadedDAG)
-			checkError(err)
+			dataStore := newDataStores(cfg)
+			cli := newClient(cfg, dataStore, logger)
 
-			res := &model.StatusResponse{Status: status}
-			log.Printf("Pid=%d Status=%s", res.Status.Pid, res.Status.Status)
+			curStatus, err := cli.GetCurrentStatus(workflow)
+
+			if err != nil {
+				logger.Fatal("Current status retrieval failed", "error", err)
+			}
+
+			logger.Info("Current status", "pid", curStatus.PID, "status", curStatus.Status)
 		},
 	}
 }

@@ -1,13 +1,9 @@
-/*
-Copyright © 2024 Mahmut Erdem Ozgen
-Forked from Dagu-dev
-*/
 package main
 
 import (
 	"os"
 
-	cmd "github.com/ErdemOzgen/blackdagger/cmd"
+	"github.com/ErdemOzgen/blackdagger/cmd"
 	"github.com/ErdemOzgen/blackdagger/internal/constants"
 )
 

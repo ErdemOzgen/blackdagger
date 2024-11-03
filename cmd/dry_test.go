@@ -1,23 +1,25 @@
 package cmd
 
 import (
-	"os"
 	"testing"
+
+	"github.com/ErdemOzgen/blackdagger/internal/test"
 )
 
 func TestDryCommand(t *testing.T) {
-	tmpDir, _, _ := setupTest(t)
-	defer func() {
-		_ = os.RemoveAll(tmpDir)
-	}()
+	t.Run("DryRun", func(t *testing.T) {
+		setup := test.SetupTest(t)
+		defer setup.Cleanup()
 
-	tests := []cmdTest{
-		{
-			args:        []string{"dry", testDAGFile("dry.yaml")},
-			expectedOut: []string{"Starting DRY-RUN"},
-		},
-	}
-	for _, tc := range tests {
-		testRunCommand(t, dryCmd(), tc)
-	}
+		tests := []cmdTest{
+			{
+				args:        []string{"dry", testDAGFile("success.yaml")},
+				expectedOut: []string{"Starting DRY-RUN"},
+			},
+		}
+
+		for _, tc := range tests {
+			testRunCommand(t, dryCmd(), tc)
+		}
+	})
 }

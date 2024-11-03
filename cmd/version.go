@@ -24,10 +24,11 @@ func versionCmd() *cobra.Command {
 		Short: "Display the binary version",
 		Long:  `blackdagger version`,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			cobra.CheckErr(config.LoadConfig())
+			_, err := config.Load()
+			cobra.CheckErr(err)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Print(AsciiArt)
+			fmt.Println(AsciiArt)
 			fmt.Println(constants.Version)
 		},
 	}

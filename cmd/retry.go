@@ -1,47 +1,122 @@
 package cmd
 
 import (
+	"log"
+	"os"
 	"path/filepath"
 
 	"github.com/ErdemOzgen/blackdagger/internal/agent"
 	"github.com/ErdemOzgen/blackdagger/internal/config"
-	"github.com/ErdemOzgen/blackdagger/internal/engine"
-	"github.com/ErdemOzgen/blackdagger/internal/persistence/client"
+	"github.com/ErdemOzgen/blackdagger/internal/dag"
+	"github.com/ErdemOzgen/blackdagger/internal/logger"
 	"github.com/spf13/cobra"
 )
 
 func retryCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "retry --req=<request-id> <DAG file>",
+		Use:   "retry --req=<request-id> /path/to/spec.yaml",
 		Short: "Retry the DAG execution",
-		Long:  `blackdagger retry --req=<request-id> <DAG file>`,
+		Long:  `blackdagger retry --req=<request-id> /path/to/spec.yaml`,
 		Args:  cobra.ExactArgs(1),
-		PreRun: func(cmd *cobra.Command, args []string) {
-			cobra.CheckErr(config.LoadConfig())
-		},
 		Run: func(cmd *cobra.Command, args []string) {
-			f, _ := filepath.Abs(args[0])
-			reqID, err := cmd.Flags().GetString("req")
-			checkError(err)
+			cfg, err := config.Load()
+			if err != nil {
+				log.Fatalf("Configuration load failed: %v", err)
+			}
+			initLogger := logger.NewLogger(logger.NewLoggerArgs{
+				Debug:  cfg.Debug,
+				Format: cfg.LogFormat,
+			})
 
-			// TODO: use engine.Engine instead of client.DataStoreFactory
-			df := client.NewDataStoreFactory(config.Get())
-			e := engine.NewFactory(df, config.Get()).Create()
+			requestID, err := cmd.Flags().GetString("req")
+			if err != nil {
+				initLogger.Error("Request ID generation failed", "error", err)
+				os.Exit(1)
+			}
 
-			hs := df.NewHistoryStore()
+			// Read the specified DAG execution status from the history store.
+			dataStore := newDataStores(cfg)
+			historyStore := dataStore.HistoryStore()
 
-			status, err := hs.FindByRequestId(f, reqID)
-			checkError(err)
+			specFilePath := args[0]
+			absoluteFilePath, err := filepath.Abs(specFilePath)
+			if err != nil {
+				initLogger.Fatal("Absolute path resolution failed",
+					"error", err,
+					"file", specFilePath)
+			}
 
-			loadedDAG, err := loadDAG(args[0], status.Status.Params)
-			checkError(err)
+			status, err := historyStore.FindByRequestID(absoluteFilePath, requestID)
+			if err != nil {
+				initLogger.Fatal("Historical execution retrieval failed",
+					"error", err,
+					"requestID", requestID,
+					"file", absoluteFilePath)
+			}
 
-			a := agent.New(&agent.Config{DAG: loadedDAG, RetryTarget: status.Status}, e, df)
+			// Start the DAG with the same parameters with the execution that
+			// is being retried.
+			workflow, err := dag.Load(cfg.BaseConfig, absoluteFilePath, status.Status.Params)
+			if err != nil {
+				initLogger.Fatal("Workflow specification load failed",
+					"error", err,
+					"file", specFilePath,
+					"params", status.Status.Params)
+			}
+
+			newRequestID, err := generateRequestID()
+			if err != nil {
+				initLogger.Fatal("Request ID generation failed", "error", err)
+			}
+
+			logFile, err := logger.OpenLogFile(logger.LogFileConfig{
+				Prefix:    "retry_",
+				LogDir:    cfg.LogDir,
+				DAGLogDir: workflow.LogDir,
+				DAGName:   workflow.Name,
+				RequestID: newRequestID,
+			})
+			if err != nil {
+				initLogger.Fatal("Log file creation failed",
+					"error", err,
+					"workflow", workflow.Name)
+			}
+			defer logFile.Close()
+
+			agentLogger := logger.NewLogger(logger.NewLoggerArgs{
+				Debug:   cfg.Debug,
+				Format:  cfg.LogFormat,
+				LogFile: logFile,
+			})
+
+			cli := newClient(cfg, dataStore, agentLogger)
+
+			agentLogger.Info("Workflow retry initiated",
+				"workflow", workflow.Name,
+				"originalRequestID", requestID,
+				"newRequestID", newRequestID,
+				"logFile", logFile.Name())
+
+			agt := agent.New(
+				newRequestID,
+				workflow,
+				agentLogger,
+				filepath.Dir(logFile.Name()),
+				logFile.Name(),
+				cli,
+				dataStore,
+				&agent.Options{RetryTarget: status.Status},
+			)
+
 			ctx := cmd.Context()
-			listenSignals(ctx, a)
-			checkError(a.Run(ctx))
+			listenSignals(ctx, agt)
+
+			if err := agt.Run(ctx); err != nil {
+				agentLogger.Fatal("Failed to start workflow", "error", err)
+			}
 		},
 	}
+
 	cmd.Flags().StringP("req", "r", "", "request-id")
 	_ = cmd.MarkFlagRequired("req")
 	return cmd
