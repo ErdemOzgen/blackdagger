@@ -1,118 +1,123 @@
 package dag
 
 import (
-	"path"
-	"strings"
+	"path/filepath"
 	"testing"
 	"time"
 
-	"github.com/ErdemOzgen/blackdagger/internal/config"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestLoadingFile(t *testing.T) {
-	l := &Loader{}
-	f := path.Join(testdataDir, "loader_test.yaml")
-	d, err := l.Load(f, "")
-	require.NoError(t, err)
-	require.Equal(t, f, d.Location)
-
-	// without .yaml
-	d, err = l.Load(path.Join(testdataDir, "loader_test"), "")
-	require.NoError(t, err)
-	require.Equal(t, f, d.Location)
-}
-
-func TestLoaingErrors(t *testing.T) {
-
+func Test_Load(t *testing.T) {
 	tests := []struct {
-		file          string
-		expectedError string
+		name             string
+		file             string
+		expectedError    string
+		expectedLocation string
 	}{
 		{
-			file:          path.Join(testdataDir, "not_existing_file.yaml"),
+			name:             "WithExt",
+			file:             filepath.Join(testdataDir, "loader_test.yaml"),
+			expectedLocation: filepath.Join(testdataDir, "loader_test.yaml"),
+		},
+		{
+			name:             "WithoutExt",
+			file:             filepath.Join(testdataDir, "loader_test"),
+			expectedLocation: filepath.Join(testdataDir, "loader_test.yaml"),
+		},
+		{
+			name:          "InvalidPath",
+			file:          filepath.Join(testdataDir, "not_existing_file.yaml"),
 			expectedError: "no such file or directory",
 		},
 		{
-			file:          path.Join(testdataDir, "err_decode.yaml"),
+			name:          "InvalidDAG",
+			file:          filepath.Join(testdataDir, "err_decode.yaml"),
 			expectedError: "has invalid keys: invalidkey",
 		},
 		{
-			file:          path.Join(testdataDir, "err_parse.yaml"),
+			name:          "InvalidYAML",
+			file:          filepath.Join(testdataDir, "err_parse.yaml"),
 			expectedError: "cannot unmarshal",
 		},
 	}
-
-	for i, tt := range tests {
-		l := &Loader{}
-		_, err := l.Load(tt.file, "")
-		require.Error(t, err)
-
-		if !strings.Contains(err.Error(), tt.expectedError) {
-			t.Errorf("test %d: expected error %q, got %q", i, tt.expectedError, err.Error())
-		}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			dg, err := Load("", tt.file, "")
+			if tt.expectedError != "" {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), tt.expectedError)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expectedLocation, dg.Location)
+			}
+		})
 	}
 }
 
-func TestLoadingHeadlineOnly(t *testing.T) {
-	l := &Loader{}
+func Test_LoadMetadata(t *testing.T) {
+	t.Run("Metadata", func(t *testing.T) {
+		dg, err := LoadMetadata(filepath.Join(testdataDir, "default.yaml"))
+		require.NoError(t, err)
 
-	d, err := l.LoadMetadata(path.Join(testdataDir, "default.yaml"))
-	require.NoError(t, err)
-
-	require.Equal(t, d.Name, "default")
-	require.True(t, len(d.Steps) == 0)
+		require.Equal(t, dg.Name, "default")
+		// Check if steps are empty since we are loading metadata only
+		require.True(t, len(dg.Steps) == 0)
+	})
 }
 
-func TestCloning(t *testing.T) {
-	l := &Loader{}
-
-	d, err := l.Load(path.Join(testdataDir, "default.yaml"), "")
-	require.NoError(t, err)
-
-	cloned := d.Clone()
-	require.Equal(t, d, cloned)
+func Test_loadBaseConfig(t *testing.T) {
+	t.Run("LoadBaseConfigFile", func(t *testing.T) {
+		dg, err := loadBaseConfig(filepath.Join(testdataDir, "base.yaml"), buildOpts{})
+		require.NotNil(t, dg)
+		require.NoError(t, err)
+	})
 }
 
-func TestLoadingBaseConfig(t *testing.T) {
-	l := &Loader{}
-	d, err := l.loadBaseConfig(config.Get().BaseConfig, &BuildDAGOptions{})
-	require.NotNil(t, d)
-	require.NoError(t, err)
+func Test_LoadDefaultConfig(t *testing.T) {
+	t.Run("DefaultConfigWithoutBaseConfig", func(t *testing.T) {
+		file := filepath.Join(testdataDir, "default.yaml")
+		dg, err := Load("", file, "")
+
+		require.NoError(t, err)
+
+		// Check if the default values are set correctly
+		assert.Equal(t, "", dg.LogDir)
+		assert.Equal(t, file, dg.Location)
+		assert.Equal(t, "default", dg.Name)
+		assert.Equal(t, time.Second*60, dg.MaxCleanUpTime)
+		assert.Equal(t, 30, dg.HistRetentionDays)
+
+		// Check if the steps are loaded correctly
+		require.Len(t, dg.Steps, 1)
+		assert.Equal(t, "1", dg.Steps[0].Name, "1")
+		assert.Equal(t, "true", dg.Steps[0].Command, "true")
+		assert.Equal(t, filepath.Dir(file), dg.Steps[0].Dir)
+	})
 }
 
-func TestLoadingDeafultValues(t *testing.T) {
-	l := &Loader{}
-	d, err := l.Load(path.Join(testdataDir, "default.yaml"), "")
-	require.NoError(t, err)
-
-	require.Equal(t, time.Second*60, d.MaxCleanUpTime)
-	require.Equal(t, 30, d.HistRetentionDays)
-}
-
-func TestLoadingFromMemory(t *testing.T) {
-	dat := `
+const (
+	testDAG = `
 name: test DAG
 steps:
   - name: "1"
     command: "true"
 `
-	l := &Loader{}
-	ret, err := l.LoadData([]byte(dat))
-	require.NoError(t, err)
-	require.Equal(t, ret.Name, "test DAG")
+)
 
-	step := ret.Steps[0]
-	require.Equal(t, step.Name, "1")
-	require.Equal(t, step.Command, "true")
+func Test_LoadYAML(t *testing.T) {
+	t.Run("ValidYAMLData", func(t *testing.T) {
+		ret, err := loadYAML([]byte(testDAG), buildOpts{})
+		require.NoError(t, err)
+		require.Equal(t, ret.Name, "test DAG")
 
-	// error
-	dat = `invalidyaml`
-	_, err = l.LoadData([]byte(dat))
-	require.Error(t, err)
-
-	// error
-	dat = `invalidkey: test DAG`
-	_, err = l.LoadData([]byte(dat))
-	require.Error(t, err)
+		step := ret.Steps[0]
+		require.Equal(t, step.Name, "1")
+		require.Equal(t, step.Command, "true")
+	})
+	t.Run("InvalidYAMLData", func(t *testing.T) {
+		_, err := loadYAML([]byte(`invalidyaml`), buildOpts{})
+		require.Error(t, err)
+	})
 }

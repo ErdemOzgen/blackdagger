@@ -3,31 +3,48 @@ package client
 import (
 	"os"
 
-	"github.com/ErdemOzgen/blackdagger/internal/config"
 	"github.com/ErdemOzgen/blackdagger/internal/persistence"
 	"github.com/ErdemOzgen/blackdagger/internal/persistence/jsondb"
 	"github.com/ErdemOzgen/blackdagger/internal/persistence/local"
 	"github.com/ErdemOzgen/blackdagger/internal/persistence/local/storage"
 )
 
-type dataStoreFactoryImpl struct {
-	cfg *config.Config
+var _ persistence.DataStores = (*dataStores)(nil)
+
+type dataStores struct {
+	historyStore persistence.HistoryStore
+	dagStore     persistence.DAGStore
+
+	dags              string
+	dataDir           string
+	suspendFlagsDir   string
+	latestStatusToday bool
 }
 
-var _ persistence.DataStoreFactory = (*dataStoreFactoryImpl)(nil)
+type DataStoreOptions struct {
+	LatestStatusToday bool
+}
 
-func NewDataStoreFactory(cfg *config.Config) persistence.DataStoreFactory {
-	ds := &dataStoreFactoryImpl{
-		cfg: cfg,
+func NewDataStores(
+	dags string,
+	dataDir string,
+	suspendFlagsDir string,
+	opts DataStoreOptions,
+) persistence.DataStores {
+	dataStoreImpl := &dataStores{
+		dags:              dags,
+		dataDir:           dataDir,
+		suspendFlagsDir:   suspendFlagsDir,
+		latestStatusToday: opts.LatestStatusToday,
 	}
-	_ = ds.InitDagDir()
-	return ds
+	_ = dataStoreImpl.InitDagDir()
+	return dataStoreImpl
 }
 
-func (f dataStoreFactoryImpl) InitDagDir() error {
-	_, err := os.Stat(f.cfg.DAGs)
+func (f *dataStores) InitDagDir() error {
+	_, err := os.Stat(f.dags)
 	if os.IsNotExist(err) {
-		if err := os.MkdirAll(f.cfg.DAGs, 0755); err != nil {
+		if err := os.MkdirAll(f.dags, 0755); err != nil {
 			return err
 		}
 	}
@@ -35,16 +52,22 @@ func (f dataStoreFactoryImpl) InitDagDir() error {
 	return nil
 }
 
-func (f dataStoreFactoryImpl) NewHistoryStore() persistence.HistoryStore {
+func (f *dataStores) HistoryStore() persistence.HistoryStore {
 	// TODO: Add support for other data stores (e.g. sqlite, postgres, etc.)
-	return jsondb.New(f.cfg.DataDir, f.cfg.DAGs)
+	if f.historyStore == nil {
+		f.historyStore = jsondb.New(
+			f.dataDir, f.latestStatusToday)
+	}
+	return f.historyStore
 }
 
-func (f dataStoreFactoryImpl) NewDAGStore() persistence.DAGStore {
-	return local.NewDAGStore(f.cfg.DAGs)
+func (f *dataStores) DAGStore() persistence.DAGStore {
+	if f.dagStore == nil {
+		f.dagStore = local.NewDAGStore(&local.NewDAGStoreArgs{Dir: f.dags})
+	}
+	return f.dagStore
 }
 
-func (f dataStoreFactoryImpl) NewFlagStore() persistence.FlagStore {
-	s := storage.NewStorage(f.cfg.SuspendFlagsDir)
-	return local.NewFlagStore(s)
+func (f *dataStores) FlagStore() persistence.FlagStore {
+	return local.NewFlagStore(storage.NewStorage(f.suspendFlagsDir))
 }

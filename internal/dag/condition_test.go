@@ -7,27 +7,23 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCondition(t *testing.T) {
-	{
-		c := &Condition{Condition: "`echo 1`", Expected: "1"}
-		err := EvalCondition(c)
-		require.NoError(t, err)
-	}
-	{
-		_ = os.Setenv("TEST_CONDITION", "100")
-		c := &Condition{Condition: "${TEST_CONDITION}", Expected: "100"}
-		err := EvalCondition(c)
-		require.NoError(t, err)
-	}
-}
-
-func TestConditionsWithEval(t *testing.T) {
+func TestCondition_Eval(t *testing.T) {
 	tests := []struct {
-		conditions []*Condition
-		isErr      bool
+		name      string
+		condition []Condition
+		wantErr   bool
 	}{
 		{
-			[]*Condition{
+			name:      "CommandSubstitution",
+			condition: []Condition{{Condition: "`echo 1`", Expected: "1"}},
+		},
+		{
+			name:      "EnvVar",
+			condition: []Condition{{Condition: "${TEST_CONDITION}", Expected: "100"}},
+		},
+		{
+			name: "MultipleCond",
+			condition: []Condition{
 				{
 					Condition: "`echo 1`",
 					Expected:  "1",
@@ -37,34 +33,38 @@ func TestConditionsWithEval(t *testing.T) {
 					Expected:  "100",
 				},
 			},
-			false,
 		},
 		{
-			[]*Condition{
+			name: "MultipleCondOneMet",
+			condition: []Condition{
 				{
 					Condition: "`echo 1`",
 					Expected:  "1",
 				},
 				{
 					Condition: "`echo 100`",
-					Expected:  "0",
-				},
-			},
-			true,
-		},
-		{
-			[]*Condition{
-				{
-					Condition: "`invalid`",
 					Expected:  "1",
 				},
 			},
-			true,
+			wantErr: true,
+		},
+		{
+			name: "InvalidCond",
+			condition: []Condition{
+				{
+					Condition: "`invalid`",
+				},
+			},
+			wantErr: true,
 		},
 	}
 
+	// Set environment variable for testing
+	_ = os.Setenv("TEST_CONDITION", "100")
 	for _, tt := range tests {
-		err := EvalConditions(tt.conditions)
-		require.Equal(t, tt.isErr, err != nil)
+		t.Run(tt.name, func(t *testing.T) {
+			err := EvalConditions(tt.condition)
+			require.Equal(t, tt.wantErr, err != nil)
+		})
 	}
 }

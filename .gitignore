@@ -1,9 +1,11 @@
-# build
-bin/*
+# binaries
+bin/
 dist/
-service/frontend/assets/fonts/*
-service/frontend/assets/*
-!service/frontend/assets/.gitkeep
+
+# frontend assets
+internal/frontend/assets/fonts/*
+internal/frontend/assets/*
+!internal/frontend/assets/.gitkeep
 
 # NVM
 .nvmrc
@@ -14,19 +16,14 @@ tmp/*
 # MacOS
 .DS_Store
 
-# VSCode
-.vscode
-
 # Goland
 .idea
 
-# certs
-cert/*.pem
-cert/*.srl
+# Directory for local development
+.local/
 
-# dags
-dags/*
-suspend/*
-data/*
-logs/*
+# Coverage files
+coverage.*
 
+#VSCode files
+.vscode

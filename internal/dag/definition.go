@@ -1,19 +1,23 @@
 package dag
 
-type configDefinition struct {
+// definition is a temporary struct to hold the DAG definition.
+// This struct is used to unmarshal the YAML data.
+// The data is then converted to the DAG struct.
+type definition struct {
 	Name              string
 	Group             string
 	Description       string
-	Schedule          interface{}
+	Schedule          any
 	LogDir            string
-	Env               interface{}
-	HandlerOn         handerOnDef
+	Env               any
+	HandlerOn         handlerOnDef
 	Functions         []*funcDef
 	Steps             []*stepDef
-	Smtp              smtpConfigDef
+	SMTP              smtpConfigDef
 	MailOn            *mailOnDef
 	ErrorMail         mailConfigDef
 	InfoMail          mailConfigDef
+	TimeoutSec        int
 	DelaySec          int
 	RestartWaitSec    int
 	HistRetentionDays *int
@@ -21,7 +25,7 @@ type configDefinition struct {
 	MaxActiveRuns     int
 	Params            string
 	MaxCleanUpTimeSec *int
-	Tags              string
+	Tags              any
 }
 
 type conditionDef struct {
@@ -29,7 +33,7 @@ type conditionDef struct {
 	Expected  string
 }
 
-type handerOnDef struct {
+type handlerOnDef struct {
 	Failure *stepDef
 	Success *stepDef
 	Cancel  *stepDef
@@ -40,8 +44,8 @@ type stepDef struct {
 	Name          string
 	Description   string
 	Dir           string
-	Executor      interface{}
-	Command       string
+	Executor      any
+	Command       any
 	Script        string
 	Stdout        string
 	Stderr        string
@@ -55,6 +59,10 @@ type stepDef struct {
 	SignalOnStop  *string
 	Env           string
 	Call          *callFuncDef
+	// Run is a sub workflow to run
+	Run string
+	// Params is a string of parameters to pass to the sub workflow
+	Params string
 }
 
 type funcDef struct {
@@ -65,7 +73,7 @@ type funcDef struct {
 
 type callFuncDef struct {
 	Function string
-	Args     map[string]interface{}
+	Args     map[string]any
 }
 
 type continueOnDef struct {

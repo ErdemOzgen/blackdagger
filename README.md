@@ -22,6 +22,9 @@
   <a href="https://www.blackhat.com/us-24/arsenal/schedule/index.html#blackdagger-39274">
     <img src="https://github.com/toolswatch/badges/blob/master/arsenal/usa/2024.svg" />
   </a>
+  <a href="https://www.blackhat.com/sector/2024/arsenal/schedule/index.html#blackdagger-40889">
+    <img src="https://github.com/toolswatch/badges/blob/master/arsenal/sector/2024.svg" />
+  </a>
 </p>
 
 <div align="center">
