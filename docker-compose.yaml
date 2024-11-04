@@ -5,8 +5,8 @@ services:
     image: "erdemozgen/blackdagger:latest"
     build: .
     environment:
-      - blackdagger_PORT=8080
-      - blackdagger_DAGS=/home/blackdagger/.config/blackdagger/dags
+      - BLACKDAGGER_PORT=8080
+      - BLACKDAGGER_DAGS=/home/blackdagger/.config/blackdagger/dags
       - TERM=xterm
     restart: unless-stopped
     ports:
@@ -14,13 +14,11 @@ services:
       - "8090:8090"
     volumes:
       - blackdagger:/home/blackdagger/.config/blackdagger
-      - ./dags/:/home/blackdagger/.config/blackdagger/dags
-      - ./data/:/home/blackdagger/.config/blackdagger/data
-      - ./logs/:/home/blackdagger/.config/blackdagger/logs
-      - ./suspend/:/home/blackdagger/.config/blackdagger/suspend
-    #command: ["bash", "/home/blackdagger/startservices.sh"] # Custom command to start the services
-    command: ["sh", "-c", "./startservices.sh"]
+      - ./dags:/home/blackdagger/.config/blackdagger/dags
+      - ./data:/home/blackdagger/.config/blackdagger/data
+      - ./logs:/home/blackdagger/.config/blackdagger/logs
+      - ./suspend:/home/blackdagger/.config/blackdagger/suspend
+    command: ["sh", "-c", "/usr/local/bin/startservices.sh"]
 
 volumes:
   blackdagger: {}
-
