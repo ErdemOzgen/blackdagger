@@ -67,7 +67,7 @@
     "@types/lodash": "^4.17.7",
     "cron-parser": "^4.5.0",
     "fontsource-roboto": "^4.0.0",
-    "mermaid": "^9.1.1",
+    "mermaid": "^11.4.0",
     "moment": "^2.29.3",
     "moment-duration-format": "^2.3.2",
     "monaco-editor": "^0.41.0",
