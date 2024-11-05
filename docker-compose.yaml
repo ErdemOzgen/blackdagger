@@ -18,7 +18,6 @@ services:
       - ./history:/home/blackdagger/.local/share/blackdagger/history
       - ./logs:/home/blackdagger/.local/share/blackdagger/logs
       - ./suspend:/home/blackdagger/.local/share/blackdagger/suspend
-    command: ["sh", "/usr/local/bin/startservices.sh"]
 
 volumes:
   blackdagger: {}
