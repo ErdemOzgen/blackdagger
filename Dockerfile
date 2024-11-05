@@ -13,7 +13,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install necessary packages
 RUN apt-get update -y && \
-    apt-get install -y wget curl bash sudo tzdata && \
+    apt-get install -y wget curl bash sudo tzdata git && \
     echo "Etc/UTC" > /etc/timezone && \
     ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime && \
     dpkg-reconfigure --frontend noninteractive tzdata

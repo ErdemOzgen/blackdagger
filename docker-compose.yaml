@@ -14,11 +14,10 @@ services:
       - "8090:8090"
     volumes:
       - blackdagger:/home/blackdagger/.config/blackdagger
-      - ./dags:/home/blackdagger/.config/blackdagger/dags
-      - ./data:/home/blackdagger/.config/blackdagger/data
-      - ./logs:/home/blackdagger/.config/blackdagger/logs
-      - ./suspend:/home/blackdagger/.config/blackdagger/suspend
-    command: ["sh", "-c", "/usr/local/bin/startservices.sh"]
+      - ./dags:/home/blackdagger/.local/share/blackdagger/dags
+      - ./history:/home/blackdagger/.local/share/blackdagger/history
+      - ./logs:/home/blackdagger/.local/share/blackdagger/logs
+      - ./suspend:/home/blackdagger/.local/share/blackdagger/suspend
 
 volumes:
   blackdagger: {}
