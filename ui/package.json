@@ -34,7 +34,7 @@
     "@types/react-fontawesome": "^1.6.5",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
     "@typescript-eslint/parser": "^5.30.5",
-    "babel-loader": "^8.2.5",
+    "babel-loader": "^9.2.1",
     "css-loader": "^6.7.1",
     "esbuild-loader": "^2.19.0",
     "eslint": "^8.19.0",
