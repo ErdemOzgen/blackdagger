@@ -39,55 +39,7 @@ func testRunCommand(t *testing.T, cmd *cobra.Command, test cmdTest) {
 	err := root.Execute()
 	require.NoError(t, err)
 
-	// configured to write to a buffer.
-	// _ = withSpool(t, func() {
-	// 	err := root.Execute()
-	// 	require.NoError(t, err)
-	// })
-	//
-	// Check if the expected output is present in the standard output.
-	// for _, s := range test.expectedOut {
-	// 	require.Contains(t, out, s)
-	// }
 }
-
-// withSpool temporarily buffers the standard output and returns it as a string.
-/*
-func withSpool(t *testing.T, testFunction func()) string {
-	t.Helper()
-
-	origStdout := os.Stdout
-
-	r, w, err := os.Pipe()
-	require.NoError(t, err)
-
-	os.Stdout = w
-	log.SetOutput(w)
-
-	defer func() {
-		os.Stdout = origStdout
-		log.SetOutput(origStdout)
-		_ = w.Close()
-	}()
-
-	testFunction()
-
-	os.Stdout = origStdout
-	_ = w.Close()
-
-	var buf bytes.Buffer
-	_, err = io.Copy(&buf, r)
-	require.NoError(t, err)
-
-	out := buf.String()
-
-	t.Cleanup(func() {
-		t.Log(out)
-	})
-
-	return out
-}
-*/
 
 func testDAGFile(name string) string {
 	return filepath.Join(

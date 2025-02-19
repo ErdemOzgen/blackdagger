@@ -39,11 +39,23 @@ type Config struct {
 	APIBaseURL         string   // Base URL for API
 	Debug              bool     // Enable debug mode (verbose logging)
 	LogFormat          string   // Log format
+	RemoteNodes        []RemoteNode
 }
 
 type TLS struct {
 	CertFile string
 	KeyFile  string
+}
+
+type RemoteNode struct {
+	Name              string `mapstructure:"name"`
+	APIBaseURL        string `mapstructure:"apiBaseURL"`
+	IsBasicAuth       bool   `mapstructure:"isBasicAuth"`
+	BasicAuthUsername string `mapstructure:"basicAuthUsername"`
+	BasicAuthPassword string `mapstructure:"basicAuthPassword"`
+	IsAuthToken       bool   `mapstructure:"isAuthToken"`
+	AuthToken         string `mapstructure:"authToken"`
+	SkipTLSVerify     bool   `mapstructure:"skipTLSVerify"`
 }
 
 var configLock sync.Mutex
@@ -108,7 +120,7 @@ func setupViper() error {
 
 	viper.AddConfigPath(r.configDir)
 	viper.SetConfigType("yaml")
-	viper.SetConfigName("admin")
+	viper.SetConfigName("config")
 
 	viper.SetEnvPrefix(envPrefix)
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
