@@ -14,6 +14,7 @@ export type Config = {
   title: string;
   navbarColor: string;
   version: string;
+  remoteNodes: string;
 };
 
 type Props = {
@@ -22,6 +23,19 @@ type Props = {
 
 function App({ config }: Props) {
   const [title, setTitle] = React.useState<string>('');
+
+  // Extract and format remote nodes
+  const remoteNodes = config.remoteNodes
+    ? config.remoteNodes.split(',').map((node) => node.trim()).filter(Boolean)
+    : ['local'];
+
+  if (!remoteNodes.includes('local')) {
+    remoteNodes.unshift('local');
+  }
+
+  const [selectedRemoteNode, setSelectedRemoteNode] =
+    React.useState<string>('local');
+
   return (
     <SWRConfig
       value={{
@@ -35,6 +49,9 @@ function App({ config }: Props) {
         value={{
           title,
           setTitle,
+          remoteNodes,
+          selectedRemoteNode,
+          selectRemoteNode: setSelectedRemoteNode,
         }}
       >
         <BrowserRouter>

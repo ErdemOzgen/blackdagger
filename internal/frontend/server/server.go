@@ -48,6 +48,7 @@ type NewServerArgs struct {
 	NavbarColor string
 	NavbarTitle string
 	APIBaseURL  string
+	RemoteNodes []string
 }
 
 type BasicAuth struct {
@@ -77,6 +78,7 @@ func New(params NewServerArgs) *Server {
 			NavbarColor: params.NavbarColor,
 			NavbarTitle: params.NavbarTitle,
 			APIBaseURL:  params.APIBaseURL,
+			RemoteNodes: params.RemoteNodes,
 		},
 	}
 }

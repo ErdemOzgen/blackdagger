@@ -3,7 +3,7 @@ import MonacoEditor from 'react-monaco-editor';
 
 type Props = {
   value: string;
-  onChange: (value: string) => void;
+  onChange: (value?: string) => void;
 };
 
 function DAGEditor({ value, onChange }: Props) {
@@ -14,6 +14,17 @@ function DAGEditor({ value, onChange }: Props) {
       onChange={onChange}
       language="yaml"
       theme="vs-dark"
+      options={{
+        automaticLayout: true,
+        minimap: { enabled: false },
+        scrollBeyondLastLine: false,
+        quickSuggestions: { other: true, comments: false, strings: true },
+        formatOnType: true,
+        formatOnPaste: true,
+        renderValidationDecorations: 'on',
+        lineNumbers: 'on',
+        glyphMargin: true,
+      }}
     />
   );
 }

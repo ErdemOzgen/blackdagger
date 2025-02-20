@@ -1,14 +1,19 @@
 package dag
 
 import (
+	"crypto/tls"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/ErdemOzgen/blackdagger/internal/client"
+	"github.com/ErdemOzgen/blackdagger/internal/config"
 	"github.com/ErdemOzgen/blackdagger/internal/dag"
 	"github.com/ErdemOzgen/blackdagger/internal/dag/scheduler"
 	"github.com/ErdemOzgen/blackdagger/internal/frontend/gen/models"
@@ -17,6 +22,7 @@ import (
 	"github.com/ErdemOzgen/blackdagger/internal/frontend/server"
 	"github.com/ErdemOzgen/blackdagger/internal/persistence/jsondb"
 	"github.com/ErdemOzgen/blackdagger/internal/persistence/model"
+	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
 	"github.com/samber/lo"
@@ -44,6 +50,8 @@ var (
 type Handler struct {
 	client             client.Client
 	logEncodingCharset string
+	remoteNodes        map[string]config.RemoteNode
+	apiBasePath        string
 }
 
 type NewHandlerArgs struct {
@@ -51,60 +59,77 @@ type NewHandlerArgs struct {
 	LogEncodingCharset string
 }
 
-func NewHandler(args *NewHandlerArgs) server.Handler {
+func NewHandler(args *NewHandlerArgs, remoteNodeConfigs []config.RemoteNode, apiBasePath string) server.Handler {
+	remoteNodes := make(map[string]config.RemoteNode)
+	for _, node := range remoteNodeConfigs {
+		remoteNodes[node.Name] = node
+	}
+
 	return &Handler{
 		client:             args.Client,
 		logEncodingCharset: args.LogEncodingCharset,
+		remoteNodes:        remoteNodes, // NEW: Store remote nodes
+		apiBasePath:        apiBasePath, // NEW: Store base API path
 	}
 }
 
 func (h *Handler) Configure(api *operations.BlackdaggerAPI) {
 	api.DagsListDagsHandler = dags.ListDagsHandlerFunc(
 		func(params dags.ListDagsParams) middleware.Responder {
+			if resp := h.handleRemoteNodeProxy(nil, params.HTTPRequest); resp != nil {
+				return resp
+			}
 			resp, err := h.getList(params)
 			if err != nil {
-				return dags.NewListDagsDefault(err.Code).
-					WithPayload(err.APIError)
+				return dags.NewListDagsDefault(err.Code).WithPayload(err.APIError)
 			}
 			return dags.NewListDagsOK().WithPayload(resp)
 		})
 
 	api.DagsGetDagDetailsHandler = dags.GetDagDetailsHandlerFunc(
 		func(params dags.GetDagDetailsParams) middleware.Responder {
+			if resp := h.handleRemoteNodeProxy(nil, params.HTTPRequest); resp != nil {
+				return resp
+			}
 			resp, err := h.getDetail(params)
 			if err != nil {
-				return dags.NewGetDagDetailsDefault(err.Code).
-					WithPayload(err.APIError)
+				return dags.NewGetDagDetailsDefault(err.Code).WithPayload(err.APIError)
 			}
 			return dags.NewGetDagDetailsOK().WithPayload(resp)
 		})
 
 	api.DagsPostDagActionHandler = dags.PostDagActionHandlerFunc(
 		func(params dags.PostDagActionParams) middleware.Responder {
+			if resp := h.handleRemoteNodeProxy(params.Body, params.HTTPRequest); resp != nil {
+				return resp
+			}
 			resp, err := h.postAction(params)
 			if err != nil {
-				return dags.NewPostDagActionDefault(err.Code).
-					WithPayload(err.APIError)
+				return dags.NewPostDagActionDefault(err.Code).WithPayload(err.APIError)
 			}
 			return dags.NewPostDagActionOK().WithPayload(resp)
 		})
 
 	api.DagsCreateDagHandler = dags.CreateDagHandlerFunc(
 		func(params dags.CreateDagParams) middleware.Responder {
+			if resp := h.handleRemoteNodeProxy(params.Body, params.HTTPRequest); resp != nil {
+				return resp
+			}
 			resp, err := h.createDAG(params)
 			if err != nil {
-				return dags.NewCreateDagDefault(err.Code).
-					WithPayload(err.APIError)
+				return dags.NewCreateDagDefault(err.Code).WithPayload(err.APIError)
 			}
 			return dags.NewCreateDagOK().WithPayload(resp)
 		})
 
 	api.DagsDeleteDagHandler = dags.DeleteDagHandlerFunc(
 		func(params dags.DeleteDagParams) middleware.Responder {
+			if resp := h.handleRemoteNodeProxy(nil, params.HTTPRequest); resp != nil {
+				return resp
+			}
 			err := h.deleteDAG(params)
 			if err != nil {
-				return dags.NewDeleteDagDefault(err.Code).
-					WithPayload(err.APIError)
+				return dags.NewDeleteDagDefault(err.Code).WithPayload(err.APIError)
 			}
 			return dags.NewDeleteDagOK()
 		})
@@ -128,6 +153,99 @@ func (h *Handler) Configure(api *operations.BlackdaggerAPI) {
 			}
 			return dags.NewListTagsOK().WithPayload(tags)
 		})
+}
+
+func (h *Handler) doRemoteProxy(body any, originalReq *http.Request, node config.RemoteNode) middleware.Responder {
+	// Copy original query parameters except remoteNode
+	q := originalReq.URL.Query()
+	q.Del("remoteNode")
+
+	// Build the new remote URL
+	urlComponents := strings.Split(originalReq.URL.Path, h.apiBasePath)
+	if len(urlComponents) < 2 {
+		return dags.NewListDagsDefault(400)
+	}
+	remoteURL := fmt.Sprintf("%s%s?%s", strings.TrimSuffix(node.APIBaseURL, "/"), urlComponents[1], q.Encode())
+
+	method := originalReq.Method
+	var bodyJSON io.Reader
+	if body != nil {
+		data, err := json.Marshal(body)
+		if err != nil {
+			return dags.NewListDagsDefault(500)
+		}
+		bodyJSON = strings.NewReader(string(data))
+	}
+
+	req, err := http.NewRequest(method, remoteURL, bodyJSON)
+	if err != nil {
+		return dags.NewListDagsDefault(500)
+	}
+
+	// Set authentication headers
+	if node.IsBasicAuth {
+		req.SetBasicAuth(node.BasicAuthUsername, node.BasicAuthPassword)
+	} else if node.IsAuthToken {
+		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", node.AuthToken))
+	}
+
+	// Copy original headers (excluding Authorization)
+	for k, v := range originalReq.Header {
+		if k == "Authorization" {
+			continue
+		}
+		for _, vv := range v {
+			req.Header.Add(k, vv)
+		}
+	}
+
+	// Allow skipping SSL verification if configured
+	transport := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: node.SkipTLSVerify, // nolint:gosec
+		},
+	}
+
+	client := &http.Client{
+		Transport: transport,
+		Timeout:   30 * time.Second,
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return dags.NewListDagsDefault(502)
+	}
+
+	defer resp.Body.Close()
+	respData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return dags.NewListDagsDefault(502)
+	}
+
+	return middleware.ResponderFunc(func(w http.ResponseWriter, _ runtime.Producer) {
+		w.WriteHeader(resp.StatusCode)
+		_, _ = w.Write(respData)
+	})
+}
+
+func (h *Handler) handleRemoteNodeProxy(body any, r *http.Request) middleware.Responder {
+	if r == nil {
+		return nil
+	}
+
+	remoteNodeName := r.URL.Query().Get("remoteNode")
+	if remoteNodeName == "" || remoteNodeName == "local" {
+		return nil // No remote node specified, handle locally
+	}
+
+	node, ok := h.remoteNodes[remoteNodeName]
+	if !ok {
+		// Remote node not found, return bad request
+		return dags.NewListDagsDefault(400)
+	}
+
+	// Forward the request to the remote node
+	return h.doRemoteProxy(body, r, node)
 }
 
 func (h *Handler) createDAG(

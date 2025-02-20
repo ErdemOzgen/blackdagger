@@ -22,9 +22,15 @@ for (const value in SchedulerStatus) {
 function Dashboard() {
   const [metrics, setMetrics] = React.useState<metrics>(defaultMetrics);
   const appBarContext = React.useContext(AppBarContext);
-  const { data } = useSWR<ListWorkflowsResponse>(`/dags`, null, {
-    refreshInterval: 10000,
-  });
+  const { data } = useSWR<ListWorkflowsResponse>(
+    `/dags?remoteNode=${
+      appBarContext.selectedRemoteNode || 'local'
+    }`,
+    null,
+    {
+      refreshInterval: 10000,
+    }
+  );
 
   React.useEffect(() => {
     if (!data) {

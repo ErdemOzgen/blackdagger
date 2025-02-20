@@ -30,7 +30,7 @@ APP_NAME=blackdagger
 
 # Docker image build configuration
 
-VERSION=1.0.6
+VERSION=1.0.7
 
 DOCKER_USERNAME=erdemozgen
 IMAGE_NAME=blackdagger
