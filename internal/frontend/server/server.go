@@ -43,6 +43,7 @@ type NewServerArgs struct {
 	Logger    logger.Logger
 	Handlers  []Handler
 	AssetsFS  fs.FS
+	BasePath  string
 
 	// Configuration for the frontend
 	NavbarColor string
@@ -77,6 +78,7 @@ func New(params NewServerArgs) *Server {
 		funcsConfig: funcsConfig{
 			NavbarColor: params.NavbarColor,
 			NavbarTitle: params.NavbarTitle,
+			BasePath:    params.BasePath,
 			APIBaseURL:  params.APIBaseURL,
 			RemoteNodes: params.RemoteNodes,
 		},
@@ -95,8 +97,9 @@ func (svr *Server) Shutdown() {
 
 func (svr *Server) Serve(ctx context.Context) (err error) {
 	middlewareOptions := &pkgmiddleware.Options{
-		Handler: svr.defaultRoutes(chi.NewRouter()),
-		Logger:  svr.logger,
+		Handler:  svr.defaultRoutes(chi.NewRouter()),
+		BasePath: svr.funcsConfig.BasePath,
+		Logger:   svr.logger,
 	}
 	if svr.authToken != nil {
 		middlewareOptions.AuthToken = &pkgmiddleware.AuthToken{

@@ -11,6 +11,7 @@ import Search from './pages/search';
 
 export type Config = {
   apiURL: string;
+  basePath: string;
   title: string;
   navbarColor: string;
   version: string;
@@ -26,9 +27,9 @@ function App({ config }: Props) {
 
   // Extract and format remote nodes
   const remoteNodes = config.remoteNodes
-    ? config.remoteNodes.split(',').map((node) => node.trim()).filter(Boolean)
-    : ['local'];
-
+    .split(',')
+    .filter(Boolean)
+    .map((node) => node.trim());
   if (!remoteNodes.includes('local')) {
     remoteNodes.unshift('local');
   }
@@ -54,7 +55,7 @@ function App({ config }: Props) {
           selectRemoteNode: setSelectedRemoteNode,
         }}
       >
-        <BrowserRouter>
+        <BrowserRouter basename={config.basePath}>
           <Layout {...config}>
             <Routes>
               <Route path="/" element={<Dashboard />} />

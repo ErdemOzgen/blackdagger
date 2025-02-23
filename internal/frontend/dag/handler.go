@@ -39,6 +39,8 @@ const (
 	dagTabTypeSchedulerLog = "scheduler-log"
 )
 
+var _ server.Handler = (*Handler)(nil)
+
 var (
 	errInvalidArgs        = errors.New("invalid argument")
 	ErrFailedToReadStatus = errors.New("failed to read status")
@@ -136,6 +138,9 @@ func (h *Handler) Configure(api *operations.BlackdaggerAPI) {
 
 	api.DagsSearchDagsHandler = dags.SearchDagsHandlerFunc(
 		func(params dags.SearchDagsParams) middleware.Responder {
+			if resp := h.handleRemoteNodeProxy(nil, params.HTTPRequest); resp != nil {
+				return resp
+			}
 			resp, err := h.searchDAGs(params)
 			if err != nil {
 				return dags.NewSearchDagsDefault(err.Code).
@@ -146,6 +151,9 @@ func (h *Handler) Configure(api *operations.BlackdaggerAPI) {
 
 	api.DagsListTagsHandler = dags.ListTagsHandlerFunc(
 		func(params dags.ListTagsParams) middleware.Responder {
+			if resp := h.handleRemoteNodeProxy(nil, params.HTTPRequest); resp != nil {
+				return resp
+			}
 			tags, err := h.getTagList(params)
 			if err != nil {
 				return dags.NewListTagsDefault(err.Code).
@@ -155,6 +163,25 @@ func (h *Handler) Configure(api *operations.BlackdaggerAPI) {
 		})
 }
 
+func (h *Handler) handleRemoteNodeProxy(body any, r *http.Request) middleware.Responder {
+	if r == nil {
+		return nil
+	}
+
+	remoteNodeName := r.URL.Query().Get("remoteNode")
+	if remoteNodeName == "" || remoteNodeName == "local" {
+		return nil // No remote node specified, handle locally
+	}
+
+	node, ok := h.remoteNodes[remoteNodeName]
+	if !ok {
+		// Remote node not found, return bad request
+		return dags.NewListDagsDefault(400)
+	}
+
+	// Forward the request to the remote node
+	return h.doRemoteProxy(body, r, node)
+}
 func (h *Handler) doRemoteProxy(body any, originalReq *http.Request, node config.RemoteNode) middleware.Responder {
 	// Copy original query parameters except remoteNode
 	q := originalReq.URL.Query()
@@ -226,26 +253,6 @@ func (h *Handler) doRemoteProxy(body any, originalReq *http.Request, node config
 		w.WriteHeader(resp.StatusCode)
 		_, _ = w.Write(respData)
 	})
-}
-
-func (h *Handler) handleRemoteNodeProxy(body any, r *http.Request) middleware.Responder {
-	if r == nil {
-		return nil
-	}
-
-	remoteNodeName := r.URL.Query().Get("remoteNode")
-	if remoteNodeName == "" || remoteNodeName == "local" {
-		return nil // No remote node specified, handle locally
-	}
-
-	node, ok := h.remoteNodes[remoteNodeName]
-	if !ok {
-		// Remote node not found, return bad request
-		return dags.NewListDagsDefault(400)
-	}
-
-	// Forward the request to the remote node
-	return h.doRemoteProxy(body, r, node)
 }
 
 func (h *Handler) createDAG(

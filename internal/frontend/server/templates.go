@@ -44,6 +44,7 @@ type funcsConfig struct {
 	NavbarTitle string
 	APIBaseURL  string
 	RemoteNodes []string
+	BasePath    string
 }
 
 func defaultFunctions(cfg funcsConfig) template.FuncMap {
@@ -63,6 +64,9 @@ func defaultFunctions(cfg funcsConfig) template.FuncMap {
 		},
 		"navbarTitle": func() string {
 			return cfg.NavbarTitle
+		},
+		"basePath": func() string {
+			return cfg.BasePath
 		},
 		"apiURL": func() string {
 			return cfg.APIBaseURL

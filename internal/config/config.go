@@ -15,11 +15,15 @@ import (
 
 // Config represents the configuration for the server.
 type Config struct {
-	Host               string   // Server host
-	Port               int      // Server port
+	Host               string // Server host
+	Port               int    // Server port
+	Debug              bool   // Enable debug mode (verbose logging)
+	BasePath           string
+	APIBasePath        string
+	APIBaseURL         string   // Base URL for API
+	WorkDir            string   // Default working directory
 	DAGs               string   // Location of DAG files
 	Executable         string   // Executable path
-	WorkDir            string   // Default working directory
 	IsBasicAuth        bool     // Enable basic auth
 	BasicAuthUsername  string   // Basic auth username
 	BasicAuthPassword  string   // Basic auth password
@@ -36,8 +40,6 @@ type Config struct {
 	IsAuthToken        bool     // Enable auth token for API
 	AuthToken          string   // Auth token for API
 	LatestStatusToday  bool     // Show latest status today or the latest status
-	APIBaseURL         string   // Base URL for API
-	Debug              bool     // Enable debug mode (verbose logging)
 	LogFormat          string   // Log format
 	RemoteNodes        []RemoteNode
 }
@@ -145,6 +147,7 @@ func setupViper() error {
 	viper.SetDefault("port", "8080")
 	viper.SetDefault("navbarTitle", "Blackdagger")
 	viper.SetDefault("apiBaseURL", "/api/v1")
+	viper.SetDefault("basePath", "")
 
 	// Set executable path
 	// This is used for invoking the workflow process on the server.
@@ -170,6 +173,7 @@ func setExecutableDefault() error {
 }
 
 func bindEnvs() {
+	_ = viper.BindEnv("basePath", "BASE_PATH")
 	// Server configurations
 	_ = viper.BindEnv("logEncodingCharset", "BLACKDAGGER_LOG_ENCODING_CHARSET")
 	_ = viper.BindEnv("navbarColor", "BLACKDAGGER_NAVBAR_COLOR")
