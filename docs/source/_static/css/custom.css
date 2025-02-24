@@ -1,0 +1,38 @@
+/* Dark theme base colors */
+:root {
+    --color-foreground: #e0e0e0;
+    --color-background: #1a1a1a;
+    --color-sidebar-background: #2d2d2d;
+    --color-link: #80b3ff;
+  }
+  
+  /* Override RTD theme variables */
+  html {
+    background-color: var(--color-background) !important;
+  }
+  
+  body {
+    color: var(--color-foreground);
+    background-color: var(--color-background);
+  }
+  
+  .wy-side-nav-search {
+    background-color: #333333;  /* Darker header for search area */
+  }
+  
+  .wy-nav-side {
+    background-color: var(--color-sidebar-background);
+  }
+  
+  /* Code blocks */
+  .highlight {
+    background-color: #2a2a2a !important;
+  }
+  
+  /* Links */
+  a {
+    color: var(--color-link);
+  }
+  a:hover {
+    color: #ffa947;
+  }
