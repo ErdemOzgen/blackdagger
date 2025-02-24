@@ -8,6 +8,7 @@ import DashboardTimechart from '../components/molecules/DashboardTimechart';
 import Title from '../components/atoms/Title';
 import { AppBarContext } from '../contexts/AppBarContext';
 import useSWR from 'swr';
+import { useConfig } from '../contexts/ConfigContext';
 
 type metrics = Record<SchedulerStatus, number>;
 
@@ -22,6 +23,7 @@ for (const value in SchedulerStatus) {
 function Dashboard() {
   const [metrics, setMetrics] = React.useState<metrics>(defaultMetrics);
   const appBarContext = React.useContext(AppBarContext);
+  const config = useConfig();
   const { data } = useSWR<ListWorkflowsResponse>(
     `/dags?remoteNode=${
       appBarContext.selectedRemoteNode || 'local'

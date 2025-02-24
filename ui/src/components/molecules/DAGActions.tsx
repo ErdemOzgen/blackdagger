@@ -26,9 +26,9 @@ type Props = {
   refresh?: () => void;
 };
 
-function Label({ show, children }: LabelProps): JSX.Element {
+function Label({ show, children }: LabelProps): React.JSX.Element {
   if (show) return <>{children}</>;
-  return <VisuallyHidden>{children}</VisuallyHidden>;
+  return <VisuallyHidden>{children?.toString()}</VisuallyHidden>;
 }
 
 function DAGActions({

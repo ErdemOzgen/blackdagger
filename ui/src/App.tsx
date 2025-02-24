@@ -8,6 +8,7 @@ import { AppBarContext } from './contexts/AppBarContext';
 import { SWRConfig } from 'swr';
 import fetchJson from './lib/fetchJson';
 import Search from './pages/search';
+import { ConfigContext } from './contexts/ConfigContext';
 
 export type Config = {
   apiURL: string;
@@ -55,18 +56,20 @@ function App({ config }: Props) {
           selectRemoteNode: setSelectedRemoteNode,
         }}
       >
-        <BrowserRouter basename={config.basePath}>
-          <Layout {...config}>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/dags/" element={<DAGs />} />
-              <Route path="/dags/:name/:tab" element={<DAGDetails />} />
-              <Route path="/dags/:name/" element={<DAGDetails />} />
-              <Route path="/search/" element={<Search />} />
-            </Routes>
-          </Layout>
-        </BrowserRouter>
+        <ConfigContext.Provider value={config}>
+          <BrowserRouter basename={config.basePath}>
+            <Layout {...config}>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dags/" element={<DAGs />} />
+                <Route path="/dags/:name/:tab" element={<DAGDetails />} />
+                <Route path="/dags/:name/" element={<DAGDetails />} />
+                <Route path="/search/" element={<Search />} />
+              </Routes>
+            </Layout>
+          </BrowserRouter>
+        </ConfigContext.Provider>
       </AppBarContext.Provider>
     </SWRConfig>
   );
