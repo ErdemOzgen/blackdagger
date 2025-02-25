@@ -1,7 +1,7 @@
 Command Line Interface
 ======================
 
-The following commands are available for interacting with blackdagger:
+The following commands are available for interacting with Blackdagger:
 
 .. code-block:: sh
 

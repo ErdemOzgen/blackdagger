@@ -1,38 +1,108 @@
 /* Dark theme base colors */
 :root {
-    --color-foreground: #e0e0e0;
-    --color-background: #1a1a1a;
-    --color-sidebar-background: #2d2d2d;
-    --color-link: #80b3ff;
-  }
-  
-  /* Override RTD theme variables */
-  html {
-    background-color: var(--color-background) !important;
-  }
-  
-  body {
-    color: var(--color-foreground);
-    background-color: var(--color-background);
-  }
-  
-  .wy-side-nav-search {
-    background-color: #333333;  /* Darker header for search area */
-  }
-  
-  .wy-nav-side {
-    background-color: var(--color-sidebar-background);
-  }
-  
-  /* Code blocks */
-  .highlight {
-    background-color: #2a2a2a !important;
-  }
-  
-  /* Links */
-  a {
-    color: var(--color-link);
-  }
-  a:hover {
-    color: #ffa947;
-  }
+  --color-foreground: #e0e0e0;
+  --color-background: #1a1a1a;
+  --color-sidebar-background: #2d2d2d;
+  --color-link: #6593bb;
+}
+
+/* Override RTD theme variables */
+html {
+  background-color: var(--color-background) !important;
+}
+
+body {
+  color: var(--color-foreground);
+  background-color: var(--color-background);
+}
+
+.wy-nav-content {
+  background-color: #333333;
+}
+
+.wy-side-nav-search {
+  background: #1a1a1a !important;
+}
+
+.wy-nav-content-wrap {
+  background-color: #242424;
+}
+
+.wy-nav-side {
+  background-color: var(--color-sidebar-background);
+}
+
+/* Code blocks */
+.highlight {
+  background-color: #2a2a2a !important;
+}
+
+.highlight .nt {
+  color: #569cd6 !important;
+}
+
+.highlight .s {
+  color: #ce9178 !important;
+}
+
+.highlight .s2 {
+  color: #ce9178 !important;
+}
+
+.highlight .c1 {
+  color: #6a9955 !important;
+}
+
+.highlight .no {
+  color: rgb(255, 180, 180);
+}
+
+.highlight .nv {
+  color: #8c8aff;
+}
+
+.highlight .m {
+  color: #bbbbbb;
+}
+
+.highlight .nb {
+  color: #69bd69;
+}
+
+.toctree-l1.current>a {
+  background-color: rgb(141, 138, 138) !important;
+}
+
+.toctree-l2 {
+  background-color: rgb(207, 207, 207) !important;
+}
+
+.toctree-l2.current>a {
+  background-color: rgb(168, 168, 168) !important;
+}
+
+/* Links */
+a {
+  color: var(--color-link);
+}
+
+a[id^="id"].reference.internal:visited {
+  color: var(--color-link) !important;
+}
+
+a:hover {
+  color: #a0ccf3;
+}
+
+.rst-content a.toc-backref {
+  color: #e0e0e0 !important;
+}
+
+.rst-content code.literal {
+  color: #05b2c5;
+}
+
+.rst-content code.literal {
+  background: none;
+  border: none;
+}
