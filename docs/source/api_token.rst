@@ -17,7 +17,7 @@ To enable API token for BLACKDAGGER, follow these steps:
   
    Replace ``<arbitrary token string>`` with a random string of your choice. This string will be used as the API token for Blackdagger.
 
-#. Alternatively, create an ``admin.yaml`` file in the ``$BLACKDAGGER_HOME`` directory (default: ``$HOME/.blackdagger/``) to override the default configuration values.
+#. Alternatively, create a ``config.yaml`` file in the ``$BLACKDAGGER_HOME`` directory (default: ``$HOME/.config/blackdagger``) to override the default configuration values.
 
    .. code-block:: yaml
   

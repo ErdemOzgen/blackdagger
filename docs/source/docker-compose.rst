@@ -13,21 +13,21 @@ To automate workflows based on cron expressions, it is necessary to run both the
         image: "ErdemOzgen/blackdagger:latest"
         user: root
         volumes:
-          - blackdagger:/home/blackdagger/.blackdagger
-        command: chown -R blackdagger /home/blackdagger/.blackdagger/
+          - blackdagger:/home/blackdagger/.config/blackdagger
+        command: chown -R blackdagger /home/blackdagger/.config/blackdagger/
 
       # ui server process
       server:
         image: "ErdemOzgen/blackdagger:latest"
         environment:
           - blackdagger_PORT=8080
-          - blackdagger_DAGS=/home/blackdagger/.blackdagger/dags
+          - blackdagger_DAGS=/home/blackdagger/.config/blackdagger/dags
         restart: unless-stopped
         ports:
           - "8080:8080"
         volumes:
-          - blackdagger:/home/blackdagger/.blackdagger
-          - ./dags/:/home/blackdagger/.blackdagger/dags
+          - blackdagger:/home/blackdagger/.config/blackdagger
+          - ./dags/:/home/blackdagger/.config/blackdagger/dags
         depends_on:
           - init
 
@@ -35,11 +35,11 @@ To automate workflows based on cron expressions, it is necessary to run both the
       scheduler:
         image: "erdemozgen/blackdagger:latest"
         environment:
-          - blackdagger_DAGS=/home/blackdagger/.blackdagger/dags
+          - blackdagger_DAGS=/home/blackdagger/.config/blackdagger/dags
         restart: unless-stopped
         volumes:
-          - blackdagger:/home/blackdagger/.blackdagger
-          - ./dags/:/home/blackdagger/.blackdagger/dags
+          - blackdagger:/home/blackdagger/.config/blackdagger
+          - ./dags/:/home/blackdagger/.config/blackdagger/dags
         command: blackdagger scheduler
         depends_on:
           - init

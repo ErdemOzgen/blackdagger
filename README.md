@@ -125,7 +125,7 @@ Save your changes and exit the editor.
 ```bash
 sudo blackdagger start-all
 ```
-But this will create **.blackdagger** folder in root user. It may cause python package issues and pip related problems.
+But this will create Blackdagger-related folders in root user. It may cause python package issues and pip related problems.
 
 3. To ensure continuous operation of the process on your system, simply create and execute the following script every minute via cron—no root account required:
 
@@ -179,7 +179,7 @@ Start the server and scheduler with the command `blackdagger start-all` or `blac
 
 Navigate to the DAG List page by clicking the menu in the left panel of the Web UI. Then create a DAG by clicking the `New DAG` button at the top of the page. Enter `example` in the dialog.
 
-*Note: DAG (YAML) files will be placed in `~/.blackdagger/dags` by default. See [Configuration Options](https://blackdagger.readthedocs.io/en/latest/config.html) for more details.*
+*Note: DAG (YAML) files will be placed in `~/.config/blackdagger/dags` by default. See [Configuration Options](https://blackdagger.readthedocs.io/en/latest/config.html) for more details.*
 
 ### 3. Edit the DAG
 
