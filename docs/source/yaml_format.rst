@@ -31,7 +31,7 @@ This section provides a comprehensive list of available fields that can be used 
 
 In addition, a global configuration file, ``$BLACKDAGGER_HOME/config.yaml``, can be used to gather common settings, such as ``logDir`` or ``env``.
 
-Note: If ``BLACKDAGGER_HOME`` environment variable is not set, the default path is ``$HOME/.blackdagger/config.yaml``.
+Note: If ``BLACKDAGGER_HOME`` environment variable is not set, the default path is ``$HOME/.config/blackdagger/config.yaml``.
 
 Example: 
 

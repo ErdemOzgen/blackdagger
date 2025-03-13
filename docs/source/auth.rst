@@ -18,7 +18,7 @@ To enable basic authentication for BLACKDAGGER, follow these steps:
   
    Replace ``<your-username>`` and ``<your-password>`` with your desired username and password.
 
-#. Alternatively, create an ``admin.yaml`` file in the ``$BLACKDAGGER_HOME`` directory (default: ``$HOME/.blackdagger/``) to override the default configuration values.
+#. Alternatively, create a ``config.yaml`` file in the ``$BLACKDAGGER_HOME`` directory (default: ``$HOME/.config/blackdagger``) to override the default configuration values.
 
    .. code-block:: yaml
   

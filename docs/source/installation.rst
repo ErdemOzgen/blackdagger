@@ -4,7 +4,7 @@ Installation
 .. contents::
     :local:
 
-You can install blackdagger quickly using Homebrew or by downloading the latest binary from the Releases page on GitHub.
+You can install Blackdagger quickly using Homebrew or by downloading the latest binary from the Releases page on GitHub.
 
 
 
@@ -19,8 +19,9 @@ Via Docker
 ----------
 
 .. code-block:: bash
-# Clone the repository and run the docker compose
-docker compose up
+
+    # Clone the repository and run the docker compose
+    docker compose up
 
 Via GitHub Release Page
 -----------------------
