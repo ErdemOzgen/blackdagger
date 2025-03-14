@@ -33,14 +33,12 @@
 
 </div>
 
-<h1><b>Blackdagger</b></h1>
+<h1><b>Blackdagger: Cyber Workflow Automation Framework</b></h1>
 
 
 Blackdagger represents a significant advancement in automation technology, offering a comprehensive solution for orchestrating complex workflows in DevOps, DevSecOps, MLOps, MLSecOps, and Continuous Automated Red Teaming (CART) environments.
 
 At its core, Blackdagger simplifies the management and execution of intricate workflows through its user-friendly approach and powerful functionality. Leveraging a declarative YAML format, Blackdagger enables users to define automation pipelines using a Directed Acyclic Graph (DAG), facilitating clear and concise expression of task dependencies and execution logic.
-
-What sets Blackdagger apart is its simplicity and versatility. Unlike traditional cron-based schedulers or workflow orchestration platforms, Blackdagger eliminates the need for extensive scripting or coding. With a built-in Web UI, users can easily manage, rerun, and monitor automation pipelines in real-time, streamlining the workflow management process. Additionally, Blackdagger offers native Docker support, enabling seamless integration with containerized environments, and a versatile toolset for task execution, including making HTTP requests and executing commands over SSH.
 
 **What Sets Blackdagger Apart?**
 
@@ -48,6 +46,25 @@ What sets Blackdagger apart is its simplicity and versatility. Unlike traditiona
 2. **Web UI for Visual Management**: With its built-in Web UI, Blackdagger provides users with a visually intuitive interface for managing, rerunning, and monitoring automation pipelines. Users can easily track the real-time status of workflows, view execution logs, and make configuration changes directly from their browser, eliminating the need for manual intervention.
 3. **Native Docker Support**: Blackdagger natively supports Docker container management, enabling seamless integration with containerized environments. Users can run arbitrary Docker containers as part of their automation workflows, making it easy to orchestrate tasks across distributed infrastructure and microservices architectures.
 4. **Versatile Task Execution**: From making HTTP requests to executing commands over SSH, Blackdagger offers a versatile toolset for task execution. Whether it's interacting with external APIs, running custom code snippets, or managing infrastructure components, Blackdagger empowers users to automate a wide range of tasks with ease.
+
+## Evolution of Blackdagger to a Framework
+Blackdagger is a single binary tool that is capable of managing and automating complex workflows for various purposes. To improve the experience of users while using Blackdagger, various repositories that contains tested YAML files for complex workflows, easy-to-setup infrastructure for CART and DevSecOps purposes are suggested by the team. With major additions to these repositories, everything that makes Blackdagger better is collected under a framework called Blackdagger: Cyber Workflow Automation Framework.
+
+The framework consist of 5 components:
+
+**Blackdagger (this repository):** Core of the framework for orchestrating the components and workflows
+**Blackcart:** A specialized Docker container optimized for Continuous Automated Red Teaming (CART) and DevSecOps pipeline tasks.
+**Blackdagger YAMLs:** Pre-tested example workflows, demonstrating real-world DevSecOps and CART use-cases, facilitating quick adoption and adaptation.
+**Blackdagger Github Infra:** A suite of advanced workflows utilizing GitHub Actions infrastructure for enhanced defense evasion techniques, scalability, and performance.
+**Blackdagger Penetration Testing Kit (BPTK):** A browser extension integrating all core functionalities, enabling direct interaction and execution of Blackdagger workflows from within the browser.
+
+<p align="center">
+  <img src="./assets/images/framework_diagram.png" width="500" alt="framework-diagram">
+</p>
+
+Each component is compatible with each other to run on **any environment, for any case and as easy, fast and effective as possible.** The framework also enables adding, removing or modifying components to add extra features for new purposes.
+
+Since Blackdagger is at the core, this repository will cover the abilities of the framework significantly. Please refer to the related repositories for more information about the components.
 
 ## **Highlights**
 - Single binary file installation
@@ -241,33 +258,41 @@ blackdagger pull <repo domain name>
 
 ## **Table of Contents**
 
-- [Highlights](#highlights)
-- [Installation](#installation)
+- [Evolution of Blackdagger to a Framework](#evolution-of-blackdagger-to-a-framework)
+- [**Highlights**](#highlights)
+- [**Installation**](#installation)
   - [Via Bash script](#via-bash-script)
   - [Via Docker](#via-docker)
   - [Via GitHub Release Page](#via-github-release-page)
-- [CLI](#cli)
-- [Documentation](#documentation)
-- [Features](#features)
-- [Usecase](#usecase)
-- [Web UI](#web-ui)
+    - [**IMPORTANT:**](#important)
+  - [Get Example YAMLs For Various Purposes](#get-example-yamls-for-various-purposes)
+- [**Quick Start Guide**](#quick-start-guide)
+  - [1. Launch the Web UI](#1-launch-the-web-ui)
+  - [2. Create a New DAG](#2-create-a-new-dag)
+  - [3. Edit the DAG](#3-edit-the-dag)
+  - [4. Execute the DAG](#4-execute-the-dag)
+- [**CLI**](#cli)
+- [**Table of Contents**](#table-of-contents)
+- [**Features**](#features)
+- [**Usecase**](#usecase)
+- [**Web UI**](#web-ui)
   - [DAG Details](#dag-details)
   - [DAGs List](#dags-list)
   - [Search DAGs](#search-dags)
   - [Execution History](#execution-history)
   - [DAG Execution Log](#dag-execution-log)
-- [Quick Start Guide](#quick-start-guide)
-  - [Launch the Web UI](#launch-the-web-ui)
-  - [Create a New DAG](#create-a-new-dag)
-  - [Edit the DAG](#edit-the-dag)
-  - [Execute the DAG](#execute-the-dag)
-- [Running as a daemon](#running-as-a-daemon)
-- [Example Workflow](#example-workflow)
-- [Motivation](#motivation)
-- [Why Not Use an Existing Workflow Scheduler Like Airflow?](#why-not-use-an-existing-workflow-scheduler-like-airflow)
-- [How It Works](#how-it-works)
-- [License](#license)
-- [Support and Community](#support-and-community)
+- [**Documentation**](#documentation)
+- [**Example Workflow**](#example-workflow)
+- [**Motivation**](#motivation)
+- [**Why Not Use an Existing Workflow Scheduler Like Airflow?**](#why-not-use-an-existing-workflow-scheduler-like-airflow)
+- [**How It Works**](#how-it-works)
+- [**Roadmap**](#roadmap)
+  - [**Short-term Goals**](#short-term-goals)
+  - [**Mid-term Initiatives**](#mid-term-initiatives)
+  - [**Long-term Vision**](#long-term-vision)
+  - [TODOS for Roadmap](#todos-for-roadmap)
+- [Executor Roadmap](#executor-roadmap)
+- [**License**](#license)
 
 ## **Features**
 
