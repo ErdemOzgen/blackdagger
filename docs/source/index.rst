@@ -26,6 +26,14 @@ While there are numerous workflow schedulers like Airflow available, these often
 
 
 .. toctree::
+   :maxdepth: 2
+   :caption: About Framework
+   :hidden:
+
+   About the Framework <framework-intro>
+   Components <components/index>
+
+.. toctree::
    :caption: First Steps
    :hidden:
 
