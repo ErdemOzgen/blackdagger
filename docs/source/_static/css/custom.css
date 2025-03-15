@@ -106,3 +106,30 @@ a:hover {
   background: none;
   border: none;
 }
+
+/* Override theme table styling completely */
+.rst-content table.docutils,
+.rst-content table.docutils th,
+.rst-content table.docutils td,
+.rst-content table.docutils tr {
+    background-color: #222 !important;
+    color: #fff !important;
+    border: 1px solid #444 !important;
+}
+
+/* Ensure borders are visible and not collapsed */
+.rst-content table.docutils {
+    border-collapse: collapse !important;
+    border: 2px solid #444 !important;
+}
+
+/* Remove zebra striping from the theme */
+
+.rst-content table.docutils tr:nth-child(odd) {
+    background-color: #222 !important;
+}
+
+.rst-content table.docutils tr:nth-child(even){
+    background-color: #3a3939 !important;
+}
+
