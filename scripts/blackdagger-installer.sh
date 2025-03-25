@@ -1,115 +1,110 @@
 #!/bin/sh
 
-# Check if the script is running as root
+# Ensure the script is running as root
 if [ "$(id -u)" -ne 0 ]; then
   echo "This script must be run as root. Please use sudo or log in as root."
   exit 1
 fi
 
+# Check Git installation
 if ! command -v git &>/dev/null; then
-    echo "Git is not installed."
-    echo "Please install git if you want to pull default yamls !!!"
+    echo "Git is not installed. Please install Git to pull default yamls."
 else
-    echo "Git is already installed. It will pull default yamls"
+    echo "Git is already installed. It will pull default yamls."
 fi
 
-RELEASES_URL="https://github.com/sorenisanerd/gotty/releases"
-GOTTY_TARGET_VERSION="v1.5.0"
+# Function to set OS and ARCH variables
+set_os_arch() {
+    OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+    ARCH=$(uname -m)
 
-echo "Preparing to download gotty $GOTTY_TARGET_VERSION..."
+    case "$ARCH" in
+        x86_64) ARCH="amd64" ;;
+        aarch64) ARCH="arm64" ;;
+        armv7*|armhf|armv7l) ARCH="armv7" ;;
+        armv6*) ARCH="armv6" ;;
+        i386|i686) ARCH="386" ;;
+        *) echo "Unsupported architecture: $ARCH"; exit 1 ;;
+    esac
+}
 
-OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-ARCH=$(uname -m)
+set_os_arch
 
-case "$ARCH" in
-    x86_64) ARCH="amd64" ;;
-    arm*) ARCH="arm" ;;
-    aarch64) ARCH="arm64" ;;
-    i386) ARCH="386" ;;
-    i686) ARCH="386" ;;
-    *) echo "Unsupported architecture: $ARCH"; exit 1 ;;
-esac
-
-TAR_FILE="gotty_${GOTTY_TARGET_VERSION}_${OS}_${ARCH}.tar.gz"
-DOWNLOAD_URL="$RELEASES_URL/download/$GOTTY_TARGET_VERSION/$TAR_FILE"
-TMPDIR=$(mktemp -d)
-DOWNLOAD_PATH="${TMPDIR}/${TAR_FILE}"
-
-echo "Downloading $TAR_FILE from $DOWNLOAD_URL..."
-curl -sfLo "$DOWNLOAD_PATH" "$DOWNLOAD_URL"
-
-if [ ! -f "$DOWNLOAD_PATH" ]; then
-    echo "Failed to download $TAR_FILE. Please check the URL and try again."
-    exit 1
-fi
-
-echo "Extracting $TAR_FILE..."
-tar -xzf "$DOWNLOAD_PATH" -C "$TMPDIR"
-
-if [ ! -f "${TMPDIR}/gotty" ]; then
-    echo "Failed to extract. The gotty binary is not found."
-    exit 1
-fi
-echo "GOTTY"
-# Move gotty to /usr/bin to make it globally accessible
-sudo mv "${TMPDIR}/gotty" /usr/bin/
-echo "gotty has been downloaded, extracted, and moved to /usr/bin successfully."
-
-
-
-# Uncomment to run gotty with passed arguments
-# "./gotty" "$@"
-#gotty -p 8090 -w --credential blackcart:blackcart /bin/bash
-
-#!/bin/sh
-
-
-RELEASES_URL="https://github.com/erdemozgen/blackdagger/releases"
-FILE_BASENAME="blackdagger"
-
-
-echo "Downloading the latest binary to the current directory..."
-
-VERSION=$(curl -sfL -o /dev/null -w %{url_effective} "$RELEASES_URL/latest" | rev | cut -f1 -d'/' | rev)
-
-if [ -z "$VERSION" ]; then
-    echo "Unable to get blackdagger version." >&2
-    exit 1
-fi
-
-# if [ "$(uname -m)" = "x86_64" ]; then
-#     ARCHITECTURE="amd64"
-# else
-#     ARCHITECTURE="$(uname -m)"
-# fi
+# Download and install gotty
+GOTTY_VERSION="v1.5.0"
+GOTTY_BASE_URL="https://github.com/sorenisanerd/gotty/releases/download/$GOTTY_VERSION"
+GOTTY_TAR_FILE="gotty_${GOTTY_VERSION}_${OS}_${ARCH}.tar.gz"
 
 TMPDIR=$(mktemp -d)
-TAR_FILE="${TMPDIR}/${FILE_BASENAME}_$(uname -s)_${ARCH}.tar.gz"
 
-echo "Downloading blackdagger $VERSION to $TMPDIR..."
-curl -sfLo "$TAR_FILE" "$RELEASES_URL/download/$VERSION/${FILE_BASENAME}_${VERSION:1}_$(uname -s)_${ARCH}.tar.gz"
+# gotty installation
+echo "Downloading gotty from $GOTTY_BASE_URL/$GOTTY_TAR_FILE..."
+curl -sfLo "$TMPDIR/$GOTTY_TAR_FILE" "$GOTTY_BASE_URL/$GOTTY_TAR_FILE"
 
-if [ ! -f "$TAR_FILE" ]; then
-    echo "Failed to download $TAR_FILE. Please check the URL and try again."
+if [ ! -f "$TMPDIR/$GOTTY_TAR_FILE" ]; then
+    echo "Failed to download $GOTTY_TAR_FILE. Check the URL and retry."
+    rm -rf "$TMPDIR"
     exit 1
 fi
 
-echo "Extracting $TAR_FILE to $TMPDIR..."
-tar -xf "$TAR_FILE" -C "$TMPDIR"
+echo "Extracting gotty..."
+tar -xzf "$TMPDIR/$GOTTY_TAR_FILE" -C "$TMPDIR"
 
-if [ ! -f "${TMPDIR}/blackdagger" ]; then
-    echo "Failed to extract. The blackdagger binary is not found."
+if [ ! -f "$TMPDIR/gotty" ]; then
+    echo "Extraction failed: gotty binary not found."
+    rm -rf "$TMPDIR"
     exit 1
 fi
 
-# Forcefully remove any existing file or directory named blackdagger in /usr/bin and then move the new binary
-if [ -f "/usr/bin/blackdagger" ] || [ -d "/usr/bin/blackdagger" ]; then
-    sudo rm -rf "/usr/bin/blackdagger"
+mv "$TMPDIR/gotty" /usr/bin/
+echo "gotty installed successfully."
+
+# blackdagger installation
+BLACKDAGGER_BASE_URL="https://github.com/erdemozgen/blackdagger/releases"
+
+# Fetch latest blackdagger version
+BLACKDAGGER_VERSION=$(curl -sfL -o /dev/null -w %{url_effective} "$BLACKDAGGER_BASE_URL/latest" | rev | cut -f1 -d'/' | rev)
+
+if [ -z "$BLACKDAGGER_VERSION" ]; then
+    echo "Unable to fetch latest blackdagger version."
+    rm -rf "$TMPDIR"
+    exit 1
 fi
-sudo mv "${TMPDIR}/blackdagger" /usr/bin/
-echo "blackdagger has been downloaded, extracted, and moved to /usr/bin/ successfully."
+
+BLACKDAGGER_VERSION_NUMBER="${BLACKDAGGER_VERSION#v}"
+BLACKDAGGER_TAR_FILE="blackdagger_${BLACKDAGGER_VERSION_NUMBER}_${OS}_${ARCH}.tar.gz"
+
+# Download blackdagger
+echo "Downloading blackdagger $BLACKDAGGER_VERSION from $BLACKDAGGER_BASE_URL/download/$BLACKDAGGER_VERSION/$BLACKDAGGER_TAR_FILE..."
+curl -sfLo "$TMPDIR/$BLACKDAGGER_TAR_FILE" "$BLACKDAGGER_BASE_URL/download/$BLACKDAGGER_VERSION/$BLACKDAGGER_TAR_FILE"
+
+if [ ! -f "$TMPDIR/$BLACKDAGGER_TAR_FILE" ]; then
+    echo "Failed to download $BLACKDAGGER_TAR_FILE. Check the URL and retry."
+    rm -rf "$TMPDIR"
+    exit 1
+fi
+
+echo "Extracting blackdagger..."
+tar -xf "$TMPDIR/$BLACKDAGGER_TAR_FILE" -C "$TMPDIR"
+
+if [ ! -f "$TMPDIR/blackdagger" ]; then
+    echo "Extraction failed: blackdagger binary not found."
+    rm -rf "$TMPDIR"
+    exit 1
+fi
+
+# Move blackdagger binary
+rm -rf "/usr/bin/blackdagger"
+mv "$TMPDIR/blackdagger" /usr/bin/
+chmod +x /usr/bin/blackdagger
+
+echo "blackdagger installed successfully."
 
 # Cleanup
 rm -rf "$TMPDIR"
 
-"blackdagger" "$@"
+echo "All installations complete!"
+
+# Uncomment to run gotty or blackdagger
+# gotty -p 8090 -w --credential blackcart:blackcart /bin/bash
+# blackdagger "$@"
