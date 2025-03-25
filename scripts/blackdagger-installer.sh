@@ -21,7 +21,7 @@ set_os_arch() {
     case "$ARCH" in
         x86_64) ARCH="amd64" ;;
         aarch64) ARCH="arm64" ;;
-        armv7*|armhf|armv7l) ARCH="armv7" ;;
+        armv7*|armhf|armv7l) ARCH="arm" ;; # corrected from armv7 to arm
         armv6*) ARCH="armv6" ;;
         i386|i686) ARCH="386" ;;
         *) echo "Unsupported architecture: $ARCH"; exit 1 ;;
@@ -57,6 +57,7 @@ if [ ! -f "$TMPDIR/gotty" ]; then
 fi
 
 mv "$TMPDIR/gotty" /usr/bin/
+chmod +x /usr/bin/gotty
 echo "gotty installed successfully."
 
 # blackdagger installation
