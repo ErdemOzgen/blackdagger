@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import MonacoEditor, { loader } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
 import { configureMonacoYaml } from 'monaco-yaml';
+import dagSchema from '../../../../schemas/dag.schema.json'; 
 
 configureMonacoYaml(monaco, {
   enableSchemaRequest: true,
@@ -13,6 +14,7 @@ configureMonacoYaml(monaco, {
     {
       uri: 'https://raw.githubusercontent.com/ErdemOzgen/blackdagger/refs/heads/main/schemas/dag.schema.json',
       fileMatch: ['*'], 
+      schema: dagSchema, // 👈 this is your imported JSON object
     },
   ],
 });
