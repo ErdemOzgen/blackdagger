@@ -151,7 +151,7 @@ export function getNextSchedule(data: WorkflowListItem): number {
     return Number.MAX_SAFE_INTEGER;
   }
   const datesToRun = schedules.map((s) =>
-    cronParser.parseExpression(s.Expression).next()
+    cronParser.parse(s.Expression).next()
   );
   const sorted = datesToRun.sort((a, b) => a.getTime() - b.getTime());
   return sorted[0].getTime() / 1000;

@@ -6,13 +6,18 @@ import Title from '../../components/atoms/Title';
 import { GetSearchResponse } from '../../models/api';
 import SearchResult from '../../components/molecules/SearchResult';
 import LoadingIndicator from '../../components/atoms/LoadingIndicator';
+import { AppBarContext } from '../../contexts/AppBarContext';
+
 
 function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchVal, setSearchVal] = React.useState(searchParams.get('q') || '');
+  const appBarContext = React.useContext(AppBarContext);
 
   const { data, error } = useSWR<GetSearchResponse>(
-    `/search?q=${searchParams.get('q') || ''}`
+    `/search?q=${searchParams.get('q') || ''}&remoteNode=${
+      appBarContext.selectedRemoteNode || 'local'
+    }`
   );
   const ref = useRef<HTMLInputElement>(null);
 

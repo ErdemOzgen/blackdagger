@@ -16,6 +16,10 @@ func TestDryCommand(t *testing.T) {
 				args:        []string{"dry", testDAGFile("success.yaml")},
 				expectedOut: []string{"Starting DRY-RUN"},
 			},
+			{
+				args:        []string{"dry", testDAGFile("params.yaml"), "--params", "p3 p4"},
+				expectedOut: []string{`[1=p3 2=p4]`},
+			},
 		}
 
 		for _, tc := range tests {

@@ -1,7 +1,7 @@
 import React, { CSSProperties } from 'react';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import mermaidAPI, { Mermaid } from 'mermaid';
+import mermaid from 'mermaid';
 
 type Props = {
   def: string;
@@ -14,8 +14,8 @@ declare global {
   }
 }
 
-mermaidAPI.initialize({
-  securityLevel: 'loose' as Mermaid['mermaidAPI']['SecurityLevel']['Loose'],
+mermaid.initialize({
+  securityLevel: 'loose',
   startOnLoad: false,
   maxTextSize: 99999999,
   flowchart: {
@@ -27,6 +27,9 @@ mermaidAPI.initialize({
 //
 function Mermaid({ def, style = {} }: Props) {
   const ref = React.useRef<HTMLDivElement>(null);
+  const [uniqueId] = React.useState(
+    () => `mermaid-${Math.random().toString(36).substr(2, 9)}`
+  );
   const mStyle = {
     ...style,
     //backgroundColor: '#171617' ,
@@ -36,7 +39,7 @@ function Mermaid({ def, style = {} }: Props) {
     overflowX: 'auto',
     padding: '2em',
   };
-  function render() {
+const render = async () => {
     if (!ref.current) {
       return;
     }
@@ -44,25 +47,37 @@ function Mermaid({ def, style = {} }: Props) {
       console.error('invalid definition!!');
       return;
     }
-    mermaidAPI.render(
-      'mermaid',
-      def,
-      (svgCode, bindFunc) => {
-        if (ref.current) {
-          ref.current.innerHTML = svgCode;
-        }
+
+    try {
+      // Clear previous content
+      ref.current.innerHTML = '';
+
+      // Generate SVG
+      const { svg, bindFunctions } = await mermaid.render(uniqueId, def);
+
+      if (ref.current) {
+        ref.current.innerHTML = svg;
+
+        // Bind event handlers
         setTimeout(() => {
-          if (ref.current) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            bindFunc(ref.current);
+          if (ref.current && bindFunctions) {
+            bindFunctions(ref.current);
           }
         }, 500);
-      },
-      ref.current
-    );
-  }
-  function renderWithRetry() {
+      }
+    } catch (error: unknown) {
+      console.error('Mermaid render error:', error);
+      if (ref.current) {
+        ref.current.innerHTML = `
+          <div style="color: red; padding: 10px;">
+            Error rendering diagram: ${error}
+          </div>
+        `;
+      }
+    }
+  };
+
+  const renderWithRetry = () => {
     try {
       render();
     } catch (error) {
@@ -71,10 +86,12 @@ function Mermaid({ def, style = {} }: Props) {
       console.error(def);
       setTimeout(renderWithRetry, 1);
     }
-  }
+  };
+
   React.useEffect(() => {
     renderWithRetry();
-  }, [def, ref.current]);
+  }, [def]);
+
   return (
     <div style={dStyle}>
       <div className="mermaid" ref={ref} style={mStyle} />

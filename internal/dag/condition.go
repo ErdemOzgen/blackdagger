@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+
+	"github.com/ErdemOzgen/blackdagger/internal/patternutil"
 )
 
 // Condition contains a condition and the expected value.
@@ -36,7 +38,7 @@ func evalCondition(c Condition) error {
 		)
 	}
 
-	if c.Expected != actual {
+	if !patternutil.MatchPattern(actual, []string{c.Expected}, patternutil.WithExactMatch()) {
 		return fmt.Errorf(
 			"%w. Condition=%s Expected=%s Actual=%s",
 			errConditionNotMet,
