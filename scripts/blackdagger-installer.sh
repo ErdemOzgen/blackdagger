@@ -19,25 +19,42 @@ set_os_arch() {
     ARCH=$(uname -m)
 
     case "$ARCH" in
-        x86_64) ARCH="amd64" ;;
-        aarch64) ARCH="arm64" ;;
-        armv7*|armhf|armv7l) ARCH="arm" ;; # corrected from armv7 to arm
-        armv6*) ARCH="armv6" ;;
-        i386|i686) ARCH="386" ;;
-        *) echo "Unsupported architecture: $ARCH"; exit 1 ;;
+        x86_64)
+            GOTTY_ARCH="amd64"
+            BLACKDAGGER_ARCH="amd64"
+            ;;
+        aarch64)
+            GOTTY_ARCH="arm64"
+            BLACKDAGGER_ARCH="arm64"
+            ;;
+        armv7*|armhf|armv7l)
+            GOTTY_ARCH="arm"
+            BLACKDAGGER_ARCH="armv7"
+            ;;
+        armv6*)
+            GOTTY_ARCH="armv6"
+            BLACKDAGGER_ARCH="armv6"
+            ;;
+        i386|i686)
+            GOTTY_ARCH="386"
+            BLACKDAGGER_ARCH="386"
+            ;;
+        *)
+            echo "Unsupported architecture: $ARCH"
+            exit 1
+            ;;
     esac
 }
 
 set_os_arch
 
-# Download and install gotty
-GOTTY_VERSION="v1.5.0"
-GOTTY_BASE_URL="https://github.com/sorenisanerd/gotty/releases/download/$GOTTY_VERSION"
-GOTTY_TAR_FILE="gotty_${GOTTY_VERSION}_${OS}_${ARCH}.tar.gz"
-
 TMPDIR=$(mktemp -d)
 
-# gotty installation
+# Gotty installation
+GOTTY_VERSION="v1.5.0"
+GOTTY_BASE_URL="https://github.com/sorenisanerd/gotty/releases/download/$GOTTY_VERSION"
+GOTTY_TAR_FILE="gotty_${GOTTY_VERSION}_${OS}_${GOTTY_ARCH}.tar.gz"
+
 echo "Downloading gotty from $GOTTY_BASE_URL/$GOTTY_TAR_FILE..."
 curl -sfLo "$TMPDIR/$GOTTY_TAR_FILE" "$GOTTY_BASE_URL/$GOTTY_TAR_FILE"
 
@@ -73,7 +90,7 @@ if [ -z "$BLACKDAGGER_VERSION" ]; then
 fi
 
 BLACKDAGGER_VERSION_NUMBER="${BLACKDAGGER_VERSION#v}"
-BLACKDAGGER_TAR_FILE="blackdagger_${BLACKDAGGER_VERSION_NUMBER}_${OS}_${ARCH}.tar.gz"
+BLACKDAGGER_TAR_FILE="blackdagger_${BLACKDAGGER_VERSION_NUMBER}_${OS}_${BLACKDAGGER_ARCH}.tar.gz"
 
 # Download blackdagger
 echo "Downloading blackdagger $BLACKDAGGER_VERSION from $BLACKDAGGER_BASE_URL/download/$BLACKDAGGER_VERSION/$BLACKDAGGER_TAR_FILE..."
