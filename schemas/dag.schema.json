@@ -21,7 +21,7 @@
       "description": "Group name to organize DAGs"
     },
     "tags": {
-      "type": "array",
+      "type": ["array", "string"],
       "items": {
         "type": "string"
       },
@@ -55,7 +55,7 @@
       "description": "Max parallel running steps"
     },
     "params": {
-      "type": "array",
+      "type": ["array", "string"],
       "items": {
         "type": "string"
       },

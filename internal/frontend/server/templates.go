@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"github.com/ErdemOzgen/blackdagger/internal/constants"
@@ -42,6 +43,8 @@ type funcsConfig struct {
 	NavbarColor string
 	NavbarTitle string
 	APIBaseURL  string
+	RemoteNodes []string
+	BasePath    string
 }
 
 func defaultFunctions(cfg funcsConfig) template.FuncMap {
@@ -62,8 +65,14 @@ func defaultFunctions(cfg funcsConfig) template.FuncMap {
 		"navbarTitle": func() string {
 			return cfg.NavbarTitle
 		},
+		"basePath": func() string {
+			return cfg.BasePath
+		},
 		"apiURL": func() string {
 			return cfg.APIBaseURL
+		},
+		"remoteNodes": func() string {
+			return strings.Join(cfg.RemoteNodes, ",")
 		},
 	}
 }

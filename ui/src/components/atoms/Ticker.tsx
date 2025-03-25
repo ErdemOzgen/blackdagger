@@ -2,7 +2,7 @@ import * as React from 'react';
 
 interface Props {
   intervalMs: number;
-  children: () => JSX.Element;
+  children: () => React.JSX.Element;
 }
 export default function Ticker({ intervalMs, children }: Props) {
   const [, update] = React.useState(0);

@@ -2,6 +2,7 @@ import * as React from 'react';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChartGantt,
@@ -26,7 +27,7 @@ function Icon({ icon }: { icon: IconProp }) {
       }}
     >
       <FontAwesomeIcon
-        style={{ height: 20, width: 20, color:'#FFFEFE' }}
+        style={{ height: 20, width: 20, color: '#FFFEFE' }}
         icon={icon}
       ></FontAwesomeIcon>
     </span>
@@ -35,21 +36,24 @@ function Icon({ icon }: { icon: IconProp }) {
 
 export const mainListItems = (
   <React.Fragment>
-    <ListItem
-      text="Dashboard"
-      icon={<Icon icon={faChartGantt} />}
-      to="/dashboard"
-    />
-    <ListItem
-      text="DAGs"
-      icon={<Icon icon={faTableList} />}
-      to="/dags"
-    />
-    <ListItem
-      text="Search"
-      icon={<Icon icon={faMagnifyingGlass} />}
-      to="/search"
-    />
+    <Link to="/dashboard">
+      <ListItem
+        text="Dashboard"
+        icon={<Icon icon={faChartGantt} />}
+      />
+    </Link>
+    <Link to="/dags">
+      <ListItem
+        text="DAGs"
+        icon={<Icon icon={faTableList} />}
+      />
+    </Link>
+    <Link to="/search">
+      <ListItem
+        text="Search"
+        icon={<Icon icon={faMagnifyingGlass} />}
+      />
+    </Link>
     <ListItem
       text="Terminal"
       icon={<Icon icon={faTerminal} />}
@@ -68,7 +72,7 @@ export const mainListItems = (
 type ListItemProps = {
   icon: React.ReactNode;
   text: string;
-  to: string;
+  to?: string;
   external?: boolean;
 };
 
@@ -118,13 +122,13 @@ function ListItem({ icon, text, to, external }: ListItemProps) {
 
 function ListItemDoc({ icon, text, to, external }: ListItemProps) {
   let listItemProps = {};
-  
+
   if (external) {
     // Directly use the 'to' prop for external links
     listItemProps = { component: "a", href: to, target: '_blank', rel: 'noopener noreferrer' };
   } else {
     // For internal routing, adjust as needed for your routing library
-    listItemProps = { component: "a", href: to }; 
+    listItemProps = { component: "a", href: to };
   }
   return (
     <ListItemButton component="a" {...listItemProps}>

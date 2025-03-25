@@ -16,6 +16,8 @@ func New(cfg *config.Config, lg logger.Logger, cli client.Client) *server.Server
 			Client:             cli,
 			LogEncodingCharset: cfg.LogEncodingCharset,
 		},
+		cfg.RemoteNodes, // NEW: Pass remote nodes
+		cfg.APIBaseURL,  // NEW: Pass API base URL
 	))
 
 	serverParams := server.NewServerArgs{
@@ -29,6 +31,13 @@ func New(cfg *config.Config, lg logger.Logger, cli client.Client) *server.Server
 		NavbarTitle: cfg.NavbarTitle,
 		APIBaseURL:  cfg.APIBaseURL,
 	}
+
+	// NEW: Add remote nodes to the server configuration
+	var remoteNodeNames []string
+	for _, node := range cfg.RemoteNodes {
+		remoteNodeNames = append(remoteNodeNames, node.Name)
+	}
+	serverParams.RemoteNodes = remoteNodeNames
 
 	if cfg.IsAuthToken {
 		serverParams.AuthToken = &server.AuthToken{

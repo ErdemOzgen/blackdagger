@@ -31,8 +31,8 @@ function DAGs() {
       limit: '50',
       searchName: apiSearchText,
       searchTag: apiSearchTag,
-    }
-  ).toString()}`
+      remoteNode: appBarContext.selectedRemoteNode || 'local',
+    }).toString()}`;
   const { data } = useSWR<ListWorkflowsResponse>(endPoint, null, {
     refreshInterval: 10000,
     revalidateIfStale: false,
@@ -41,8 +41,12 @@ function DAGs() {
   const addSearchParam = (key: string, value: string) => {
     const locationQuery = new URLSearchParams(window.location.search);
     locationQuery.set(key, value);
-    window.history.pushState({}, '', `${window.location.pathname}?${locationQuery.toString()}`);
-  }
+    window.history.pushState(
+      {},
+      '',
+      `${window.location.pathname}?${locationQuery.toString()}`
+    );
+  };
 
   const refreshFn = React.useCallback(() => {
     setTimeout(() => mutate(endPoint), 500);

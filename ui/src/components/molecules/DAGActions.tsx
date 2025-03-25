@@ -10,6 +10,7 @@ import StartDAGModal from './StartDAGModal';
 import ConfirmModal from './ConfirmModal';
 import LabeledItem from '../atoms/LabeledItem';
 import { Workflow, WorkflowStatus } from '../../models/api';
+import { AppBarContext } from '../../contexts/AppBarContext';
 
 type LabelProps = {
   show: boolean;
@@ -25,9 +26,9 @@ type Props = {
   refresh?: () => void;
 };
 
-function Label({ show, children }: LabelProps): JSX.Element {
+function Label({ show, children }: LabelProps): React.JSX.Element {
   if (show) return <>{children}</>;
-  return <VisuallyHidden>{children}</VisuallyHidden>;
+  return <VisuallyHidden>{children?.toString()}</VisuallyHidden>;
 }
 
 function DAGActions({
@@ -39,6 +40,7 @@ function DAGActions({
   label = true,
 }: Props) {
   const nav = useNavigate();
+  const appBarContext = React.useContext(AppBarContext);
 
   const [isStartModal, setIsStartModal] = React.useState(false);
   const [isStopModal, setIsStopModal] = React.useState(false);
@@ -51,7 +53,9 @@ function DAGActions({
       requestId?: string;
       params?: string;
     }) => {
-      const url = `${getConfig().apiURL}/dags/${params.name}`;
+      const url = `${getConfig().apiURL}/dags/${params.name}?remoteNode=${
+        appBarContext.selectedRemoteNode || 'local'
+      }`;
       const ret = await fetch(url, {
         method: 'POST',
         headers: {

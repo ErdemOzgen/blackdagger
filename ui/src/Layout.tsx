@@ -8,12 +8,11 @@ import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import { mainListItems } from './menu';
-import { Grid, colors } from '@mui/material';
+import { Grid, MenuItem, Select } from '@mui/material';
 import { AppBarContext } from './contexts/AppBarContext';
 import { Link } from 'react-router-dom';
 
 import blackdaggerImage from './assets/images/blackdagger.png';
-
 
 const drawerWidthClosed = 64;
 const drawerWidth = 240;
@@ -101,8 +100,7 @@ function Content({ title, navbarColor, children }: DashboardContentProps) {
         <Drawer variant="permanent" open={false}>
           <Box
             sx={{
-              background: `linear-gradient(0deg, ${mdTheme.palette.background.default} 0%, ${gradientColor} 70%, ${gradientColor} 100%)`, // Adjust gradientColor accordingly
-              /**background: `linear-gradient(0deg, #fff 0%, ${gradientColor} 70%, ${gradientColor} 100%);`, **/
+              background: `linear-gradient(0deg, ${mdTheme.palette.background.default} 0%, ${gradientColor} 70%, ${gradientColor} 100%)`,
               height: '100%',
             }}
           >
@@ -136,35 +134,64 @@ function Content({ title, navbarColor, children }: DashboardContentProps) {
               display: 'block',
             }}
           >
-           <Toolbar
-  sx={{
-    width: '100%',
-    display: 'flex',
-    direction: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flex: 1,
-  }}
->
-  <AppBarContext.Consumer>
-    {(context) => (
-      <NavBarTitleText visible={scrolled}>
-        {context.title}
-      </NavBarTitleText>
-    )}
-  </AppBarContext.Consumer>
-  <Link to="/dashboard">
+            <Toolbar
+              sx={{
+                width: '100%',
+                display: 'flex',
+                direction: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flex: 1,
+              }}
+            >
+              <AppBarContext.Consumer>
+                {(context) => (
+                  <NavBarTitleText visible={scrolled}>
+                    {context.title}
+                  </NavBarTitleText>
+                )}
+              </AppBarContext.Consumer>
 
-  <NavBarTitleText>{title || 'Blackdagger'}</NavBarTitleText> {/* Title */}
-  </Link>
-  <Link to="/dashboard">
- 
-  <img src={blackdaggerImage} alt="Black Dagger" />
-  
-  </Link>
-</Toolbar>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Link to="/dashboard">
+                  <NavBarTitleText>{title || 'Blackdagger'}</NavBarTitleText>
+                </Link>
+                <Link to="/dashboard">
+                  <img src={blackdaggerImage} alt="Blackdagger" />
+                </Link>
 
+                <AppBarContext.Consumer>
+                  {(context) =>
+                    context.remoteNodes && context.remoteNodes.length > 0 ? (
+                      <Select
+                        sx={{
+                          backgroundColor: 'white',
+                          color: 'black',
+                          borderRadius: '5px',
+                          border: '1px solid #ccc',
+                          marginLeft: '10px',
+                          height: '30px',
+                          width: '150px',
+                          marginBottom: '5px',
+                        }}
+                        value={context.selectedRemoteNode}
+                        onChange={(e) => {
+                          context.selectRemoteNode(e.target.value);
+                        }}
+                      >
+                        {context.remoteNodes.map((node) => (
+                          <MenuItem key={node} value={node}>
+                            {node}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    ) : null
+                  }
+                </AppBarContext.Consumer>
+              </Box>
+            </Toolbar>
           </AppBar>
+
           <Grid
             container
             ref={containerRef}
@@ -172,8 +199,7 @@ function Content({ title, navbarColor, children }: DashboardContentProps) {
               flex: 1,
               pb: 4,
               overflow: 'auto',
-              backgroundColor: '#171617', /*Dashboard background color */
-
+              backgroundColor: '#171617',
             }}
             onScroll={() => {
               const curr = containerRef.current;
@@ -206,7 +232,6 @@ const NavBarTitleText = ({
     sx={{
       fontWeight: '800',
       color: '#FFFEFE',
-      /**backgroundColor : 'red',**/
       opacity: visible ? 1 : 0,
       transition: 'opacity 0.2s',
     }}

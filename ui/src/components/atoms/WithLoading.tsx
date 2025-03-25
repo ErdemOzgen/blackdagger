@@ -2,7 +2,7 @@ import React from 'react';
 import LoadingIndicator from './LoadingIndicator';
 
 type Props = {
-  children?: JSX.Element | JSX.Element[] | null;
+  children?: React.JSX.Element | React.JSX.Element[] | null;
   loaded: boolean;
 };
 
