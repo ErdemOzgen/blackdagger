@@ -1,7 +1,7 @@
 package constants
 
 var (
-	Version = "1.0.7"
+	Version = "1.1.0"
 )
 
 /*

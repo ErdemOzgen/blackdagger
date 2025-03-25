@@ -21,10 +21,7 @@
       "description": "Group name to organize DAGs"
     },
     "tags": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
+      "type": "string",
       "description": "List of free tags to categorize DAGs"
     },
     "env": {
