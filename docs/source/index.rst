@@ -20,8 +20,8 @@ How It Works
 ------------
 Blackdagger simplifies workflow management by operating as a standalone command-line tool, leveraging the local file system for data storage — eliminating the need for database management systems or cloud services. It enables the definition of DAGs in an intuitive, declarative YAML format, ensuring that existing programs can be seamlessly integrated without any modifications.
 
-Why Not Use an Existing Workflow Scheduler Like Airflow?
----------
+Why Not an Existing Workflow Scheduler Like Airflow?
+------------------------------------------------------------
 While there are numerous workflow schedulers like Airflow available, these often necessitate the authoring of DAGs through programming languages such as Python. For legacy systems with extensive job configurations, incorporating code in languages like Perl or Shell Script can already be a complex endeavor. Introducing an additional layer with such tools can further complicate maintainability. In contrast, Blackdagger is crafted for simplicity and usability, requiring no coding skills. This makes it a perfect fit for smaller projects looking for a straightforward, self-sufficient workflow management solution.
 
 .. toctree::
@@ -63,6 +63,7 @@ While there are numerous workflow schedulers like Airflow available, these often
    :hidden:
 
    config
+   remote
    auth
    api_token
 

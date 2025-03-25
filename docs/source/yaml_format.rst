@@ -246,6 +246,17 @@ If you want the DAG to continue to the next step regardless of the step's condit
       continueOn:
         skipped: true
 
+Use regex in conditions:
+
+.. code-block:: yaml
+
+  steps:
+    - name: monthly task
+      command: monthly.sh
+      preconditions:
+        - condition: "`date '+%d'`"
+          expected: "re:0[1-9]" # Run only if the day is between 01 and 09
+
 User Defined Functions
 -----------------------
 
