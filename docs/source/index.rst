@@ -27,22 +27,61 @@ While there are numerous workflow schedulers like Airflow available, these often
 .. toctree::
    :hidden:
    :maxdepth: 2
+   :caption: About Framework
+   :hidden:
+
+   About the Framework <framework-intro>
+   Components <components/index>
+
+.. toctree::
+   :caption: First Steps
+   :hidden:
 
    installation
    quickstart
+
+.. toctree::
+   :caption: Interfaces
+   :hidden:
+
    cli
    web_interface
+
+.. toctree::
+   :caption: Writing YAMLs
+   :hidden:
+
    yaml_format
-   base_config
    examples
+   advanced
+   executors
+   scheduler
+   email
+
+.. toctree::
+   :caption: Configurations
+   :hidden:
+
    config
    auth
    api_token
-   executors
-   email
-   scheduler
+
+.. toctree::
+   :caption: Docker
+   :hidden:  
+
    docker-compose
-   rest
    docker
+
+.. toctree::
+   :caption: REST API
+   :hidden:    
+
+   rest
+
+.. toctree::
+   :caption: FAQ and Contribution
+   :hidden:  
+
    faq
    contrib

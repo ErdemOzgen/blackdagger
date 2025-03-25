@@ -29,17 +29,16 @@ install-libs:
 	pip install sphinx sphinx-autobuild
 
 build:
-	sphinx-build -b html source/ build/html
+	sphinx-build -b html -D language=us_EN source/ build/html
 
-gettext-ja:
-	sphinx-build -b gettext source/ build/html
-	sphinx-intl update -p _build/gettext -l ja
-
-PYTHON_VER = 3.7.16
+PYTHON_VER = 3.11.9
 
 venv:
 	pyenv local $(PYTHON_VER)
 	python -m venv .venv
 
-	@pyenv install $(PYTHON_VER)
 install-python:
+	@pyenv install $(PYTHON_VER)
+
+gen-pot-files:
+	sphinx-intl update -p build/gettext -l en
