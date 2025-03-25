@@ -37,7 +37,7 @@ IMAGE_NAME=blackdagger
 FULL_IMAGE_NAME=$(DOCKER_USERNAME)/$(IMAGE_NAME):$(VERSION)
 LATEST_IMAGE_NAME=$(DOCKER_USERNAME)/$(IMAGE_NAME):latest
 BUILDER_NAME=mybuilder
-DOCKER_CMD := docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm64/v8 --builder container --build-arg VERSION=$(VERSION) --push --no-cache
+DOCKER_CMD := docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm64/v8 --build-arg VERSION=$(VERSION) --push --no-cache
 
 # Arguments for the tests
 GOTESTSUM_ARGS=--format=standard-quiet
@@ -157,13 +157,13 @@ ifeq ($(VERSION),)
 	$(error "VERSION is not set")
 endif
 	echo "${COLOR_GREEN}Building the docker image with the version $(VERSION)...${COLOR_RESET}"
-	$(DOCKER_CMD) -t ghcr.io/blackdagger-org/${APP_NAME}:$(VERSION) .
+	$(DOCKER_CMD) -t erdemozgen/${APP_NAME}:$(VERSION) .
 
 # build-image-latest build the docker image with the latest tag and push to 
 # the registry.
 build-image-latest:
 	@echo "${COLOR_GREEN}Building the docker image...${COLOR_RESET}"
-	$(DOCKER_CMD) -t ghcr.io/blackdagger-org/${APP_NAME}:latest .
+	$(DOCKER_CMD) -t erdemozgen/${APP_NAME}:latest .
 
 # gomerger merges all go files into a single file.
 gomerger: ${LOCAL_DIR}/merged
