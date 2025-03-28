@@ -176,7 +176,6 @@ func (e *sshExec) Run() error {
 	if err != nil {
 		return err
 	}
-
 	session, err := conn.NewSession()
 	if err != nil {
 		return err
@@ -184,18 +183,16 @@ func (e *sshExec) Run() error {
 	e.session = session
 	defer session.Close()
 
-	// Direct stdout/stderr to the executor's writer.
 	session.Stdout = e.stdout
 	session.Stderr = e.stdout
 
-	// Join command and args.
+	// The command to be executed on the remote server.
 	originalCmd := strings.Join(append([]string{e.step.Command}, e.step.Args...), " ")
 
-	// Wrap the command in a shell.
-	// Using bash -c to interpret shell operators like ";".
-	shellCmd := fmt.Sprintf("bash -c \"%s\"", originalCmd)
-
-	return session.Run(shellCmd)
+	// Wrap the command in a shell to ensure it is executed correctly.
+	// This is necessary because the command may contain shell-specific
+	cmd := fmt.Sprintf("sh -c %q", originalCmd)
+	return session.Run(cmd)
 }
 
 // referenced code:
