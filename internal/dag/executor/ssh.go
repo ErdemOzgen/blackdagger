@@ -167,8 +167,9 @@ func (e *sshExec) Run() error {
 	if e.step.Script != "" {
 		// Create a unique temporary file path on the remote host.
 		tmpFile := fmt.Sprintf("/tmp/script-%d.sh", time.Now().UnixNano())
-		// Construct a heredoc command to write the script content to the temporary file and execute it with bash.
-		remoteCmd = fmt.Sprintf("cat > %s <<'EOF'\n%s\nEOF\nbash %s", tmpFile, e.step.Script, tmpFile)
+		// Construct a heredoc command to write the script to the temporary file,
+		// execute it with bash, and remove the temporary file afterwards.
+		remoteCmd = fmt.Sprintf("cat > %s <<'EOF'\n%s\nEOF\nbash %s; rm -f %s", tmpFile, e.step.Script, tmpFile, tmpFile)
 	} else {
 		originalCmd := strings.Join(append([]string{e.step.Command}, e.step.Args...), " ")
 		// Wrap the command in a shell to ensure proper parsing of shell operators.
