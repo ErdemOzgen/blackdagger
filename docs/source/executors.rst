@@ -205,6 +205,7 @@ Command Execution over SSH
 --------------------------
 
 The `ssh` executor allows us to execute commands on remote hosts over SSH.
+Instead of `key`, you can use `password` field and enter your password of your remote host.
 
 .. code-block:: yaml
 
@@ -218,4 +219,22 @@ The `ssh` executor allows us to execute commands on remote hosts over SSH.
             port: 22
             key: /Users/blackdagger/.ssh/private.pem
         command: /usr/sbin/ifconfig
+
+To run multiple commands at the same time, use the example below:
+
+.. code-block:: yaml
+
+    steps:
+      - name: step1
+        executor: 
+          type: ssh
+          config:
+            user: blackdagger
+            ip: XXX.XXX.XXX.XXX
+            port: 22
+            key: /Users/blackdagger/.ssh/private.pem
+        script: |
+          echo "Executing multiple commands:"
+          cp /etc/resolv.conf /tmp/x
+          cat /tmp/x
 
