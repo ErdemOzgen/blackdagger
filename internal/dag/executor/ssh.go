@@ -146,6 +146,30 @@ func (e *sshExec) Kill(_ os.Signal) error {
 	return nil
 }
 
+// func (e *sshExec) Run() error {
+// 	addr := net.JoinHostPort(e.config.IP, e.config.Port)
+// 	conn, err := ssh.Dial("tcp", addr, e.sshConfig)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	session, err := conn.NewSession()
+// 	if err != nil {
+// 		return err
+// 	}
+// 	e.session = session
+// 	defer session.Close()
+
+// 	// Once a Session is created, you can execute a single command on
+// 	// the remote side using the Run method.
+// 	session.Stdout = e.stdout
+// 	session.Stderr = e.stdout
+// 	command := strings.Join(
+// 		append([]string{e.step.Command}, e.step.Args...), " ",
+// 	)
+// 	return session.Run(command)
+// }
+
 func (e *sshExec) Run() error {
 	addr := net.JoinHostPort(e.config.IP, e.config.Port)
 	conn, err := ssh.Dial("tcp", addr, e.sshConfig)
@@ -160,14 +184,18 @@ func (e *sshExec) Run() error {
 	e.session = session
 	defer session.Close()
 
-	// Once a Session is created, you can execute a single command on
-	// the remote side using the Run method.
+	// Direct stdout/stderr to the executor's writer.
 	session.Stdout = e.stdout
 	session.Stderr = e.stdout
-	command := strings.Join(
-		append([]string{e.step.Command}, e.step.Args...), " ",
-	)
-	return session.Run(command)
+
+	// Join command and args.
+	originalCmd := strings.Join(append([]string{e.step.Command}, e.step.Args...), " ")
+
+	// Wrap the command in a shell.
+	// Using bash -c to interpret shell operators like ";".
+	shellCmd := fmt.Sprintf("bash -c \"%s\"", originalCmd)
+
+	return session.Run(shellCmd)
 }
 
 // referenced code:
