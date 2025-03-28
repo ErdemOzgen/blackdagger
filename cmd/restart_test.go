@@ -46,6 +46,8 @@ func TestRestartCommand(t *testing.T) {
 
 		time.Sleep(waitForStatusUpdate)
 
+		time.Sleep(time.Millisecond * 300)
+
 		// Wait for the DAG running again.
 		testStatusEventual(t, cli, dagFile, scheduler.StatusRunning)
 
@@ -60,6 +62,8 @@ func TestRestartCommand(t *testing.T) {
 		// Check parameter was the same as the first execution
 		workflow, err := dag.Load(setup.Config.BaseConfig, dagFile, "")
 		require.NoError(t, err)
+
+		time.Sleep(time.Millisecond * 300)
 
 		dataStore := newDataStores(setup.Config)
 		recentHistory := newClient(

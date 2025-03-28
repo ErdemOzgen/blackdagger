@@ -9,6 +9,7 @@ import (
 	"os"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/mitchellh/mapstructure"
 	"golang.org/x/crypto/ssh"
@@ -55,14 +56,13 @@ func selectSSHAuthMethod(cfg *sshExecConfig) (ssh.AuthMethod, error) {
 		if signer, err = getPublicKeySigner(cfg.Key); err != nil {
 			return nil, err
 		}
-
 		return ssh.PublicKeys(signer), nil
 	}
 
 	return ssh.Password(cfg.Password), nil
 }
 
-// expandEnvHook is a mapstructure decode hook that expands environment variables in string fields
+// expandEnvHook is a mapstructure decode hook that expands environment variables in string fields.
 func expandEnvHook(f reflect.Type, t reflect.Type, data any) (any, error) {
 	if f.Kind() != reflect.String || t.Kind() != reflect.String {
 		return data, nil
@@ -78,7 +78,6 @@ func newSSHExec(_ context.Context, step dag.Step) (Executor, error) {
 			DecodeHook: expandEnvHook,
 		},
 	)
-
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +93,7 @@ func newSSHExec(_ context.Context, step dag.Step) (Executor, error) {
 		Password: def.Password,
 	}
 
-	// Handle Port as either string or int
+	// Handle Port as either string or int.
 	port := os.ExpandEnv(fmt.Sprintf("%v", def.Port))
 	if port == "" {
 		port = "22"
@@ -152,7 +151,6 @@ func (e *sshExec) Run() error {
 	if err != nil {
 		return err
 	}
-
 	session, err := conn.NewSession()
 	if err != nil {
 		return err
@@ -160,14 +158,24 @@ func (e *sshExec) Run() error {
 	e.session = session
 	defer session.Close()
 
-	// Once a Session is created, you can execute a single command on
-	// the remote side using the Run method.
 	session.Stdout = e.stdout
 	session.Stderr = e.stdout
-	command := strings.Join(
-		append([]string{e.step.Command}, e.step.Args...), " ",
-	)
-	return session.Run(command)
+
+	var remoteCmd string
+
+	// If a script is provided, use it; otherwise, use the command.
+	if e.step.Script != "" {
+		// Create a unique temporary file path on the remote host.
+		tmpFile := fmt.Sprintf("/tmp/script-%d.sh", time.Now().UnixNano())
+		// Construct a heredoc command to write the script content to the temporary file and execute it with bash.
+		remoteCmd = fmt.Sprintf("cat > %s <<'EOF'\n%s\nEOF\nbash %s", tmpFile, e.step.Script, tmpFile)
+	} else {
+		originalCmd := strings.Join(append([]string{e.step.Command}, e.step.Args...), " ")
+		// Wrap the command in a shell to ensure proper parsing of shell operators.
+		remoteCmd = fmt.Sprintf("sh -c %q", originalCmd)
+	}
+
+	return session.Run(remoteCmd)
 }
 
 // referenced code:
@@ -175,11 +183,8 @@ func (e *sshExec) Run() error {
 //	https://go.googlesource.com/crypto/+/master/ssh/example_test.go
 //	https://gist.github.com/boyzhujian/73b5ecd37efd6f8dd38f56e7588f1b58
 func getPublicKeySigner(path string) (ssh.Signer, error) {
-	// A public key may be used to authenticate against the remote
-	// frontend by using an unencrypted PEM-encoded private key file.
-	//
-	// If you have an encrypted private key, the crypto/x509 package
-	// can be used to decrypt it.
+	// A public key may be used to authenticate against the remote host
+	// by using an unencrypted PEM-encoded private key file.
 	key, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
