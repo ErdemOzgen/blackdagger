@@ -25,7 +25,6 @@ Why Not an Existing Workflow Scheduler Like Airflow?
 While there are numerous workflow schedulers like Airflow available, these often necessitate the authoring of DAGs through programming languages such as Python. For legacy systems with extensive job configurations, incorporating code in languages like Perl or Shell Script can already be a complex endeavor. Introducing an additional layer with such tools can further complicate maintainability. In contrast, Blackdagger is crafted for simplicity and usability, requiring no coding skills. This makes it a perfect fit for smaller projects looking for a straightforward, self-sufficient workflow management solution.
 
 .. toctree::
-   :hidden:
    :maxdepth: 2
    :caption: About Framework
    :hidden:
