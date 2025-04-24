@@ -11,7 +11,7 @@ type Props = {
 function DashboardMetric({ title, color, value }: Props) {
   return (
     <React.Fragment>
-      <Title variant="h7">{title}</Title>
+      <Title variant="h6">{title}</Title>
       <Box
         sx={{
           display: 'flex',
