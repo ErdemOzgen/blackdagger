@@ -11,7 +11,7 @@ type Props = {
 function DashboardMetric({ title, color, value }: Props) {
   return (
     <React.Fragment>
-      <Title>{title}</Title>
+      <Title variant="h7">{title}</Title>
       <Box
         sx={{
           display: 'flex',
@@ -20,7 +20,7 @@ function DashboardMetric({ title, color, value }: Props) {
           flexGrow: 1,
         }}
       >
-        <Typography component="p" variant="h2" color={color}>
+        <Typography component="p" variant="h5" color={color}>
           {value}
         </Typography>
       </Box>
