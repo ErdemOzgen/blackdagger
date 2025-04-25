@@ -15,7 +15,6 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { Typography } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 
-
 function Icon({ icon }: { icon: IconProp }) {
   return (
     <span
@@ -37,22 +36,13 @@ function Icon({ icon }: { icon: IconProp }) {
 export const mainListItems = (
   <React.Fragment>
     <Link to="/dashboard">
-      <ListItem
-        text="Dashboard"
-        icon={<Icon icon={faChartGantt} />}
-      />
+      <ListItem text="Dashboard" icon={<Icon icon={faChartGantt} />} />
     </Link>
     <Link to="/dags">
-      <ListItem
-        text="DAGs"
-        icon={<Icon icon={faTableList} />}
-      />
+      <ListItem text="DAGs" icon={<Icon icon={faTableList} />} />
     </Link>
     <Link to="/search">
-      <ListItem
-        text="Search"
-        icon={<Icon icon={faMagnifyingGlass} />}
-      />
+      <ListItem text="Search" icon={<Icon icon={faMagnifyingGlass} />} />
     </Link>
     <ListItem
       text="Terminal"
@@ -82,11 +72,16 @@ function ListItem({ icon, text, to, external }: ListItemProps) {
   if (external) {
     const protocol = window.location.protocol;
     const hostname = window.location.hostname;
-    const port = "8090";
+    const port = '8090';
     const href = `${protocol}//${hostname}:${port}`;
-    listItemProps = { component: "a", href: href, target: '_blank', rel: 'noopener noreferrer' };
+    listItemProps = {
+      component: 'a',
+      href: href,
+      target: '_blank',
+      rel: 'noopener noreferrer',
+    };
   } else {
-    listItemProps = { component: "a", href: to };
+    listItemProps = { component: 'a', href: to };
   }
 
   const content = (
@@ -96,7 +91,7 @@ function ListItem({ icon, text, to, external }: ListItemProps) {
         primary={
           <Typography
             sx={{
-              color: 'black',
+              color: 'white',
               fontWeight: '400',
             }}
           >
@@ -108,9 +103,12 @@ function ListItem({ icon, text, to, external }: ListItemProps) {
   );
 
   // If the list item is for the Terminal, wrap it in a Tooltip
-  if (text === "Terminal") {
+  if (text === 'Terminal') {
     return (
-      <Tooltip title="If you want to access the terminal interface please make sure `default-gotty-service` dag is running" arrow>
+      <Tooltip
+        title="If you want to access the terminal interface please make sure `default-gotty-service` dag is running"
+        arrow
+      >
         {content}
       </Tooltip>
     );
@@ -119,16 +117,20 @@ function ListItem({ icon, text, to, external }: ListItemProps) {
   return content;
 }
 
-
 function ListItemDoc({ icon, text, to, external }: ListItemProps) {
   let listItemProps = {};
 
   if (external) {
     // Directly use the 'to' prop for external links
-    listItemProps = { component: "a", href: to, target: '_blank', rel: 'noopener noreferrer' };
+    listItemProps = {
+      component: 'a',
+      href: to,
+      target: '_blank',
+      rel: 'noopener noreferrer',
+    };
   } else {
     // For internal routing, adjust as needed for your routing library
-    listItemProps = { component: "a", href: to };
+    listItemProps = { component: 'a', href: to };
   }
   return (
     <ListItemButton component="a" {...listItemProps}>
@@ -137,7 +139,7 @@ function ListItemDoc({ icon, text, to, external }: ListItemProps) {
         primary={
           <Typography
             sx={{
-              color: 'black',
+              color: 'white',
               fontWeight: '400',
             }}
           >
