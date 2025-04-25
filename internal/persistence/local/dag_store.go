@@ -153,6 +153,9 @@ func (d *dagStoreImpl) searchName(fileName string, searchText *string) bool {
 	}
 
 	fileName = strings.TrimSuffix(fileName, path.Ext(fileName))
+	fileName = strings.ToLower(fileName)
+
+	*searchText = strings.ToLower(*searchText)
 
 	return strings.Contains(fileName, *searchText)
 }
