@@ -1,6 +1,9 @@
 package cmd
 
 import (
+	"log"
+	"path/filepath"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -51,7 +54,20 @@ func init() {
 
 func initialize() {
 	if cfgFile != "" {
-		viper.SetConfigFile(cfgFile)
+		dir, file := filepath.Split(cfgFile)
+		if dir == "" {
+			dir = "."
+		}
+		dir += "/"
+		viper.SetConfigFile(dir + file)
+
+		err := viper.ReadInConfig()
+		if err != nil {
+			log.Println("Error reading config file:", err)
+			return
+		}
+
+		log.Println("Using config file:", cfgFile)
 		return
 	}
 }
