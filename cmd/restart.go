@@ -11,15 +11,16 @@ import (
 	"github.com/ErdemOzgen/blackdagger/internal/dag"
 	"github.com/ErdemOzgen/blackdagger/internal/dag/scheduler"
 	"github.com/ErdemOzgen/blackdagger/internal/logger"
+	"github.com/ErdemOzgen/blackdagger/internal/util"
 	"github.com/spf13/cobra"
 )
 
 func restartCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "restart /path/to/spec.yaml",
+		Use:   "restart [/path/to/spec.yaml]",
 		Short: "Stop the running DAG and restart it",
-		Long:  `blackdagger restart /path/to/spec.yaml`,
-		Args:  cobra.ExactArgs(1),
+		Long:  `blackdagger restart [/path/to/spec.yaml]`,
+		Args:  cobra.MaximumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			cfg, err := config.Load()
 			if err != nil {
@@ -37,90 +38,125 @@ func restartCmd() *cobra.Command {
 				Quiet:  quiet,
 			})
 
-			// Load the DAG file and stop the DAG if it is running.
-			specFilePath := args[0]
-			workflow, err := dag.Load(cfg.BaseConfig, specFilePath, "")
-			if err != nil {
-				initLogger.Fatal("Workflow load failed", "error", err, "file", args[0])
-			}
-
 			dataStore := newDataStores(cfg)
 			cli := newClient(cfg, dataStore, initLogger)
 
-			if err := stopDAGIfRunning(cli, workflow, initLogger); err != nil {
-				initLogger.Fatal("Workflow stop operation failed",
-					"error", err,
-					"workflow", workflow.Name)
+			var dagFiles []string
+
+			if len(args) == 0 {
+				initLogger.Info("Restarting all DAGs...")
+
+				dagFiles, err = util.GetAllDAGFiles(cfg.DAGs)
+				if err != nil {
+					initLogger.Fatal("Failed to list DAG files", "error", err)
+				}
+			} else {
+				dagFiles = []string{args[0]}
 			}
 
-			// Wait for the specified amount of time before restarting.
-			waitForRestart(workflow.RestartWait, initLogger)
+			for _, specFilePath := range dagFiles {
+				workflow, err := dag.Load(cfg.BaseConfig, specFilePath, "")
+				if err != nil {
+					initLogger.Error("Workflow load failed", "error", err, "file", specFilePath)
+					continue
+				}
 
-			// Retrieve the parameter of the previous execution.
-			params, err := getPreviousExecutionParams(cli, workflow)
-			if err != nil {
-				initLogger.Fatal("Previous execution parameter retrieval failed",
-					"error", err,
-					"workflow", workflow.Name)
-			}
+				curStatus, err := cli.GetCurrentStatus(workflow)
+				if err != nil {
+					initLogger.Error("Status retrieval failed", "error", err, "workflow", workflow.Name)
+					continue
+				}
 
-			// Start the DAG with the same parameter.
-			// Need to reload the DAG file with the parameter.
-			workflow, err = dag.Load(cfg.BaseConfig, specFilePath, params)
-			if err != nil {
-				initLogger.Fatal("Workflow reload failed",
-					"error", err,
-					"file", specFilePath,
-					"params", params)
-			}
+				// Skip workflows that are in NodeStatusNone
+				if curStatus.Status == scheduler.StatusNone {
+					initLogger.Info("Skipping DAG with no status", "workflow", workflow.Name)
+					continue
+				}
 
-			requestID, err := generateRequestID()
-			if err != nil {
-				initLogger.Fatal("Request ID generation failed", "error", err)
-			}
+				initLogger.Info("Restarting workflow", "workflow", workflow.Name)
 
-			logFile, err := logger.OpenLogFile(logger.LogFileConfig{
-				Prefix:    "restart_",
-				LogDir:    cfg.LogDir,
-				DAGLogDir: workflow.LogDir,
-				DAGName:   workflow.Name,
-				RequestID: requestID,
-			})
-			if err != nil {
-				initLogger.Fatal("Log file creation failed",
-					"error", err,
-					"workflow", workflow.Name)
-			}
-			defer logFile.Close()
+				if err := stopDAGIfRunning(cli, workflow, initLogger); err != nil {
+					initLogger.Fatal("Workflow stop operation failed",
+						"error", err,
+						"workflow", workflow.Name)
+					continue
+				}
 
-			agentLogger := logger.NewLogger(logger.NewLoggerArgs{
-				Debug:   cfg.Debug,
-				Format:  cfg.LogFormat,
-				LogFile: logFile,
-				Quiet:   quiet,
-			})
+				// Wait for the specified amount of time before restarting.
+				waitForRestart(workflow.RestartWait, initLogger)
 
-			agentLogger.Info("Workflow restart initiated",
-				"workflow", workflow.Name,
-				"requestID", requestID,
-				"logFile", logFile.Name())
+				// Retrieve the parameter of the previous execution.
+				params, err := getPreviousExecutionParams(cli, workflow)
+				if err != nil {
+					initLogger.Fatal("Previous execution parameter retrieval failed",
+						"error", err,
+						"workflow", workflow.Name)
+					continue
+				}
 
-			agt := agent.New(
-				requestID,
-				workflow,
-				agentLogger,
-				filepath.Dir(logFile.Name()),
-				logFile.Name(),
-				newClient(cfg, dataStore, agentLogger),
-				dataStore,
-				&agent.Options{Dry: false})
+				// Start the DAG with the same parameter.
+				// Need to reload the DAG file with the parameter.
+				workflow, err = dag.Load(cfg.BaseConfig, specFilePath, params)
+				if err != nil {
+					initLogger.Fatal("Workflow reload failed",
+						"error", err,
+						"file", specFilePath,
+						"params", params)
+					continue
+				}
 
-			listenSignals(cmd.Context(), agt)
-			if err := agt.Run(cmd.Context()); err != nil {
-				agentLogger.Fatal("Workflow restart failed",
-					"error", err,
+				requestID, err := generateRequestID()
+				if err != nil {
+					initLogger.Fatal("Request ID generation failed", "error", err)
+					continue
+				}
+
+				logFile, err := logger.OpenLogFile(logger.LogFileConfig{
+					Prefix:    "restart_",
+					LogDir:    cfg.LogDir,
+					DAGLogDir: workflow.LogDir,
+					DAGName:   workflow.Name,
+					RequestID: requestID,
+				})
+				if err != nil {
+					initLogger.Fatal("Log file creation failed",
+						"error", err,
+						"workflow", workflow.Name)
+					continue
+				}
+				defer logFile.Close()
+
+				agentLogger := logger.NewLogger(logger.NewLoggerArgs{
+					Debug:   cfg.Debug,
+					Format:  cfg.LogFormat,
+					LogFile: logFile,
+					Quiet:   quiet,
+				})
+
+				agentLogger.Info("Workflow restart initiated",
 					"workflow", workflow.Name,
-					"requestID", requestID)
+					"requestID", requestID,
+					"logFile", logFile.Name())
+
+				agt := agent.New(
+					requestID,
+					workflow,
+					agentLogger,
+					filepath.Dir(logFile.Name()),
+					logFile.Name(),
+					newClient(cfg, dataStore, agentLogger),
+					dataStore,
+					&agent.Options{Dry: false},
+				)
+
+				listenSignals(cmd.Context(), agt)
+				if err := agt.Run(cmd.Context()); err != nil {
+					agentLogger.Fatal("Workflow restart failed",
+						"error", err,
+						"workflow", workflow.Name,
+						"requestID", requestID)
+					continue
+				}
 			}
 		},
 	}
