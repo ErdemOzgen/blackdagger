@@ -15,33 +15,34 @@ import (
 
 // Config represents the configuration for the server.
 type Config struct {
-	Host               string // Server host
-	Port               int    // Server port
-	Debug              bool   // Enable debug mode (verbose logging)
-	BasePath           string
-	APIBasePath        string
-	APIBaseURL         string   // Base URL for API
-	WorkDir            string   // Default working directory
-	DAGs               string   // Location of DAG files
-	Executable         string   // Executable path
-	IsBasicAuth        bool     // Enable basic auth
-	BasicAuthUsername  string   // Basic auth username
-	BasicAuthPassword  string   // Basic auth password
-	LogEncodingCharset string   // Log encoding charset
-	LogDir             string   // Log directory
-	DataDir            string   // Data directory
-	SuspendFlagsDir    string   // Suspend flags directory
-	AdminLogsDir       string   // Directory for admin logs
-	BaseConfig         string   // Common config file for all DAGs.
-	NavbarColor        string   // Navbar color for the web UI
-	NavbarTitle        string   // Navbar title for the web UI
-	Env                sync.Map // Store environment variables
-	TLS                *TLS     // TLS configuration
-	IsAuthToken        bool     // Enable auth token for API
-	AuthToken          string   // Auth token for API
-	LatestStatusToday  bool     // Show latest status today or the latest status
-	LogFormat          string   // Log format
-	RemoteNodes        []RemoteNode
+	Host                string // Server host
+	Port                int    // Server port
+	Debug               bool   // Enable debug mode (verbose logging)
+	BasePath            string
+	APIBasePath         string
+	APIBaseURL          string   // Base URL for API
+	WorkDir             string   // Default working directory
+	DAGs                string   // Location of DAG files
+	Executable          string   // Executable path
+	IsBasicAuth         bool     // Enable basic auth
+	BasicAuthUsername   string   // Basic auth username
+	BasicAuthPassword   string   // Basic auth password
+	LogEncodingCharset  string   // Log encoding charset
+	LogDir              string   // Log directory
+	DataDir             string   // Data directory
+	SuspendFlagsDir     string   // Suspend flags directory
+	AdminLogsDir        string   // Directory for admin logs
+	BaseConfig          string   // Common config file for all DAGs.
+	NavbarColor         string   // Navbar color for the web UI
+	NavbarTitle         string   // Navbar title for the web UI
+	Env                 sync.Map // Store environment variables
+	TLS                 *TLS     // TLS configuration
+	IsAuthToken         bool     // Enable auth token for API
+	AuthToken           string   // Auth token for API
+	LatestStatusToday   bool     // Show latest status today or the latest status
+	LogFormat           string   // Log format
+	RemoteNodes         []RemoteNode
+	SkipInitialDAGPulls bool // Skip initial DAG pulls
 }
 
 type TLS struct {
@@ -138,6 +139,7 @@ func setupViper() error {
 	viper.SetDefault("adminLogsDir", r.adminLogsDir)
 	viper.SetDefault("baseConfig", r.baseConfigFile)
 	viper.SetDefault("latestStatusToday", true)
+	viper.SetDefault("skipInitialDAGPulls", false)
 	// Logging configurations
 	viper.SetDefault("logLevel", "info")
 	viper.SetDefault("logFormat", "text")
@@ -207,6 +209,7 @@ func bindEnvs() {
 
 	// Miscellaneous
 	_ = viper.BindEnv("latestStatusToday", "BLACKDAGGER_LATEST_STATUS")
+	_ = viper.BindEnv("skipInitialDAGPulls", "BLACKDAGGER_SKIP_INITIAL_DAG_PULLS")
 }
 
 func loadLegacyEnvs(cfg *Config) {
