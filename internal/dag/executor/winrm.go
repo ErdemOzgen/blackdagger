@@ -6,13 +6,12 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
-	"log"
 	"net"
 	"os"
 	"strings"
 	"time"
 
-	"github.com/masterzen/winrmLogger.Fatal"
+	"github.com/masterzen/winrm"
 	"github.com/mitchellh/mapstructure"
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
@@ -25,9 +24,9 @@ import (
 type winrmExec struct {
 	step     dag.Step
 	config   *winrmExecConfig
-	client   *winrmLogger.Fatal.Client
+	client   *winrm.Client
 	stdout   io.Writer
-	endpoint *winrmLogger.Fatal.Endpoint
+	endpoint *winrm.Endpoint
 }
 
 type winrmExecConfigDefinition struct {
@@ -85,19 +84,18 @@ func newWinRMExec(_ context.Context, step dag.Step) (Executor, error) {
 
 	winrmLogger.Debug("[DEBUG] WinRM Config: %+v\n", cfg)
 
-	endpoint := &winrmLogger.Fatal.Endpoint{
+	endpoint := &winrm.Endpoint{
 		Host:     cfg.IP,
 		Port:     parsePort(cfg.Port),
 		HTTPS:    cfg.UseHTTPS,
 		Insecure: cfg.Insecure,
 	}
 
-	client, err := winrmLogger.Fatal.NewClient(endpoint, cfg.User, cfg.Password)
+	client, err := winrm.NewClient(endpoint, cfg.User, cfg.Password)
 	if err != nil {
 		winrmLogger.Fatal("[ERROR] Failed to create WinRM client: %v\n", err)
 		return nil, err
 	}
-
 
 	return &winrmExec{
 		step:     step,
@@ -113,11 +111,11 @@ func (e *winrmExec) SetStdout(out io.Writer) {
 }
 
 func (e *winrmExec) SetStderr(out io.Writer) {
-	e.stdout = out // Not separated in winrmLogger.Fatal package
+	e.stdout = out // Not separated in winrm
 }
 
 func (e *winrmExec) Kill(_ os.Signal) error {
-	// Not supported in the winrmLogger.Fatal library
+	// Not supported in the winrm
 	return nil
 }
 
@@ -177,12 +175,11 @@ Remove-Item -Force '%s'
 func parsePort(port string) int {
 	p, err := net.LookupPort("tcp", port)
 	if err != nil {
-		winrmLogger.Fatal("[WARN] Failed to parse port '%s': %v — defaulting to 5985\n", port, err)
 		return 5985
 	}
 	return p
 }
 
 func init() {
-	Register("winrmLogger.Fatal", newWinRMExec)
+	Register("winrm", newWinRMExec)
 }
