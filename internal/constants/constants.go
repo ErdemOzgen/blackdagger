@@ -1,8 +1,6 @@
 package constants
 
-var (
-	Version = "1.1.2"
-)
+var Version string
 
 /*
 const (

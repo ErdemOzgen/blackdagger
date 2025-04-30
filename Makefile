@@ -22,15 +22,12 @@ CONFIG_DIR=$(SCRIPT_DIR)/config
 
 # Local build settings
 BIN_DIR=$(SCRIPT_DIR)/bin
-BUILD_VERSION=1.1.0
-LDFLAGS=-X 'main.version=$(BUILD_VERSION)'
+LDFLAGS=-X 'main.version=$(VERSION)'
 
 # Application name
 APP_NAME=blackdagger
 
 # Docker image build configuration
-
-VERSION=1.1.0
 
 DOCKER_USERNAME=erdemozgen
 IMAGE_NAME=blackdagger
