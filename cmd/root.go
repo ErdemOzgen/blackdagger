@@ -44,7 +44,7 @@ func init() {
 	rootCmd.PersistentFlags().
 		StringVar(
 			&cfgFile, "config", "",
-			"config file (default is $HOME/.config/blackdagger/admin.yaml)",
+			"config file (default is $HOME/.config/blackdagger/config.yaml)",
 		)
 
 	cobra.OnInitialize(initialize)
