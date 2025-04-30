@@ -122,8 +122,12 @@ func setupViper() error {
 	r := newResolver("BLACKDAGGER_HOME", filepath.Join(homeDir, ".blackdagger"), xdgCfg)
 
 	viper.AddConfigPath(r.configDir)
-	viper.SetConfigType("yaml")
-	viper.SetConfigName("config")
+
+	// Check if viper already used a config file (provided with --config flag)
+	if viper.GetViper().ConfigFileUsed() == "" {
+		viper.SetConfigType("yaml")
+		viper.SetConfigName("config")
+	}
 
 	viper.SetEnvPrefix(envPrefix)
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
