@@ -189,11 +189,23 @@ func TestClient_RunDAG(t *testing.T) {
 		require.NoError(t, err)
 
 		err = cli.Restart(dagStatus.DAG, client.RestartOptions{})
-		require.NoError(t, err)
+		if err != nil {
+			// Restart returns "nil" if no DAG was restarted
+			require.NoError(t, err)
+		}
+		require.Equal(t, "not started", dagStatus.Status.StatusText)
 
-		status, err := cli.GetLatestStatus(dagStatus.DAG)
+		err = cli.Start(dagStatus.DAG, client.StartOptions{})
 		require.NoError(t, err)
-		require.Equal(t, scheduler.StatusSuccess, status.Status)
+		dagLatestStatus, err := cli.GetLatestStatus(dagStatus.DAG)
+		require.NoError(t, err)
+		require.Equal(t, scheduler.StatusSuccess, dagLatestStatus.Status)
+
+		err = cli.Restart(dagStatus.DAG, client.RestartOptions{})
+		require.NoError(t, err)
+		dagLatestStatus, err = cli.GetLatestStatus(dagStatus.DAG)
+		require.NoError(t, err)
+		require.Equal(t, scheduler.StatusSuccess, dagLatestStatus.Status)
 	})
 	t.Run("Retry", func(t *testing.T) {
 		setup := test.SetupTest(t)

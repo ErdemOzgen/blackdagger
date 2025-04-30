@@ -210,3 +210,44 @@ func AddYamlExtension(file string) string {
 	}
 	return file
 }
+
+func expandPath(path string) (string, error) {
+	// Expand environment variables like $HOME
+	path = os.ExpandEnv(path)
+
+	// Expand ~ to the home directory
+	if strings.HasPrefix(path, "~") {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return "", err
+		}
+		path = filepath.Join(home, path[1:])
+	}
+
+	return path, nil
+}
+
+// GetAllDAGFiles returns all DAG files
+func GetAllDAGFiles(baseConfig string) ([]string, error) {
+	expandedBaseConfig, err := expandPath(baseConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check if the directory exists
+	_, err = os.Stat(expandedBaseConfig)
+	if os.IsNotExist(err) {
+		log.Printf("Directory %s does not exist", expandedBaseConfig)
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	files, err := filepath.Glob(filepath.Join(expandedBaseConfig, "*.yaml"))
+	if err != nil {
+		return nil, err
+	}
+
+	return files, nil
+}

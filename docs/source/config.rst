@@ -30,6 +30,7 @@ The following environment variables can be used to configure the BLACKDAGGER. De
 - ``BLACKDAGGER_WORK_DIR``: The working directory for DAGs. If not set, the default value is DAG location. Also you can set the working directory for each DAG steps in the DAG configuration file. For more information, see :ref:`specifying working dir`.
 - ``BLACKDAGGER_CERT_FILE``: The path to the SSL certificate file.
 - ``BLACKDAGGER_KEY_FILE`` : The path to the SSL key file.
+- ``BLACKDAGGER_SKIP_INITIAL_DAG_PULLS``: Set to 1 to skip the automatic pull of default DAG YAML files during startup.
 
 Note: If ``BLACKDAGGER_HOME`` environment variable is not set, the default value is ``$HOME/.config/blackdagger``.
 

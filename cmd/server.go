@@ -32,8 +32,10 @@ func serverCmd() *cobra.Command {
 
 			logger.Info("Server initialization", "host", cfg.Host, "port", cfg.Port)
 
-			pullDagList := []string{"default"}
-			Pulldags(pullDagList)
+			if !cfg.SkipInitialDAGPulls {
+				pullDagList := []string{"default"}
+				Pulldags(pullDagList)
+			}
 
 			dataStore := newDataStores(cfg)
 			cli := newClient(cfg, dataStore, logger)
