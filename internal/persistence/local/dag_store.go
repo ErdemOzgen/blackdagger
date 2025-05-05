@@ -153,8 +153,19 @@ func (d *dagStoreImpl) searchName(fileName string, searchText *string) bool {
 	}
 
 	fileName = strings.TrimSuffix(fileName, path.Ext(fileName))
+	fileName = strings.ToLower(fileName)
+
+	*searchText = strings.ToLower(*searchText)
 
 	return strings.Contains(fileName, *searchText)
+}
+
+func (d *dagStoreImpl) searchDescription(description string, searchDescription *string) bool {
+	if searchDescription == nil {
+		return true
+	}
+
+	return strings.Contains(description, *searchDescription)
 }
 
 func (d *dagStoreImpl) searchTags(tags []string, searchTag *string) bool {
@@ -200,7 +211,7 @@ func (d *dagStoreImpl) ListPagination(params persistence.DAGListPaginationArgs) 
 			errList = append(errList, fmt.Sprintf("reading %s failed: %s", dir.Name(), err))
 		}
 
-		if !d.searchName(dir.Name(), params.Name) || currentDag == nil || !d.searchTags(currentDag.Tags, params.Tag) {
+		if !d.searchName(dir.Name(), params.Name) && !d.searchDescription(currentDag.Description, params.Name) || currentDag == nil || !d.searchTags(currentDag.Tags, params.Tag) {
 			return nil
 		}
 

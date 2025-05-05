@@ -25,9 +25,7 @@ function Dashboard() {
   const appBarContext = React.useContext(AppBarContext);
   const config = useConfig();
   const { data } = useSWR<ListWorkflowsResponse>(
-    `/dags?remoteNode=${
-      appBarContext.selectedRemoteNode || 'local'
-    }`,
+    `/dags?remoteNode=${appBarContext.selectedRemoteNode || 'local'}`,
     null,
     {
       refreshInterval: 10000,
@@ -53,7 +51,7 @@ function Dashboard() {
   }, [appBarContext]);
 
   return (
-    <Grid container spacing={3} sx={{ mx: 2, width: '100%' }}>
+    <Grid container spacing={1} sx={{ mx: 2, width: '100%' }} paddingTop={2}>
       {(
         [
           [SchedulerStatus.Success, 'Successful'],
@@ -62,18 +60,35 @@ function Dashboard() {
           [SchedulerStatus.Cancel, 'Canceled'],
         ] as Array<[SchedulerStatus, string]>
       ).map(([status, label]) => (
-        <Grid item xs={12} md={4} lg={3} key={label}>
+        <Grid item xs={12} sm={6} md={4} lg={3} key={label}>
           <Box
             sx={{
-              px: 2,
               display: 'flex',
               flexDirection: 'column',
-              height: 240,
+              justifyContent: 'center',
+              alignItems: 'center',
+
+              backgroundColor: statusColorMapping[status].backgroundColor,
+              color: statusColorMapping[status].color,
+              borderRadius: 3,
+              boxShadow: 3,
+              transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+              p: { xs: 2, md: 3 },
+
+              height: 'auto',
+              width: 'auto',
+              minHeight: 80,
+              maxWidth: '100',
+
+              '&:hover': {
+                transform: 'scale(1.02)',
+                boxShadow: 6,
+              },
             }}
           >
             <DashboardMetric
               title={label}
-              color={statusColorMapping[status].backgroundColor}
+              color={statusColorMapping[status].color}
               value={metrics[status]}
             />
           </Box>

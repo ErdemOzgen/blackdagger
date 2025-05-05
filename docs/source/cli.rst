@@ -8,17 +8,17 @@ The following commands are available for interacting with Blackdagger:
   # Runs the DAG
   blackdagger start [--params=<params>] <file>
   
-  # Displays the current status of the DAG
-  blackdagger status <file>
+  # Displays the current status of the DAG. If no DAG file is provided, displays the status of all DAGs.
+  blackdagger status [file]
   
   # Re-runs the specified DAG run
   blackdagger retry --req=<request-id> <file>
   
-  # Stops the DAG execution
-  blackdagger stop <file>
+  # Stops the DAG execution. If no DAG file is provided, stops all DAGs.
+  blackdagger stop [file]
   
-  # Restarts the current running DAG
-  blackdagger restart <file>
+  # Restarts the current running DAG. If no DAG file is provided, restarts all DAGs.
+  blackdagger restart [file]
   
   # Dry-runs the DAG
   blackdagger dry [--params=<params>] <file>

@@ -7,15 +7,17 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { mainListItems } from './menu';
-import { Grid, MenuItem, Select } from '@mui/material';
+import { Grid, MenuItem, Select, Divider } from '@mui/material';
 import { AppBarContext } from './contexts/AppBarContext';
 import { Link } from 'react-router-dom';
-
 import blackdaggerImage from './assets/images/blackdagger.png';
 
-const drawerWidthClosed = 64;
 const drawerWidth = 240;
+const drawerWidthClosed = 64;
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -24,14 +26,15 @@ interface AppBarProps extends MuiAppBarProps {
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })<AppBarProps>(({ theme, open }) => ({
-  zIndex: theme.zIndex.drawer - 1,
-  transition: theme.transitions.create(['width', 'margin', 'border'], {
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  width: '100%',
   ...(open && {
-    transition: theme.transitions.create(['width', 'margin', 'border'], {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
@@ -42,38 +45,29 @@ const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
   '& .MuiDrawer-paper': {
+    backgroundColor: theme.palette.background.paper,
     position: 'relative',
     whiteSpace: 'nowrap',
-    width: drawerWidth,
+    width: open ? drawerWidth : drawerWidthClosed,
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
+      duration: theme.transitions.duration.standard,
     }),
+    overflowX: 'hidden',
     boxSizing: 'border-box',
-    ...(!open && {
-      overflowX: 'hidden',
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      }),
-      width: drawerWidthClosed,
-      [theme.breakpoints.up('sm')]: {
-        width: theme.spacing(9),
-      },
-    }),
   },
 }));
 
 const mdTheme = createTheme({
   palette: {
-    mode: 'dark', // Set the theme mode to dark
+    mode: 'dark',
     background: {
-      default: '#121212', // Dark background for most surfaces
-      paper: '#1e1e1e', // Dark background for components like Drawer and AppBar
+      default: '#121212',
+      paper: '#1e1e1e',
     },
     text: {
-      primary: '#FFFEFE', // Light text color for readability
-      secondary: '#FFFEFE', // Slightly dimmer text color for less emphasis
+      primary: '#FFFEFE',
+      secondary: '#CCCCCC',
     },
   },
   typography: {
@@ -85,128 +79,139 @@ type DashboardContentProps = {
   title: string;
   navbarColor: string;
   version: string;
-  children?: React.ReactElement | React.ReactElement[];
+  children?: React.ReactNode;
 };
 
 function Content({ title, navbarColor, children }: DashboardContentProps) {
   const [scrolled, setScrolled] = React.useState(false);
+  const [drawerOpen, setDrawerOpen] = React.useState(true);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const gradientColor = navbarColor || '#171617';
 
+  const toggleDrawer = () => {
+    setDrawerOpen((prev) => !prev);
+  };
+
   return (
     <ThemeProvider theme={mdTheme}>
-      <Box sx={{ display: 'flex', flexDirection: 'row', width: '100vw' }}>
+      <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <Drawer variant="permanent" open={false}>
+        <AppBar position="absolute" open={drawerOpen}>
+          <Toolbar
+            sx={{
+              pr: 2,
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={toggleDrawer}
+              sx={{ mr: 2 }}
+            >
+              {drawerOpen ? <ChevronLeftIcon /> : <MenuIcon />}
+            </IconButton>
+
+            <AppBarContext.Consumer>
+              {(context) => (
+                <NavBarTitleText visible={scrolled}>
+                  {context.title}
+                </NavBarTitleText>
+              )}
+            </AppBarContext.Consumer>
+
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Link
+                to="/dashboard"
+                style={{ textDecoration: 'none', marginRight: '10px' }}
+              >
+                <NavBarTitleText>{title || 'Blackdagger'}</NavBarTitleText>
+              </Link>
+
+              <AppBarContext.Consumer>
+                {(context) =>
+                  context.remoteNodes && context.remoteNodes.length > 0 ? (
+                    <Select
+                      sx={{
+                        backgroundColor: 'white',
+                        color: 'black',
+                        borderRadius: '5px',
+                        border: '1px solid #ccc',
+                        ml: 2,
+                        height: '30px',
+                        width: '150px',
+                      }}
+                      value={context.selectedRemoteNode}
+                      onChange={(e) => context.selectRemoteNode(e.target.value)}
+                    >
+                      {context.remoteNodes.map((node) => (
+                        <MenuItem key={node} value={node}>
+                          {node}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  ) : null
+                }
+              </AppBarContext.Consumer>
+            </Box>
+          </Toolbar>
+        </AppBar>
+
+        <Drawer variant="permanent" open={drawerOpen}>
+          <Toolbar
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: drawerOpen ? 'center' : 'center',
+              px: [1],
+              py: 2,
+            }}
+          >
+            <Box
+              component="img"
+              src={blackdaggerImage}
+              alt="Blackdagger"
+              sx={{
+                width: drawerOpen ? 240 : 0,
+                transition: 'width 0.4s ',
+              }}
+            />
+          </Toolbar>
+
+          <Divider />
           <Box
             sx={{
-              background: `linear-gradient(0deg, ${mdTheme.palette.background.default} 0%, ${gradientColor} 70%, ${gradientColor} 100%)`,
+              background: `linear-gradient(0deg, ${mdTheme.palette.background.default} 0%, ${gradientColor} 100%)`,
               height: '100%',
             }}
           >
-            <List component="nav" sx={{ pl: '6px' }}>
+            <List component="nav" sx={{ pl: drawerOpen ? '12px' : '4px' }}>
               {mainListItems}
             </List>
           </Box>
         </Drawer>
+
         <Box
           component="main"
           sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            backgroundColor: 'white',
+            flexGrow: 1,
             height: '100vh',
-            width: '100%',
-            maxWidth: '100%',
             overflow: 'auto',
+            backgroundColor: '#171617',
           }}
         >
-          <AppBar
-            open={false}
-            elevation={0}
-            sx={{
-              width: '100%',
-              backgroundColor: '#171617',
-              borderBottom: scrolled ? 1 : 0,
-              borderColor: 'grey.300',
-              pr: 3,
-              position: 'relative',
-              display: 'block',
-            }}
-          >
-            <Toolbar
-              sx={{
-                width: '100%',
-                display: 'flex',
-                direction: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flex: 1,
-              }}
-            >
-              <AppBarContext.Consumer>
-                {(context) => (
-                  <NavBarTitleText visible={scrolled}>
-                    {context.title}
-                  </NavBarTitleText>
-                )}
-              </AppBarContext.Consumer>
-
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Link to="/dashboard">
-                  <NavBarTitleText>{title || 'Blackdagger'}</NavBarTitleText>
-                </Link>
-                <Link to="/dashboard">
-                  <img src={blackdaggerImage} alt="Blackdagger" />
-                </Link>
-
-                <AppBarContext.Consumer>
-                  {(context) =>
-                    context.remoteNodes && context.remoteNodes.length > 0 ? (
-                      <Select
-                        sx={{
-                          backgroundColor: 'white',
-                          color: 'black',
-                          borderRadius: '5px',
-                          border: '1px solid #ccc',
-                          marginLeft: '10px',
-                          height: '30px',
-                          width: '150px',
-                          marginBottom: '5px',
-                        }}
-                        value={context.selectedRemoteNode}
-                        onChange={(e) => {
-                          context.selectRemoteNode(e.target.value);
-                        }}
-                      >
-                        {context.remoteNodes.map((node) => (
-                          <MenuItem key={node} value={node}>
-                            {node}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    ) : null
-                  }
-                </AppBarContext.Consumer>
-              </Box>
-            </Toolbar>
-          </AppBar>
-
+          <Toolbar />
           <Grid
             container
             ref={containerRef}
-            sx={{
-              flex: 1,
-              pb: 4,
-              overflow: 'auto',
-              backgroundColor: '#171617',
-            }}
             onScroll={() => {
               const curr = containerRef.current;
               if (curr) {
                 setScrolled(curr.scrollTop > 54);
               }
             }}
+            sx={{ flex: 1, pb: 4, px: 3 }}
           >
             {children}
           </Grid>
@@ -228,7 +233,6 @@ const NavBarTitleText = ({
   <Typography
     component="h1"
     variant="h6"
-    gutterBottom
     sx={{
       fontWeight: '800',
       color: '#FFFEFE',
