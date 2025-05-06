@@ -197,7 +197,12 @@ func CopyWithChangeDetection(srcDir, destDir string) {
 					fmt.Printf("Detected change in %s\n", file.Name())
 					fmt.Print("Overwrite? [y]es / [n]o / [d]iff: ")
 					var choice string
-					fmt.Scanln(&choice)
+
+					if _, err := fmt.Scanln(&choice); err != nil {
+						fmt.Println("Error reading input:", err)
+						return
+					}
+
 					switch strings.ToLower(choice) {
 					case "y":
 						copyFile(srcPath, destPath)
@@ -206,7 +211,12 @@ func CopyWithChangeDetection(srcDir, destDir string) {
 						showDiff(srcPath, destPath)
 						fmt.Printf("-----  -----\n\n")
 						fmt.Print("Revert after viewing? [y/N]: ")
-						fmt.Scanln(&choice)
+
+						if _, err := fmt.Scanln(&choice); err != nil {
+							fmt.Println("Error reading input:", err)
+							return
+						}
+
 						if strings.ToLower(choice) == "y" {
 							copyFile(srcPath, destPath)
 							fmt.Printf("Copied new file: %s\n", destPath)
@@ -223,7 +233,12 @@ func CopyWithChangeDetection(srcDir, destDir string) {
 				fmt.Printf("New file detected: %s\n", file.Name())
 				fmt.Print("Copy to destination? [y]es / [n]o / [v]iew: ")
 				var choice string
-				fmt.Scanln(&choice)
+
+				if _, err := fmt.Scanln(&choice); err != nil {
+					fmt.Println("Error reading input:", err)
+					return
+				}
+
 				switch strings.ToLower(choice) {
 				case "y":
 					copyFile(srcPath, destPath)
@@ -236,7 +251,12 @@ func CopyWithChangeDetection(srcDir, destDir string) {
 					}
 					fmt.Printf("----- %s -----\n%s\n", file.Name(), string(content))
 					fmt.Print("Copy after viewing? [y/N]: ")
-					fmt.Scanln(&choice)
+
+					if _, err := fmt.Scanln(&choice); err != nil {
+						fmt.Println("Error reading input:", err)
+						return
+					}
+
 					if strings.ToLower(choice) == "y" {
 						copyFile(srcPath, destPath)
 						fmt.Printf("Copied new file: %s\n", destPath)

@@ -48,7 +48,7 @@ type winrmExecConfig struct {
 }
 
 func newWinRMExec(_ context.Context, step dag.Step) (Executor, error) {
-	loggerCfg, err := config.Load()
+	loggerCfg, _ := config.Load()
 	winrmLogger := logger.NewLogger(logger.NewLoggerArgs{
 		Debug:  loggerCfg.Debug,
 		Format: loggerCfg.LogFormat,
@@ -162,7 +162,10 @@ Remove-Item -Force '%s'
 		remoteCmd = fmt.Sprintf(`powershell -ExecutionPolicy Bypass -EncodedCommand %s`, encoded)
 	}
 
-	exitCode, err := e.client.Run(remoteCmd, e.stdout, e.stdout)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	exitCode, err := e.client.RunWithContext(ctx, remoteCmd, e.stdout, e.stdout)
 	if err != nil {
 		return fmt.Errorf("command execution failed: %w", err)
 	}

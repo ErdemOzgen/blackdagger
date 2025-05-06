@@ -437,22 +437,6 @@ func (d *dagStoreImpl) resolve(name string) (string, error) {
 	return foundPath, nil
 }
 
-// find finds the sub workflow file with the given name.
-func find(name string) (string, error) {
-	ext := path.Ext(name)
-	if ext == "" {
-		// try all supported extensions
-		for _, ext := range dag.Exts {
-			if util.FileExists(name + ext) {
-				return filepath.Abs(name + ext)
-			}
-		}
-	} else if util.FileExists(name) {
-		// the name has an extension
-		return filepath.Abs(name)
-	}
-	return "", fmt.Errorf("sub workflow %s not found", name)
-}
 func (d *dagStoreImpl) TagList() ([]string, []string, error) {
 	var (
 		errList    = make([]string, 0)
