@@ -46,6 +46,11 @@ func init() {
 			&cfgFile, "config", "",
 			"config file (default is $HOME/.config/blackdagger/config.yaml)",
 		)
+	rootCmd.PersistentFlags().
+		Bool("force", false, "boolean flag to force local YAMLs to match remote")
+
+	rootCmd.PersistentFlags().
+		Bool("keep", false, "boolean flag to keep local YAMLs to match remote")
 
 	cobra.OnInitialize(initialize)
 
