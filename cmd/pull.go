@@ -358,7 +358,12 @@ func AskUserToRevertChanges(repoPath string, modified, deleted []string) bool {
 
 	fmt.Print("Do you want to discard local changes and pull fresh? (y/N): ")
 	var answer string
-	fmt.Scanln(&answer)
+
+	if _, err := fmt.Scanln(&choice); err != nil {
+		fmt.Println("Error reading input:", err)
+		return
+	}
+	
 	answer = strings.ToLower(strings.TrimSpace(answer))
 	return answer == "y" || answer == "yes"
 }
