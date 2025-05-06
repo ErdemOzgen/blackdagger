@@ -1,5 +1,15 @@
-import { Box, Stack } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
+import {
+  Box,
+  Stack,
+  Typography,
+  useTheme,
+  InputAdornment,
+  TextField,
+  IconButton,
+  Tooltip,
+} from '@mui/material';
+import { ContentCopy, Search } from '@mui/icons-material';
 import { LogFile } from '../../models/api';
 import BorderedBox from '../atoms/BorderedBox';
 import LabeledItem from '../atoms/LabeledItem';
@@ -10,60 +20,117 @@ type Props = {
   log?: LogFile;
 };
 
-// Credit: https://github.com/chalk/ansi-regex/commit/02fa893d619d3da85411acc8fd4e2eea0e95a9d9 under MIT license
-const ANSI_CODES_REGEX = [
-  '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
-  '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))',
-].join('|');
-
 function ExecutionLog({ log }: Props) {
-  if (!log) {
-    return <LoadingIndicator />;
-  }
-  log.Content = log.Content.replace(new RegExp(ANSI_CODES_REGEX, 'g'), '');
+  const theme = useTheme();
+  const [searchTerm, setSearchTerm] = useState('');
+
+  if (!log) return <LoadingIndicator />;
+
+  const filteredContent = searchTerm
+    ? log.Content.split('\n')
+        .filter((line: string) =>
+          line.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .join('\n')
+    : log.Content;
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(log.Content);
+    } catch (err) {
+      console.error('Failed to copy log output:', err);
+    }
+  };
+
   return (
-    <Box>
-      <Stack spacing={1} direction="column" sx={{ width: '100%' }}>
-        <LabeledItem label="Log File">{log.LogFile}</LabeledItem>
-        {log.Step ? (
-          <React.Fragment>
-            <LabeledItem label="Step Name">{log.Step.Step.Name}</LabeledItem>
-            <Stack spacing={2} direction="row" sx={{ alignItems: 'center' }}>
-              <LabeledItem label="Started At">{log.Step.StartedAt}</LabeledItem>
+    <Box
+      sx={{
+        padding: 3,
+        backgroundColor: theme.palette.background.paper,
+        borderRadius: 2,
+        boxShadow: theme.shadows[1],
+      }}
+    >
+      <Typography variant="h5" fontWeight="bold" gutterBottom>
+        Execution Log
+      </Typography>
+
+      <Stack spacing={2}>
+        <LabeledItem label="Log File">
+          <Typography variant="body2">{log.LogFile}</Typography>
+        </LabeledItem>
+
+        {log.Step && (
+          <>
+            <LabeledItem label="Step Name">
+              <Typography variant="body2">{log.Step.Step.Name}</Typography>
+            </LabeledItem>
+
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={4}>
+              <LabeledItem label="Started At">
+                <Typography variant="body2">{log.Step.StartedAt}</Typography>
+              </LabeledItem>
               <LabeledItem label="Finished At">
-                {log.Step.FinishedAt}
+                <Typography variant="body2">{log.Step.FinishedAt}</Typography>
               </LabeledItem>
             </Stack>
+
             <LabeledItem label="Status">
               <NodeStatusChip status={log.Step.Status}>
                 {log.Step.StatusText}
               </NodeStatusChip>
             </LabeledItem>
-          </React.Fragment>
-        ) : null}
+          </>
+        )}
       </Stack>
+
+      <Stack direction="row" spacing={2} alignItems="center" mt={4} mb={1}>
+        <TextField
+          size="small"
+          placeholder="Search logs..."
+          variant="outlined"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          sx={{ width: '100%' }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search fontSize="small" />
+              </InputAdornment>
+            ),
+          }}
+        />
+
+        <Tooltip title="Copy full log to clipboard">
+          <IconButton onClick={handleCopy}>
+            <ContentCopy fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      </Stack>
+
       <BorderedBox
         sx={{
-          mt: 2,
-          py: 2,
-          px: 2,
+          backgroundColor: '#0f0f0f',
+          color: '#f1f1f1',
+          fontFamily: 'Roboto Mono, Courier New, monospace',
+          fontSize: '1 rem',
+          padding: 2,
           height: '60vh',
-          overflow: 'auto',
-          backgroundColor: 'black',
+          overflowY: 'auto',
+          borderRadius: 2,
+          whiteSpace: 'pre-wrap',
+          lineHeight: 1.5,
+          wordBreak: 'break-word',
+          border: `1px solid ${theme.palette.divider}`,
         }}
-      >
-        <pre
-          style={{
-            color: 'white',
-            height: '100%',
-            fontFamily: 'Courier New, Courier, monospace',
-          }}
-        >
-          {log.Content || '<No log output>'}
-        </pre>
-      </BorderedBox>
+        dangerouslySetInnerHTML={{
+          __html: filteredContent || '<No log output>',
+        }}
+      />
     </Box>
   );
 }
 
-export default ExecutionLog;
+export default React.memo(ExecutionLog, (prevProps, nextProps) => {
+  return prevProps.log?.Content === nextProps.log?.Content;
+});
