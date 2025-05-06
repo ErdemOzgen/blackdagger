@@ -315,7 +315,7 @@ steps:
 		require.NoError(t, err)
 
 		// Check if the new DAG is actually created.
-		workflow, err := dag.Load("", filepath.Join(setup.Config.DAGs, id+".yaml"), "")
+		workflow, err := dag.Load("", filepath.Join(setup.Config.DAGs, id), "")
 		require.NoError(t, err)
 		require.Equal(t, "test-dag", workflow.Name)
 	})
@@ -328,7 +328,7 @@ steps:
 		// Create a DAG to rename.
 		id, err := cli.CreateDAG("old_name")
 		require.NoError(t, err)
-		_, err = cli.GetStatus(filepath.Join(setup.Config.DAGs, id+".yaml"))
+		_, err = cli.GetStatus(filepath.Join(setup.Config.DAGs, id))
 		require.NoError(t, err)
 
 		// Rename the file.
