@@ -110,14 +110,16 @@ func (d *dagStoreImpl) Create(name string, spec []byte) (string, error) {
 	if err := d.ensureDirExist(); err != nil {
 		return "", err
 	}
-	loc, err := d.fileLocation(name)
-	if err != nil {
-		return "", err
-	}
+
+	name += ".yaml"
+	loc := filepath.Join(d.dir, name)
+	fmt.Printf("Creating DAG file at %s...\n", loc)
+
 	if exists(loc) {
 		return "", fmt.Errorf("%w: %s", errDAGFileAlreadyExists, loc)
 	}
 	// nolint: gosec
+	fmt.Printf("Creating DAG file at %s...\n", loc)
 	return name, os.WriteFile(loc, spec, 0644)
 }
 
