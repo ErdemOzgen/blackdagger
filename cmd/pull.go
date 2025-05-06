@@ -76,14 +76,14 @@ func init() {
 	// is called directly, e.g.:
 	// pullCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
-func Pulldags(args []string) {
+func Pulldags(args []string) bool {
 	// TODO: move to config files
 	jobCategories := []string{"mlops", "default", "devsecops", "devops", "mlsecops", "cart"}
 
 	if len(args) == 0 && viper.GetString("origin") == "" {
 		fmt.Println("Please specify a category name or provide --origin.")
 		fmt.Println("Available categories are:", jobCategories)
-		return
+		return false
 	}
 
 	viper.AutomaticEnv()
@@ -104,14 +104,14 @@ func Pulldags(args []string) {
 	} else {
 		fmt.Println("Please specify a correct category name.")
 		fmt.Println("Available categories are:", jobCategories)
-		return
+		return false
 	}
 
 	max := big.NewInt(1000000)
 	randomInt, err := rand.Int(rand.Reader, max)
 	if err != nil {
 		fmt.Printf("Failed to generate a random number: %v\n", err)
-		return
+		return false
 	}
 	tempFolderName := fmt.Sprintf("blackdagger-%s-%s", folderName, randomInt.String())
 
@@ -120,11 +120,11 @@ func Pulldags(args []string) {
 
 	if err := os.MkdirAll(repoBase, os.ModePerm); err != nil {
 		fmt.Printf("Failed to create temp repo folder: %v\n", err)
-		return
+		return false
 	}
 	if err := os.MkdirAll(destBase, os.ModePerm); err != nil {
 		fmt.Printf("Failed to create dag folder: %v\n", err)
-		return
+		return false
 	}
 
 	fmt.Printf("Cloning repository from %s into %s...\n", repoURL, repoBase)
@@ -133,13 +133,13 @@ func Pulldags(args []string) {
 	matches, err := filepath.Glob(filepath.Join(filepath.Join(dagValue, "repos"), prefix+"-*"))
 	if err != nil {
 		fmt.Printf("Failed to find existing folders: %v\n", err)
-		return
+		return false
 	}
 	for _, match := range matches {
 		if stat, err := os.Stat(match); err == nil && stat.IsDir() {
 			if err := os.RemoveAll(match); err != nil {
 				fmt.Printf("Failed to remove existing folder %s: %v\n", match, err)
-				return
+				return false
 			}
 		}
 	}
@@ -149,12 +149,13 @@ func Pulldags(args []string) {
 		fmt.Printf("Failed to clone the repository: %v, output: %s\n", err, string(output))
 		fmt.Println("This category may not been public yet. Stay tuned for updates!")
 
-		return
+		return false
 	}
 
 	CopyWithChangeDetection(repoBase, destBase)
 
 	_ = os.RemoveAll(repoBase)
+	return true
 }
 
 func CopyWithChangeDetection(srcDir, destDir string) {
@@ -359,12 +360,13 @@ func AskUserToRevertChanges(repoPath string, modified, deleted []string) bool {
 	fmt.Print("Do you want to discard local changes and pull fresh? (y/N): ")
 	var answer string
 
+	var choice string
 	if _, err := fmt.Scanln(&choice); err != nil {
 		fmt.Println("Error reading input:", err)
-		return
+		return false
 	}
-	
-	answer = strings.ToLower(strings.TrimSpace(answer))
+
+	answer = strings.ToLower(strings.TrimSpace(choice))
 	return answer == "y" || answer == "yes"
 }
 
