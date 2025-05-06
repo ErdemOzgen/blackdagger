@@ -22,13 +22,13 @@ func startAllCmd() *cobra.Command {
 			_ = viper.BindPFlag("port", cmd.Flags().Lookup("port"))
 			_ = viper.BindPFlag("host", cmd.Flags().Lookup("host"))
 			_ = viper.BindPFlag("dags", cmd.Flags().Lookup("dags"))
-			_ = viper.BindPFlag("force", rootCmd.PersistentFlags().Lookup("force"))
+			_ = viper.BindPFlag("check", rootCmd.PersistentFlags().Lookup("check"))
 			_ = viper.BindPFlag("keep", rootCmd.PersistentFlags().Lookup("keep"))
 
-			force := viper.GetBool("force")
+			check := viper.GetBool("check")
 			keep := viper.GetBool("keep")
-			if force && keep {
-				fmt.Println("Error: --force and --keep cannot be used together.")
+			if check && keep {
+				fmt.Println("Error: --check and --keep cannot be used together.")
 				os.Exit(1)
 			}
 		},

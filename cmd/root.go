@@ -47,7 +47,7 @@ func init() {
 			"config file (default is $HOME/.config/blackdagger/config.yaml)",
 		)
 	rootCmd.PersistentFlags().
-		Bool("force", false, "boolean flag to force local YAMLs to match remote")
+		Bool("check", false, "boolean flag to check local YAMLs to match remote")
 
 	rootCmd.PersistentFlags().
 		Bool("keep", false, "boolean flag to keep local YAMLs to match remote")

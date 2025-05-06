@@ -37,15 +37,15 @@ var pullCmd = &cobra.Command{
 		_ = viper.BindPFlag("dags", cmd.Flags().Lookup("dags"))
 		_ = viper.BindPFlag("logDir", cmd.Flags().Lookup("logDir"))
 		_ = viper.BindPFlag("dataDir", cmd.Flags().Lookup("dataDir"))
-		_ = viper.BindPFlag("force", rootCmd.PersistentFlags().Lookup("force"))
+		_ = viper.BindPFlag("check", rootCmd.PersistentFlags().Lookup("check"))
 		_ = viper.BindPFlag("keep", rootCmd.PersistentFlags().Lookup("keep"))
 		_, err := config.Load()
 		cobra.CheckErr(err)
 
-		force := viper.GetBool("force")
+		check := viper.GetBool("check")
 		keep := viper.GetBool("keep")
-		if force && keep {
-			fmt.Println("Error: --force and --keep cannot be used together.")
+		if check && keep {
+			fmt.Println("Error: --check and --keep cannot be used together.")
 			os.Exit(1)
 		}
 
@@ -163,8 +163,8 @@ func CopyWithChangeDetection(srcDir, destDir string) {
 		panic(err)
 	}
 
-	if viper.GetBool("force") {
-		fmt.Println("Overwriting local changes due to --force flag.")
+	if viper.GetBool("check") {
+		fmt.Println("Checking local changes due to --check flag.")
 	} else if viper.GetBool("keep") {
 		fmt.Println("Keeping all local changes due to --keep flag.")
 		return
@@ -179,7 +179,7 @@ func CopyWithChangeDetection(srcDir, destDir string) {
 			srcPath := filepath.Join(srcDir, file.Name())
 			destPath := filepath.Join(destDir, file.Name())
 
-			if viper.GetBool("force") {
+			if !viper.GetBool("check") {
 				copyFile(srcPath, destPath)
 				fmt.Printf("Overwritten %s\n", destPath)
 				continue
