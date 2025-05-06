@@ -42,7 +42,8 @@ type Config struct {
 	LatestStatusToday   bool     // Show latest status today or the latest status
 	LogFormat           string   // Log format
 	RemoteNodes         []RemoteNode
-	SkipInitialDAGPulls bool // Skip initial DAG pulls
+	SkipInitialDAGPulls bool   // Skip initial DAG pulls
+	DAGRepo             string // DAG repository URL prefix
 }
 
 type TLS struct {
@@ -144,6 +145,7 @@ func setupViper() error {
 	viper.SetDefault("baseConfig", r.baseConfigFile)
 	viper.SetDefault("latestStatusToday", true)
 	viper.SetDefault("skipInitialDAGPulls", false)
+	viper.SetDefault("dagRepo", "https://github.com/ErdemOzgen/blackdagger-")
 	// Logging configurations
 	viper.SetDefault("logLevel", "info")
 	viper.SetDefault("logFormat", "text")
@@ -214,6 +216,7 @@ func bindEnvs() {
 	// Miscellaneous
 	_ = viper.BindEnv("latestStatusToday", "BLACKDAGGER_LATEST_STATUS")
 	_ = viper.BindEnv("skipInitialDAGPulls", "BLACKDAGGER_SKIP_INITIAL_DAG_PULLS")
+	_ = viper.BindEnv("dagRepo", "BLACKDAGGER_DAG_REPO")
 }
 
 func loadLegacyEnvs(cfg *Config) {

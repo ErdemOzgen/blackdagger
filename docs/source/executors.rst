@@ -238,3 +238,39 @@ To run multiple commands at the same time, use the example below:
           cp /etc/resolv.conf /tmp/x
           cat /tmp/x
 
+Command Execution over WinRM
+--------------------------
+
+The `winrm` executor allows us to execute commands on remote Windows hosts over the WinRM protocol.
+
+.. code-block:: yaml
+
+    steps:
+      - name: step1
+        executor: 
+          type: winrm
+          config:
+            user: blackdagger
+            password: yourpassword
+            ip: XXX.XXX.XXX.XXX
+            port: 5985
+        command: ipconfig
+
+To run multiple commands at the same time, use the example below:
+
+.. code-block:: yaml
+
+    steps:
+      - name: step1
+        executor: 
+          type: winrm
+          config:
+            user: blackdagger
+            password: yourpassword
+            ip: XXX.XXX.XXX.XXX
+            port: 5985
+        script: |
+            Write-Host "Executing multiple commands:"
+            Get-ChildItem C:\Windows
+            ipconfig
+

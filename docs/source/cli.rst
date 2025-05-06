@@ -31,6 +31,9 @@ The following commands are available for interacting with Blackdagger:
   
   # Starts the scheduler process
   blackdagger scheduler [--dags=<path to directory>]
+
+  # Pulls the latest version of the DAGs from the repository
+  blackdagger pull [category] [--origin] [--check] [--keep]
   
   # Shows the current binary version
   blackdagger version

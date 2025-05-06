@@ -31,6 +31,7 @@ The following environment variables can be used to configure the BLACKDAGGER. De
 - ``BLACKDAGGER_CERT_FILE``: The path to the SSL certificate file.
 - ``BLACKDAGGER_KEY_FILE`` : The path to the SSL key file.
 - ``BLACKDAGGER_SKIP_INITIAL_DAG_PULLS``: Set to 1 to skip the automatic pull of default DAG YAML files during startup.
+- ``BLACKDAGGER_DAG_REPO``: The prefix for the DAG repository. This is used to pull the categorized DAG YAML files from the repository. The default value is ``https://github.com/ErdemOzgen/blackdagger-``.
 
 Note: If ``BLACKDAGGER_HOME`` environment variable is not set, the default value is ``$HOME/.config/blackdagger``.
 

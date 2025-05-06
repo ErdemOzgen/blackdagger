@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/ErdemOzgen/blackdagger/internal/config"
 	"github.com/ErdemOzgen/blackdagger/internal/frontend"
@@ -19,6 +21,15 @@ func serverCmd() *cobra.Command {
 			_ = viper.BindPFlag("port", cmd.Flags().Lookup("port"))
 			_ = viper.BindPFlag("host", cmd.Flags().Lookup("host"))
 			_ = viper.BindPFlag("dags", cmd.Flags().Lookup("dags"))
+			_ = viper.BindPFlag("check", rootCmd.PersistentFlags().Lookup("check"))
+			_ = viper.BindPFlag("keep", rootCmd.PersistentFlags().Lookup("keep"))
+
+			check := viper.GetBool("check")
+			keep := viper.GetBool("keep")
+			if check && keep {
+				fmt.Println("Error: --check and --keep cannot be used together.")
+				os.Exit(1)
+			}
 		},
 		Run: func(cmd *cobra.Command, _ []string) {
 			cfg, err := config.Load()
