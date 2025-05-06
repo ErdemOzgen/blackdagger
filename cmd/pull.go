@@ -63,6 +63,9 @@ func init() {
 	pullCmd.Flags().String("origin", "", "Custom origin URL to pull from")
 	_ = viper.BindPFlag("origin", pullCmd.Flags().Lookup("origin"))
 
+	pullCmd.Flags().String("folder", "", "Folder to pull into")
+	_ = viper.BindPFlag("folder", pullCmd.Flags().Lookup("folder"))
+
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
@@ -86,6 +89,7 @@ func Pulldags(args []string) {
 	viper.AutomaticEnv()
 	dagValue := viper.GetString("dags")
 	origin := viper.GetString("origin")
+	folder := viper.GetString("folder")
 
 	var repoName, repoURL, folderName string
 
@@ -112,7 +116,7 @@ func Pulldags(args []string) {
 	tempFolderName := fmt.Sprintf("blackdagger-%s-%s", folderName, randomInt.String())
 
 	repoBase := filepath.Join(dagValue, "repos", tempFolderName)
-	destBase := filepath.Join(dagValue)
+	destBase := filepath.Join(dagValue, folder)
 
 	if err := os.MkdirAll(repoBase, os.ModePerm); err != nil {
 		fmt.Printf("Failed to create temp repo folder: %v\n", err)
