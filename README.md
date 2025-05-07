@@ -44,10 +44,10 @@
 
 Blackdagger is a powerful, user-friendly framework designed to orchestrate complex workflows in DevOps, DevSecOps, MLOps, MLSecOps, and Continuous Automated Red Teaming (CART) environments. By leveraging a declarative YAML format and a Directed Acyclic Graph (DAG) structure, Blackdagger simplifies the definition, management, and execution of automation pipelines, enabling seamless integration with containerized environments and versatile task execution.
 
-- **Declarative YAML Format**: Blackdagger simplifies workflow definition with a declarative YAML format, allowing users to specify command dependencies using a Directed Acyclic Graph (DAG). This intuitive approach makes it easy to define complex workflows and manage task dependencies without the need for extensive scripting or coding.
-- **Web UI for Visual Management**: With its built-in Web UI, Blackdagger provides users with a visually intuitive interface for managing, rerunning, and monitoring automation pipelines. Users can easily track the real-time status of workflows, view execution logs, and make configuration changes directly from their browser, eliminating the need for manual intervention.
-- **Native Docker Support**: Blackdagger natively supports Docker container management, enabling seamless integration with containerized environments. Users can run arbitrary Docker containers as part of their automation workflows, making it easy to orchestrate tasks across distributed infrastructure and microservices architectures.
-- **Versatile Task Execution**: From making HTTP requests to executing commands over SSH, Blackdagger offers a versatile toolset for task execution. Whether it's interacting with external APIs, running custom code snippets, or managing infrastructure components, Blackdagger empowers users to automate a wide range of tasks with ease.
+- **Declarative YAML Format**: Blackdagger uses a YAML-based DAG to define workflows, simplifying complex task dependencies without scripting.
+- **Web UI for Visual Management**: Intuitive browser interface for managing, monitoring, and rerunning pipelines with real-time status and logs.
+- **Native Docker Support**: Seamlessly integrates Docker containers for efficient task orchestration in distributed environments.
+- **Versatile Task Execution**: Supports HTTP requests, SSH commands, and custom code for flexible automation.
 
 
 You can find everything about Blackdagger, including this README, in our [documentation](https://blackdagger.readthedocs.io).
@@ -55,7 +55,7 @@ You can find everything about Blackdagger, including this README, in our [docume
 
 ## **Table of Contents**
 - [**Key Features**](#key-features)
-- [**Usecases**](#usecases)
+- [**Use cases**](#use-cases)
 - [**Evolution of Blackdagger to a Framework**](#evolution-of-blackdagger-to-a-framework)
 - [**Installation**](#installation)
   - [Via Bash script](#via-bash-script)
@@ -113,7 +113,7 @@ You can find everything about Blackdagger, including this README, in our [docume
 - Basic Authentication over HTTPS
 
 
-## **Usecases**
+## **Use cases**
 
 - **Data Pipeline Automation:** Schedule ETL tasks for data processing and centralization.
 - **Infrastructure Monitoring:** Periodically check infrastructure components with HTTP requests or SSH commands.
@@ -132,15 +132,15 @@ You can find everything about Blackdagger, including this README, in our [docume
 - **Threat Simulation and Response:** Automate the execution of threat simulations to test the effectiveness of security measures. Use Blackdagger to orchestrate complex scenarios involving multiple steps, such as breaching a system, escalating privileges, and exfiltrating data, followed by automated rollback and alerting.
 
 ## Evolution of Blackdagger to a Framework
-Blackdagger is a single binary tool that is capable of managing and automating complex workflows for various purposes. To improve the experience of users while using Blackdagger, various repositories that contains tested YAML files for complex workflows, easy-to-setup infrastructure for CART and DevSecOps purposes are suggested by the team. With major additions to these repositories, everything that makes Blackdagger better is collected under a framework called Blackdagger: Cyber Workflow Automation Framework.
+Blackdagger is a single-binary tool designed for workflow automation. To enhance user experience, the team recommends repositories containing pre-tested YAML files for complex workflows and easy-to-deploy infrastructure for Continuous Automated Red Teaming (CART) and DevSecOps. These enhancements are unified under the Blackdagger: Cyber Workflow Automation Framework, which integrates all components that improve Blackdagger's functionality.
 
-The framework consist of 5 components:
+The framework consists of 5 components:
 
 - **Blackdagger (this repository):** Core of the framework for orchestrating the components and workflows
-- [**Blackcart:**](https://github.com/ErdemOzgen/blackcart) A specialized Docker container optimized for Continuous Automated Red Teaming (CART) and DevSecOps pipeline tasks.
+- [**Blackcart:**](https://hub.docker.com/r/erdemozgen/blackcart) A specialized Docker image optimized for Continuous Automated Red Teaming (CART) and DevSecOps pipeline tasks.
 - **Blackdagger YAMLs:** Pre-tested [example](https://github.com/ErdemOzgen/blackdagger-default) workflows, demonstrating real-world [DevSecOps](https://github.com/ErdemOzgen/blackdagger-devsecops) and [CART](https://github.com/ErdemOzgen/blackdagger-cart) use-cases, facilitating quick adoption and adaptation.
 - [**Blackdagger Github Infra:**](https://github.com/ErdemOzgen/blackdagger-github-infra) A suite of advanced workflows utilizing GitHub Actions infrastructure for enhanced defense evasion techniques, scalability, and performance.
-- [**Blackdagger Web Kit:**](https://github.com/ErdemOzgen/blackdagger-web-kit) A browser extension integrating all core functionalities, enabling direct interaction and execution of Blackdagger workflows from within the browser.
+- [**Blackdagger Web Kit:**](https://github.com/ErdemOzgen/blackdagger-web-kit) A browser extension integrating core functionalities, allowing direct execution of Blackdagger workflows from the browser.
 
 <p align="center">
   <img src="https://github.com/ErdemOzgen/blackdagger/blob/main/assets/images/framework_diagram.png" width="500" alt="framework-diagram">
