@@ -42,16 +42,94 @@
 <h1><b>Blackdagger: Cyber Workflow Automation Framework</b></h1>
 
 
-Blackdagger represents a significant advancement in automation technology, offering a comprehensive solution for orchestrating complex workflows in DevOps, DevSecOps, MLOps, MLSecOps, and Continuous Automated Red Teaming (CART) environments.
+Blackdagger is a powerful, user-friendly framework designed to orchestrate complex workflows in DevOps, DevSecOps, MLOps, MLSecOps, and Continuous Automated Red Teaming (CART) environments. By leveraging a declarative YAML format and a Directed Acyclic Graph (DAG) structure, Blackdagger simplifies the definition, management, and execution of automation pipelines, enabling seamless integration with containerized environments and versatile task execution.
 
-At its core, Blackdagger simplifies the management and execution of intricate workflows through its user-friendly approach and powerful functionality. Leveraging a declarative YAML format, Blackdagger enables users to define automation pipelines using a Directed Acyclic Graph (DAG), facilitating clear and concise expression of task dependencies and execution logic.
+- **Declarative YAML Format**: Blackdagger simplifies workflow definition with a declarative YAML format, allowing users to specify command dependencies using a Directed Acyclic Graph (DAG). This intuitive approach makes it easy to define complex workflows and manage task dependencies without the need for extensive scripting or coding.
+- **Web UI for Visual Management**: With its built-in Web UI, Blackdagger provides users with a visually intuitive interface for managing, rerunning, and monitoring automation pipelines. Users can easily track the real-time status of workflows, view execution logs, and make configuration changes directly from their browser, eliminating the need for manual intervention.
+- **Native Docker Support**: Blackdagger natively supports Docker container management, enabling seamless integration with containerized environments. Users can run arbitrary Docker containers as part of their automation workflows, making it easy to orchestrate tasks across distributed infrastructure and microservices architectures.
+- **Versatile Task Execution**: From making HTTP requests to executing commands over SSH, Blackdagger offers a versatile toolset for task execution. Whether it's interacting with external APIs, running custom code snippets, or managing infrastructure components, Blackdagger empowers users to automate a wide range of tasks with ease.
 
-**What Sets Blackdagger Apart?**
 
-1. **Declarative YAML Format**: Blackdagger simplifies workflow definition with a declarative YAML format, allowing users to specify command dependencies using a Directed Acyclic Graph (DAG). This intuitive approach makes it easy to define complex workflows and manage task dependencies without the need for extensive scripting or coding.
-2. **Web UI for Visual Management**: With its built-in Web UI, Blackdagger provides users with a visually intuitive interface for managing, rerunning, and monitoring automation pipelines. Users can easily track the real-time status of workflows, view execution logs, and make configuration changes directly from their browser, eliminating the need for manual intervention.
-3. **Native Docker Support**: Blackdagger natively supports Docker container management, enabling seamless integration with containerized environments. Users can run arbitrary Docker containers as part of their automation workflows, making it easy to orchestrate tasks across distributed infrastructure and microservices architectures.
-4. **Versatile Task Execution**: From making HTTP requests to executing commands over SSH, Blackdagger offers a versatile toolset for task execution. Whether it's interacting with external APIs, running custom code snippets, or managing infrastructure components, Blackdagger empowers users to automate a wide range of tasks with ease.
+You can find everything about Blackdagger, including this README, in our [documentation](https://blackdagger.readthedocs.io).
+
+
+## **Table of Contents**
+- [**Key Features**](#key-features)
+- [**Usecases**](#usecases)
+- [**Evolution of Blackdagger to a Framework**](#evolution-of-blackdagger-to-a-framework)
+- [**Installation**](#installation)
+  - [Via Bash script](#via-bash-script)
+  - [Via Docker](#via-docker)
+  - [Via GitHub Release Page](#via-github-release-page)
+  - [Get Example YAMLs For Various Purposes](#get-example-yamls-for-various-purposes)
+- [**Quick Start Guide**](#quick-start-guide)
+  - [1. Launch the Web UI](#1-launch-the-web-ui)
+  - [2. Create a New DAG](#2-create-a-new-dag)
+  - [3. Edit the DAG](#3-edit-the-dag)
+  - [4. Execute the DAG](#4-execute-the-dag)
+- [**CLI**](#cli)
+- [**Web UI**](#web-ui)
+  - [DAG Details](#dag-details)
+  - [DAGs List](#dags-list)
+  - [Search DAGs](#search-dags)
+  - [Execution History](#execution-history)
+  - [DAG Execution Log](#dag-execution-log)
+- [**Documentation**](#documentation)
+- [**Example Workflow**](#example-workflow)
+- [**Tutorial Videos**](#tutorial-videos)
+- [**Motivation**](#motivation)
+- [**Why Not Use an Existing Workflow Scheduler Like Airflow?**](#why-not-use-an-existing-workflow-scheduler-like-airflow)
+- [**How It Works**](#how-it-works)
+- [**Roadmap**](#roadmap)
+  - [Short-term Goals](#short-term-goals)
+  - [Mid-term Initiatives](#mid-term-initiatives)
+  - [Long-term Vision](#long-term-vision)
+  - [Executor Roadmap](#executor-roadmap)
+  - [TODOS for Roadmap](#todos-for-roadmap)
+- [**License**](#license)
+
+## Key Features
+
+- Web User Interface
+- Command Line Interface (CLI) with several commands for running and managing DAGs
+- YAML format for defining DAGs, with support for various features including:
+  - Execution of custom code snippets
+  - Parameters
+  - Command substitution
+  - Conditional logic
+  - Redirection of stdout and stderr
+  - Lifecycle hooks
+  - Repeating task
+  - Automatic retry
+- Executors for running different types of tasks:
+  - Running arbitrary Docker containers
+  - Making HTTP requests
+  - Sending emails
+  - Running jq command
+  - Executing remote commands via SSH
+- Email notification
+- Scheduling with Cron expressions
+- REST API Interface
+- Basic Authentication over HTTPS
+
+
+## **Usecases**
+
+- **Data Pipeline Automation:** Schedule ETL tasks for data processing and centralization.
+- **Infrastructure Monitoring:** Periodically check infrastructure components with HTTP requests or SSH commands.
+- **Automated Reporting:** Generate and send periodic reports via email.
+- **Batch Processing:** Schedule batch jobs for tasks like data cleansing or model training.
+- **Task Dependency Management:** Manage complex workflows with interdependent tasks.
+- **Microservices Orchestration:** Define and manage dependencies between microservices.
+- **CI/CD Integration:** Automate code deployment, testing, and environment updates.
+- **Alerting System:** Create notifications based on specific triggers or conditions.
+- **Custom Task Automation:** Define and schedule custom tasks using code snippets.
+- **Model Training Automation:** Automate the training of machine learning models by scheduling jobs that run on new data sets. Use Blackdagger to manage dependencies between data preprocessing, training, evaluation, and deployment tasks.
+- **Model Deployment Pipeline:** Create a DAG to automate the deployment of trained models to production environments, including steps for model validation, containerization with Docker, and deployment using SSH commands.
+- **Security Scans Integration:** Schedule regular security scans and static code analysis as part of the CI/CD pipeline. Use Blackdagger to orchestrate these tasks, ensuring that deployments are halted if vulnerabilities are detected.
+- **Automated Compliance Checks:** Set up workflows to automatically run compliance checks against infrastructure and codebase, reporting results via HTTP requests to compliance monitoring tools.
+- **Automated Penetration Testing:** Schedule and manage continuous penetration testing activities. Define dependencies in Blackdagger to ensure that penetration tests are conducted after deployment but before wide release, using Docker containers to isolate testing environments.
+- **Threat Simulation and Response:** Automate the execution of threat simulations to test the effectiveness of security measures. Use Blackdagger to orchestrate complex scenarios involving multiple steps, such as breaching a system, escalating privileges, and exfiltrating data, followed by automated rollback and alerting.
 
 ## Evolution of Blackdagger to a Framework
 Blackdagger is a single binary tool that is capable of managing and automating complex workflows for various purposes. To improve the experience of users while using Blackdagger, various repositories that contains tested YAML files for complex workflows, easy-to-setup infrastructure for CART and DevSecOps purposes are suggested by the team. With major additions to these repositories, everything that makes Blackdagger better is collected under a framework called Blackdagger: Cyber Workflow Automation Framework.
@@ -72,25 +150,11 @@ Each component is compatible with each other to run on **any environment, for an
 
 Since Blackdagger is at the core, this repository will cover the abilities of the framework significantly. Please refer to the related repositories for more information about the components.
 
-## **Highlights**
-- Single binary file installation
-- Declarative YAML format for defining DAGs
-- Web UI for visually managing, rerunning, and monitoring pipelines
-- Use existing programs without any modification
-- Self-contained, with no need for a DBMS
-- Suitable for Continuous Red Teaming (CART)
-- Suitable for DevOps and DevSecOps
-- Suitable for MLOps and MLSecOps
-
-You can find everything about Blackdagger, including this README, in our [documentation](https://blackdagger.readthedocs.io).
-
-Below, you can find the **videos** that can help you to get started with Blackdagger:
-
-| Installation and Setup of Blackdagger Video | Usage of Blackdagger Video | DAG Creation and Running in Blackdagger Video|
-|:-:|:-:|:-:|
-| [![Installation and Setup of Blackdagger](https://img.youtube.com/vi/GnFJlfEfxSk/0.jpg)](https://www.youtube.com/watch?v=GnFJlfEfxSk) | [![Usage of Blackdagger](https://img.youtube.com/vi/ezeudtCWI3w/0.jpg)](https://www.youtube.com/watch?v=ezeudtCWI3w) | [![DAG Creation and Running in Blackdagger](https://img.youtube.com/vi/1oVbahg1R5I/0.jpg)](https://www.youtube.com/watch?v=1oVbahg1R5I) |
-
 ## **Installation**
+
+### Prerequisites
+- A Linux, macOS, or Windows system with bash or Docker installed.
+- For certain workflows, `sudo` permissions may be required (see [Sudo Configuration](#sudo-configuration)).
 
 ### Via Bash script
 
@@ -110,22 +174,21 @@ sudo bash blackdagger-installer.sh
 
 ### Via Docker
 
-
 ```sh
-# In Blackdagger repo run this commmands 
+# Clone the repository and run Docker Compose
+git clone https://github.com/ErdemOzgen/blackdagger.git
+cd blackdagger
 docker compose up 
 # If docker compose does not work please try to docker compose build
 #docker compose build
-# You can access web terminal in http://127.0.0.1:8080
-# Also You can access gotty web terminal http://127.0.0.1:8090 username: blackdagger password: blackdagger
-# Do not forget run default-gotty-service dags in http://[::]:8080/dags/default-gotty-service .
 ```
+Access the Web UI at `http://127.0.0.1:8080` and the GoTTY web terminal at `http://127.0.0.1:8090` (username: `blackdagger`, password: `blackdagger`) (Do not forget run default-gotty-service dags in http://[::]:8080/dags/default-gotty-service).
 
 ### Via GitHub Release Page
 
 Download the latest binary from the [Releases page](https://github.com/ErdemOzgen/blackdagger/releases) and place it in your `$PATH` (e.g. `/usr/bin`).
 
-#### **IMPORTANT:** 
+#### **Sudo Configuration** 
 In some YAMLs and/or processes that users want to run by using Blackdagger, `sudo` permission may be required. Therefore, users may need to configure a `sudo` permission before running them. Without this permission, process running, maintaining, stopping features and other Blackdagger features may encounter bugs. Below, you can find different options to configure `sudo` permission:
 
 1. First and **suggested option** is adding user account to the /etc/sudoers file with NOPASSWD permissions, enabling them to execute sudo commands without needing to enter a password. This modification simplifies operations that require elevated privileges by removing the requirement to provide a password for each sudo command.
@@ -189,7 +252,6 @@ blackdagger pull <category>
 ```
 
 This command pulls YAML files from our repositories that you can find above. We created YAML files that are suitable with Blackdagger YAML format and useful for various cases. These YAML files are also tested many times to provide you a fast option to perform your desired actions.
-
 
 
 ## **Quick Start Guide**
@@ -262,85 +324,6 @@ blackdagger version
 blackdagger pull <repo domain name>
 ```
 
-## **Table of Contents**
-
-- [Evolution of Blackdagger to a Framework](#evolution-of-blackdagger-to-a-framework)
-- [**Highlights**](#highlights)
-- [**Installation**](#installation)
-  - [Via Bash script](#via-bash-script)
-  - [Via Docker](#via-docker)
-  - [Via GitHub Release Page](#via-github-release-page)
-    - [**IMPORTANT:**](#important)
-  - [Get Example YAMLs For Various Purposes](#get-example-yamls-for-various-purposes)
-- [**Quick Start Guide**](#quick-start-guide)
-  - [1. Launch the Web UI](#1-launch-the-web-ui)
-  - [2. Create a New DAG](#2-create-a-new-dag)
-  - [3. Edit the DAG](#3-edit-the-dag)
-  - [4. Execute the DAG](#4-execute-the-dag)
-- [**CLI**](#cli)
-- [**Table of Contents**](#table-of-contents)
-- [**Features**](#features)
-- [**Usecase**](#usecase)
-- [**Web UI**](#web-ui)
-  - [DAG Details](#dag-details)
-  - [DAGs List](#dags-list)
-  - [Search DAGs](#search-dags)
-  - [Execution History](#execution-history)
-  - [DAG Execution Log](#dag-execution-log)
-- [**Documentation**](#documentation)
-- [**Example Workflow**](#example-workflow)
-- [**Motivation**](#motivation)
-- [**Why Not Use an Existing Workflow Scheduler Like Airflow?**](#why-not-use-an-existing-workflow-scheduler-like-airflow)
-- [**How It Works**](#how-it-works)
-- [**Roadmap**](#roadmap)
-  - [**Short-term Goals**](#short-term-goals)
-  - [**Mid-term Initiatives**](#mid-term-initiatives)
-  - [**Long-term Vision**](#long-term-vision)
-  - [TODOS for Roadmap](#todos-for-roadmap)
-- [Executor Roadmap](#executor-roadmap)
-- [**License**](#license)
-
-## **Features**
-
-- Web User Interface
-- Command Line Interface (CLI) with several commands for running and managing DAGs
-- YAML format for defining DAGs, with support for various features including:
-  - Execution of custom code snippets
-  - Parameters
-  - Command substitution
-  - Conditional logic
-  - Redirection of stdout and stderr
-  - Lifecycle hooks
-  - Repeating task
-  - Automatic retry
-- Executors for running different types of tasks:
-  - Running arbitrary Docker containers
-  - Making HTTP requests
-  - Sending emails
-  - Running jq command
-  - Executing remote commands via SSH
-- Email notification
-- Scheduling with Cron expressions
-- REST API Interface
-- Basic Authentication over HTTPS
-
-## **Usecase**
-
-- **Data Pipeline Automation:** Schedule ETL tasks for data processing and centralization.
-- **Infrastructure Monitoring:** Periodically check infrastructure components with HTTP requests or SSH commands.
-- **Automated Reporting:** Generate and send periodic reports via email.
-- **Batch Processing:** Schedule batch jobs for tasks like data cleansing or model training.
-- **Task Dependency Management:** Manage complex workflows with interdependent tasks.
-- **Microservices Orchestration:** Define and manage dependencies between microservices.
-- **CI/CD Integration:** Automate code deployment, testing, and environment updates.
-- **Alerting System:** Create notifications based on specific triggers or conditions.
-- **Custom Task Automation:** Define and schedule custom tasks using code snippets.
-- **Model Training Automation:** Automate the training of machine learning models by scheduling jobs that run on new data sets. Use Blackdagger to manage dependencies between data preprocessing, training, evaluation, and deployment tasks.
-- **Model Deployment Pipeline:** Create a DAG to automate the deployment of trained models to production environments, including steps for model validation, containerization with Docker, and deployment using SSH commands.
-- **Security Scans Integration:** Schedule regular security scans and static code analysis as part of the CI/CD pipeline. Use Blackdagger to orchestrate these tasks, ensuring that deployments are halted if vulnerabilities are detected.
-- **Automated Compliance Checks:** Set up workflows to automatically run compliance checks against infrastructure and codebase, reporting results via HTTP requests to compliance monitoring tools.
-- **Automated Penetration Testing:** Schedule and manage continuous penetration testing activities. Define dependencies in Blackdagger to ensure that penetration tests are conducted after deployment but before wide release, using Docker containers to isolate testing environments.
-- **Threat Simulation and Response:** Automate the execution of threat simulations to test the effectiveness of security measures. Use Blackdagger to orchestrate complex scenarios involving multiple steps, such as breaching a system, escalating privileges, and exfiltrating data, followed by automated rollback and alerting.
 
 
 ## **Web UI**
@@ -496,6 +479,14 @@ steps:
       - send_report
 ```
 
+## **Tutorial Videos**
+
+Below, you can find the **videos** that can help you to get started with Blackdagger:
+
+| Installation and Setup of Blackdagger Video | Usage of Blackdagger Video | DAG Creation and Running in Blackdagger Video|
+|:-:|:-:|:-:|
+| [![Installation and Setup of Blackdagger](https://img.youtube.com/vi/GnFJlfEfxSk/0.jpg)](https://www.youtube.com/watch?v=GnFJlfEfxSk) | [![Usage of Blackdagger](https://img.youtube.com/vi/ezeudtCWI3w/0.jpg)](https://www.youtube.com/watch?v=ezeudtCWI3w) | [![DAG Creation and Running in Blackdagger](https://img.youtube.com/vi/1oVbahg1R5I/0.jpg)](https://www.youtube.com/watch?v=1oVbahg1R5I) |
+
 ## **Motivation**
 
 Legacy systems often have complex and implicit dependencies between jobs. When there are hundreds of cron jobs on a server, it can be difficult to keep track of these dependencies and to determine which job to rerun if one fails. It can also be a hassle to SSH into a server to view logs and manually rerun shell scripts one by one. blackdagger aims to solve these problems by allowing you to explicitly visualize and manage pipeline dependencies as a DAG, and by providing a web UI for checking dependencies, execution status, and logs and for rerunning or stopping jobs with a simple mouse click.
@@ -536,17 +527,7 @@ Blackdagger is committed to continuous improvement and the development of new fe
 
 We are excited about the journey ahead and invite the community to contribute ideas, feedback, and code to help make Blackdagger the go-to solution for workflow management. Stay tuned for updates and join us in shaping the future of Blackdagger!
 
-### TODOS for Roadmap
-
-- [ ] Create more executors see in [here](#executor-roadmap)
-- [ ] Create more playbooks for Default,DevOps, DevSecOps, MLOps, MLSecOps, and Continuous Automated Red Teaming (CART) environments.
-- [ ] Support for importing different DAGs within the same DAG using import statements, enabling modular workflow design.
-- [ ] Implementation of centralized control, allowing BlackDagger to function as an agent for streamlined management.
-- [ ] Enhancement of log collection features to include forwarding logs to a central server for aggregated analysis.
-- [ ] Addition of functionality to generate reports in DOCX and PDF formats for improved documentation and reporting.
-- [ ] Integration with ChatGPT and offline language models for automated document generation, enhancing documentation efficiency.
-
-## Executor Roadmap
+### Executor Roadmap
 
 - [ ] **Kubernetes Executor**
   - **Description**: Executes tasks as Kubernetes jobs, allowing for scalable and efficient containerized job execution in a Kubernetes cluster.
@@ -587,6 +568,16 @@ We are excited about the journey ahead and invite the community to contribute id
 - [ ] **IoT Device Executor**
   - **Description**: Sends commands or updates to IoT devices, supporting device management and automation across IoT networks.
   - **Use Case**: Useful for IoT applications needing orchestrated control or updates across multiple devices, such as smart home systems, industrial automation, or health monitoring devices.
+
+### TODOS for Roadmap
+
+- [ ] Create more executors see in [here](#executor-roadmap)
+- [ ] Create more playbooks for Default,DevOps, DevSecOps, MLOps, MLSecOps, and Continuous Automated Red Teaming (CART) environments.
+- [ ] Support for importing different DAGs within the same DAG using import statements, enabling modular workflow design.
+- [ ] Implementation of centralized control, allowing BlackDagger to function as an agent for streamlined management.
+- [ ] Enhancement of log collection features to include forwarding logs to a central server for aggregated analysis.
+- [ ] Addition of functionality to generate reports in DOCX and PDF formats for improved documentation and reporting.
+- [ ] Integration with ChatGPT and offline language models for automated document generation, enhancing documentation efficiency.
 
 
 ## **License**
