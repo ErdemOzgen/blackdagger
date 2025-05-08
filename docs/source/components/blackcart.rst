@@ -8,7 +8,7 @@ Blackcart
       </div>
    </div>
 
-Blackcart is a powerful Docker container designed for Continuous Automated Red Teaming (CART) and DevSecOps pipelines. It integrates a comprehensive suite of security tools into a containerized environment, enabling continuous security testing and proactive threat mitigation. With Blackcart, you can enhance your organization's security posture and streamline your development processes.
+Blackcart is a powerful Docker image designed for Continuous Automated Red Teaming (CART) and DevSecOps pipelines. It integrates a comprehensive suite of security tools into a containerized environment, enabling continuous security testing and proactive threat mitigation. With Blackcart, you can enhance your organization's security posture and streamline your development processes.
 
 Continuous automated red teaming (CART) is an advanced cybersecurity approach that incorporates automation and continuous testing into traditional red team exercises. Unlike manual red teaming conducted annually or bi-annually, CART ensures ongoing security testing throughout the year. By continuously testing an organization's cybersecurity defenses, CART aims to detect and address vulnerabilities proactively, preventing attackers from exploiting them. This method provides a more proactive and comprehensive approach to enhancing an organization's security posture. Blackcart is a streamlined Dockerfile that comprises a collection of essential security tools suitable for Continuous Automated Red Teaming (CART).
 
@@ -17,16 +17,16 @@ Blackcart, originally designed for CART, extends its capabilities to serve as a 
 
 Highlights
 ----------
-Continuous Automated Red Teaming (CART)
-DevSecOps abilities
-Continuous security testing
-Vulnerability assessment
-Threat detection
-Automation and orchestration
-Compliance and reporting
-Streamlined Docker container
-Comprehensive toolset
-Integration with DevSecOps pipelines
+- Continuous Automated Red Teaming (CART)
+- DevSecOps abilities
+- Continuous security testing
+- Vulnerability assessment
+- Threat detection
+- Automation and orchestration
+- Compliance and reporting
+- Streamlined Docker container
+- Comprehensive toolset
+- Integration with DevSecOps pipelines
 
 Installation and Usage
 ----------------------

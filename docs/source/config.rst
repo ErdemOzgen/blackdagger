@@ -67,6 +67,10 @@ You can create ``config.yaml`` file in the ``$BLACKDAGGER_HOME`` directory (defa
     # Working Directory
     workDir: <working directory for DAGs>                        # default: DAG location
 
+    # DAG Configuration
+    skipInitialDAGPulls: <true|false>                            # skip initial DAG pulls
+    dagRepo: <DAG repository prefix>                             # default: https://github.com/ErdemOzgen/blackdagger-
+
     # SSL Configuration
     tls:
         certFile: <path to SSL certificate file>

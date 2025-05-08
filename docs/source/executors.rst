@@ -1,3 +1,5 @@
+.. _Executors:
+
 Executors
 =========
 
@@ -6,7 +8,7 @@ Executors
 
 The `executor` field provides different execution methods for each step. These executors are responsible for executing the commands or scripts specified in the command or script field of the step. Below are the available executors and their use cases.
 
-In the `examples <./examples/>`_ directory, you can find a collection of sample DAGs that demonstrate how to use executors.
+At :ref:`Examples`, you can find a collection of sample DAGs that demonstrate how to use executors.
 
 .. _docker executor:
 
@@ -239,7 +241,7 @@ To run multiple commands at the same time, use the example below:
           cat /tmp/x
 
 Command Execution over WinRM
---------------------------
+----------------------------
 
 The `winrm` executor allows us to execute commands on remote Windows hosts over the WinRM protocol.
 

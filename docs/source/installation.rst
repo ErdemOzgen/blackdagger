@@ -8,7 +8,7 @@ You can install Blackdagger quickly using Homebrew or by downloading the latest 
 
 
 
-Via Bash script
+Via Bash Script
 ---------------
 
 .. code-block:: bash
@@ -23,7 +23,7 @@ Via Docker
     # Clone the repository and run the docker compose
     docker compose up
 
-Via GitHub Release Page
+Via GitHub Releases Page
 -----------------------
 
 Download the latest binary from the `Releases page <https://github.com/ErdemOzgen/blackdagger/releases>`_ and place it in your ``$PATH`` (e.g. ``/usr/local/bin``).
