@@ -7,14 +7,16 @@ Quick Start Guide
 1. Launch the Web UI
 ---------------------
 
-Start the server with ``blackdagger server`` and browse to http://127.0.0.1:8080 to explore the Web UI.
+Start the server with the command ``blackdagger start-all`` or ``blackdagger server`` and browse to http://127.0.0.1:8080 to explore the Web UI.
 
-Note: The server will be started on port ``8080`` by default. You can change the port by passing ``--port`` option. See :ref:`Host and Port Configuration` for more details.
+*Note: The server will be started on port* ``8080`` *by default. You can change the port by passing* ``--port`` *option. See* :ref:`Host and Port Configuration` *for more details.*
 
 2. Create a New DAG
 -------------------
 
-Create a DAG by clicking the ``New DAG`` button on the top page of the web UI. Input ``example`` in the dialog.
+Navigate to the DAG List page by clicking the menu in the left panel of the Web UI. Then create a DAG by clicking the ``New`` button at the top of the page. Enter a name for the DAG (e.g. ``example-dag``) and click the ``Create`` button.
+
+*Note: DAG (YAML) files will be placed in ~/.config/blackdagger/dags by default. See* :ref:`Configuration Options` *for more details.*
 
 3. Edit the DAG
 ---------------
@@ -23,26 +25,17 @@ Go to the ``SPEC`` Tab and hit the ``Edit`` button. Copy & Paste the following Y
 
 .. code-block:: yaml
 
-    schedule: "0 0 * * *"
-    tags: Daily
+    schedule: "* * * * *" # Run the DAG every minute
     steps:
-      - name: "S1"
-        command: "sleep 2"
-      - name: "S2"
-        command: "sleep 2"
+      - name: s1
+        command: echo Hello blackdagger
+      - name: s2
+        command: echo done!
         depends:
-          - "S1"
-      - name: "S3"
-        command: "sleep 2"
-        depends:
-          - "S1"
-      - name: "S4"
-        command: "sleep 2"
-        depends:
-          - "S2"
-          - "S3"
+          - s1
 
 4. Execute the DAG
 -------------------
 
-You can execute the example by pressing the `Start` button.
+You can execute the example by pressing the `Start` button. You can see "Hello blackdagger" in the log page in the Web UI.
+

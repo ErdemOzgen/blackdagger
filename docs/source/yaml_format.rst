@@ -77,6 +77,7 @@ Each step can have its own set of configurations, including:
 - ``name``: The name of the step.
 - ``description``: A brief description of the step.
 - ``dir``: The working directory for the step.
+- ``executor``: The executor to use for the DAG. More details can be found in the :ref:`Executors` section.
 - ``command``: The command and parameters to execute.
 - ``stdout``: The file to which the standard output is written.
 - ``output``: The variable to which the result is written.

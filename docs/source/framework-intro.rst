@@ -1,9 +1,11 @@
 Introduction to the Blackdagger: Cyber Workflow Automation Framework
 ===================================================================
 
-Blackdagger is a single binary tool that is capable of managing and automating complex workflows for various purposes. To improve the experience of users while using Blackdagger, various repositories that contains tested YAML files for complex workflows, easy-to-setup infrastructure for CART and DevSecOps purposes are suggested by the team. With major additions to these repositories, everything that makes Blackdagger better is collected under a framework called Blackdagger: Cyber Workflow Automation Framework.
+Blackdagger is a powerful, user-friendly framework designed to orchestrate complex workflows in DevOps, DevSecOps, MLOps, MLSecOps, and Continuous Automated Red Teaming (CART) environments.
 
-The framework consist of 5 components:
+To improve usability and streamline complex workflows, the team introduced a structured framework around Blackdagger. This includes pre-configured YAML files for common use cases and deployable infrastructure for Continuous Automated Red Teaming (CART) and DevSecOps. These additions are consolidated under the Blackdagger: Cyber Workflow Automation Framework, providing a cohesive solution that enhances the tool's overall effectiveness.
+
+The framework consists of 5 components:
 
 - `Blackdagger: <https://github.com/ErdemOzgen/blackdagger>`_ Core of the framework for orchestrating the components and workflows.
 - `Blackcart: <https://github.com/ErdemOzgen/blackcart>`_ A specialized Docker container optimized for Continuous Automated Red Teaming (CART) and DevSecOps pipeline tasks.
@@ -17,6 +19,6 @@ The framework consist of 5 components:
 
 ---
 
-Each component is compatible with each other to run on any environment, for any case and as easy, fast and effective as possible. The framework also enables adding, removing or modifying components to add extra features for new purposes.
+Each component within the framework is designed for interoperability, allowing seamless integration across various environments and use cases with maximum ease, speed, and efficiency. The framework is modular, supporting the addition, removal, or modification of components to introduce new features or adapt to evolving requirements.
 
-Since Blackdagger is at the core, this documentation will cover the abilities of the framework significantly. Please refer to the related documentation pages under this title for more information about the components.
+With Blackdagger at its core, this documentation will cover the abilities of the framework significantly. Please refer to the related documentation pages under this title for more information about the components.

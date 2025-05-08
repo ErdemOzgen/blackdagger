@@ -17,7 +17,7 @@ API Endpoints
 This document provides information about the following endpoints:
 
 Show DAGs `GET /api/v1/dags/`
----------------------
+-----------------------------
 
 Return a list of available DAGs.
 
@@ -44,7 +44,7 @@ Response Body
 
 
 Show Workflow Detail `GET /api/v1/dags/:name`
---------------------------------------
+---------------------------------------------
 
 Return details about the specified workflow.
 
@@ -72,7 +72,7 @@ TBU
 
 
 Show Workflow Spec `GET /api/v1/dags/:name/spec`
-----------------------------------------
+------------------------------------------------
 
 Return the specifications of the specified workflow.
 
@@ -100,7 +100,7 @@ TBU
 
 
 Submit Workflow Action `POST /api/v1/dags/:name`
-----------------------------------------
+------------------------------------------------
 
 Submit an action to a specified workflow.
 
