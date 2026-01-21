@@ -10,8 +10,8 @@ import (
 
 	"github.com/ErdemOzgen/blackdagger/internal/dag"
 	"github.com/ErdemOzgen/blackdagger/internal/util"
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/mitchellh/mapstructure"
@@ -59,7 +59,7 @@ func (e *docker) Run() error {
 	defer cli.Close()
 
 	if e.pull {
-		reader, err := cli.ImagePull(ctx, e.image, types.ImagePullOptions{})
+		reader, err := cli.ImagePull(ctx, e.image, image.PullOptions{})
 		if err != nil {
 			return err
 		}
@@ -89,7 +89,7 @@ func (e *docker) Run() error {
 		}
 		removing = true
 		err := cli.ContainerRemove(
-			ctx, resp.ID, types.ContainerRemoveOptions{
+			ctx, resp.ID, container.RemoveOptions{
 				Force: true,
 			},
 		)
@@ -103,13 +103,13 @@ func (e *docker) Run() error {
 	}
 
 	if err := cli.ContainerStart(
-		ctx, resp.ID, types.ContainerStartOptions{},
+		ctx, resp.ID, container.StartOptions{},
 	); err != nil {
 		return err
 	}
 
 	out, err := cli.ContainerLogs(
-		ctx, resp.ID, types.ContainerLogsOptions{
+		ctx, resp.ID, container.LogsOptions{
 			ShowStdout: true,
 			ShowStderr: true,
 			Follow:     true,
