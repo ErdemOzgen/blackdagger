@@ -163,7 +163,7 @@ docker compose up
 #docker compose build
 ```
 
-Access the Web UI at `http://127.0.0.1:8080` and the GoTTY web terminal at `http://127.0.0.1:8090` (username: `blackdagger`, password: `blackdagger`) (Do not forget to run default-gotty-service dag at http://[::]:8080/dags/default-gotty-service).
+Access the Web UI at `http://127.0.0.1:8080` and the GoTTY web terminal at `http://127.0.0.1:8090` (username: `blackcart`, password: `blackcart`) (Do not forget to run default-gotty-service dag at http://[::]:8080/dags/default-gotty-service).
 
 ### Via GitHub Releases Page
 
