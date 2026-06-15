@@ -139,6 +139,9 @@ func TestWebhookExecutor(t *testing.T) {
 
 		exec, err := newWebhook(context.Background(), step)
 		require.NoError(t, err)
+
+		buf := new(bytes.Buffer)
+		exec.SetStdout(buf)
 		require.NoError(t, exec.Run())
 	})
 
@@ -162,6 +165,10 @@ func TestWebhookExecutor(t *testing.T) {
 
 		exec, err := newWebhook(context.Background(), step)
 		require.NoError(t, err)
+
+		buf := new(bytes.Buffer)
+		exec.SetStdout(buf)
+
 		err = exec.Run()
 		require.Error(t, err)
 		require.ErrorIs(t, err, errWebhookStatusCode)
