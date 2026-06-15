@@ -69,6 +69,10 @@ func dryCmd() *cobra.Command {
 
 			dataStore := newDataStores(cfg)
 			cli := newClient(cfg, dataStore, agentLogger)
+			logSink, forwardOutput, err := newLogForwarding(cfg, agentLogger)
+			if err != nil {
+				agentLogger.Fatal("Log forwarding setup failed", "error", err)
+			}
 
 			agt := agent.New(
 				requestID,
@@ -78,7 +82,11 @@ func dryCmd() *cobra.Command {
 				logFile.Name(),
 				cli,
 				dataStore,
-				&agent.Options{Dry: true})
+				&agent.Options{
+					Dry:               true,
+					LogSink:           logSink,
+					ForwardStepOutput: forwardOutput,
+				})
 
 			ctx := cmd.Context()
 

@@ -1,0 +1,5 @@
+imports:
+  - nested_grandchild
+steps:
+  - name: nested-child-step
+    command: echo nested-child

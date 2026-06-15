@@ -108,6 +108,129 @@ Sending HTTP Requests
             "postId": "1"
           },
           "body": ""
+
+Sending a Webhook
+-----------------
+
+.. code-block:: yaml
+
+  steps:
+    - name: trigger_deployment_webhook
+      executor:
+        type: webhook
+        config:
+          url: "https://example.org/hooks/deploy"
+          method: "POST"
+          timeout: 10
+          headers:
+            Authorization: "Bearer ${WEBHOOK_TOKEN}"
+            Content-Type: "application/json"
+          query:
+            env: "prod"
+          body: '{"service":"api","version":"1.2.3"}'
+          successStatusCodes: [200, 202]
+          silent: true
+
+This example is also available as ``examples/execute_webhook.yaml``.
+
+Handler Callbacks with Webhooks
+-------------------------------
+
+Use lifecycle hooks to notify external systems when a workflow succeeds or
+fails.
+
+.. code-block:: yaml
+
+  env:
+    - CALLBACK_URL: https://example.org/hooks/workflow-status
+
+  handlerOn:
+    success:
+      executor:
+        type: webhook
+        config:
+          url: "${CALLBACK_URL}"
+          method: "POST"
+          headers:
+            Content-Type: "application/json"
+          body: '{"status":"COMPLETED"}'
+          silent: true
+    failure:
+      executor:
+        type: webhook
+        config:
+          url: "${CALLBACK_URL}"
+          method: "POST"
+          headers:
+            Content-Type: "application/json"
+          body: '{"status":"FAILED"}'
+          silent: true
+
+  steps:
+    - name: check_identity
+      command: bash
+      script: |
+        id
+
+This example is also available as
+``examples/handler_on_webhook_callback.yaml``.
+
+Running Terraform
+-----------------
+
+.. code-block:: yaml
+
+  steps:
+    - name: terraform_apply
+      executor:
+        type: terraform
+        config:
+          binary: terraform
+          workingDir: ./infra
+          init: true
+          initArgs:
+            - -upgrade
+          subcommand: apply
+          varFiles:
+            - env/prod.tfvars
+          vars:
+            image_tag: "1.2.3"
+            region: "us-east-1"
+          targets:
+            - module.app
+          autoApprove: true
+          env:
+            TF_IN_AUTOMATION: "true"
+
+This example is also available as ``examples/execute_terraform.yaml``.
+
+Running Ansible Playbook
+------------------------
+
+.. code-block:: yaml
+
+  steps:
+    - name: run_ansible_playbook
+      executor:
+        type: ansible
+        config:
+          binary: ansible-playbook
+          playbook: deploy/site.yml
+          inventory: inventory/prod.ini
+          tags:
+            - deploy
+            - app
+          extraVars:
+            image_tag: "1.2.3"
+            environment: "prod"
+          become: true
+          forks: 20
+          diff: true
+          check: false
+          env:
+            ANSIBLE_STDOUT_CALLBACK: yaml
+
+This example is also available as ``examples/execute_ansible_playbook.yaml``.
         }
 
 Querying JSON Data with jq
@@ -243,3 +366,61 @@ Customizing Signal Handling on Stop
         for s in {1..64}; do trap "echo trap $s" $s; done
         sleep 60
       signalOnStop: "SIGINT"
+
+Importing DAG Files
+-------------------
+
+Use ``imports`` to build modular workflows from reusable YAML files.
+
+.. code-block:: yaml
+
+  # examples/imports/main_workflow.yaml
+  name: import-example
+  imports:
+    - ./common_steps
+    - ./notify_steps
+
+  steps:
+    - name: run_pipeline
+      command: echo "running pipeline"
+      depends:
+        - validate_data
+
+.. code-block:: yaml
+
+  # examples/imports/common_steps.yaml
+  steps:
+    - name: prepare_data
+      command: echo "preparing data"
+    - name: validate_data
+      command: echo "validating data"
+      depends:
+        - prepare_data
+
+.. code-block:: yaml
+
+  # examples/imports/notify_steps.yaml
+  steps:
+    - name: notify
+      command: echo "notifying"
+      depends:
+        - run_pipeline
+
+Scraping Log Forwarding Metrics
+-------------------------------
+
+Use this example to scrape Prometheus-formatted log forwarding metrics from
+the local monitor endpoint.
+
+.. code-block:: yaml
+
+  name: scrape-log-forwarding-metrics
+
+  steps:
+    - name: scrape_prometheus_metrics
+      command: curl
+      args:
+        - -fsS
+        - http://127.0.0.1:8091/log-forwarding/metrics/prometheus
+
+This example is also available as ``examples/scrape_log_forwarding_metrics.yaml``.

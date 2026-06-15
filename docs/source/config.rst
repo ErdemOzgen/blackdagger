@@ -32,6 +32,19 @@ The following environment variables can be used to configure the BLACKDAGGER. De
 - ``BLACKDAGGER_KEY_FILE`` : The path to the SSL key file.
 - ``BLACKDAGGER_SKIP_INITIAL_DAG_PULLS``: Set to 1 to skip the automatic pull of default DAG YAML files during startup.
 - ``BLACKDAGGER_DAG_REPO``: The prefix for the DAG repository. This is used to pull the categorized DAG YAML files from the repository. The default value is ``https://github.com/ErdemOzgen/blackdagger-``.
+- ``BLACKDAGGER_LOG_FORWARDING_ENABLED``: Set to 1 to enable centralized log forwarding.
+- ``BLACKDAGGER_LOG_FORWARDING_SINK_TYPE``: Log forwarding sink type. Current MVP supports ``http``.
+- ``BLACKDAGGER_LOG_FORWARDING_HTTP_URL``: HTTP endpoint URL used to forward log lines.
+- ``BLACKDAGGER_LOG_FORWARDING_TIMEOUT_SEC``: HTTP timeout in seconds for log forwarding requests.
+- ``BLACKDAGGER_LOG_FORWARDING_INCLUDE_STEP_OUTPUT``: Set to 1 to include step stdout and stderr files in forwarding.
+- ``BLACKDAGGER_LOG_FORWARDING_QUEUE_SIZE``: Async queue size for buffered log forwarding.
+- ``BLACKDAGGER_LOG_FORWARDING_MAX_RETRIES``: Maximum retry attempts per forwarded log record.
+- ``BLACKDAGGER_LOG_FORWARDING_INITIAL_BACKOFF_MS``: Initial retry backoff in milliseconds.
+- ``BLACKDAGGER_LOG_FORWARDING_MAX_BACKOFF_MS``: Maximum retry backoff in milliseconds.
+- ``BLACKDAGGER_LOG_FORWARDING_MONITOR_ENABLED``: Set to 1 to expose a local health and metrics endpoint for log forwarding.
+- ``BLACKDAGGER_LOG_FORWARDING_MONITOR_HOST``: Host address used by the local monitor endpoint.
+- ``BLACKDAGGER_LOG_FORWARDING_MONITOR_PORT``: Port number used by the local monitor endpoint.
+- ``BLACKDAGGER_LOG_FORWARDING_MONITOR_BASE_PATH``: Base path for monitor endpoints (for example, ``/log-forwarding``).
 
 Note: If ``BLACKDAGGER_HOME`` environment variable is not set, the default value is ``$HOME/.config/blackdagger``.
 
@@ -70,6 +83,24 @@ You can create ``config.yaml`` file in the ``$BLACKDAGGER_HOME`` directory (defa
     # DAG Configuration
     skipInitialDAGPulls: <true|false>                            # skip initial DAG pulls
     dagRepo: <DAG repository prefix>                             # default: https://github.com/ErdemOzgen/blackdagger-
+
+    # Centralized log forwarding (MVP)
+    logForwarding:
+      enabled: <true|false>                                    # enables central log forwarding
+      sinkType: http                                            # supported: http
+      httpURL: https://logs.example.com/ingest                  # destination endpoint
+      timeoutSec: 5                                             # request timeout in seconds
+      includeStepOutput: <true|false>                           # include stdout/stderr files
+      queueSize: 256                                             # async buffer size
+      maxRetries: 3                                              # retry attempts per log record
+      initialBackoffMS: 100                                      # first retry delay (ms)
+      maxBackoffMS: 2000                                         # max retry delay (ms)
+      monitorEnabled: <true|false>                               # expose local monitor endpoints
+      monitorHost: 127.0.0.1                                     # monitor bind host
+      monitorPort: 8091                                          # monitor bind port
+      monitorBasePath: /log-forwarding                           # monitor base path
+      headers:
+        Authorization: "Bearer <token>"                      # optional HTTP headers
 
     # SSL Configuration
     tls:
@@ -137,3 +168,44 @@ Example:
       from: "foo@bar.com"
       to: "foo@bar.com"
       prefix: "[Info]"
+
+Centralized Log Forwarding (MVP)
+--------------------------------
+
+You can forward DAG execution logs to a central HTTP endpoint.
+
+.. code-block:: yaml
+
+    logForwarding:
+      enabled: true
+      sinkType: http
+      httpURL: https://logs.example.com/ingest
+      timeoutSec: 5
+      includeStepOutput: false
+      queueSize: 256
+      maxRetries: 3
+      initialBackoffMS: 100
+      maxBackoffMS: 2000
+      monitorEnabled: true
+      monitorHost: 127.0.0.1
+      monitorPort: 8091
+      monitorBasePath: /log-forwarding
+      headers:
+        Authorization: "Bearer <token>"
+
+When monitor is enabled, the command process exposes these endpoints:
+
+- ``<monitorBasePath>/health``
+- ``<monitorBasePath>/metrics`` (JSON)
+- ``<monitorBasePath>/metrics/prometheus`` (Prometheus text format)
+
+You can also request Prometheus format from ``<monitorBasePath>/metrics`` using
+``?format=prometheus``.
+
+When retries, queue drops, or terminal delivery failures occur, the command logger emits structured events with:
+
+- ``event=log_forwarding_retry``
+- ``event=log_forwarding_drop``
+- ``event=log_forwarding_failed``
+
+For a runnable configuration example, see ``examples/config_log_forwarding.yaml``.

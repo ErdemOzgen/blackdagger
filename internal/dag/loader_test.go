@@ -1,7 +1,9 @@
 package dag
 
 import (
+	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 	"time"
 
@@ -119,5 +121,120 @@ func Test_LoadYAML(t *testing.T) {
 	t.Run("InvalidYAMLData", func(t *testing.T) {
 		_, err := loadYAML([]byte(`invalidyaml`), buildOpts{})
 		require.Error(t, err)
+	})
+	t.Run("ImportsRequireFilePath", func(t *testing.T) {
+		_, err := loadYAML([]byte(`
+imports:
+  - child
+steps:
+  - name: "1"
+    command: "true"
+`), buildOpts{})
+		require.Error(t, err)
+		require.ErrorIs(t, err, errImportsRequirePath)
+	})
+}
+
+func Test_Load_WithImports(t *testing.T) {
+	t.Run("MergesImportedSteps", func(t *testing.T) {
+		file := filepath.Join(testdataDir, "imports", "parent.yaml")
+
+		dg, err := Load("", file, "")
+		require.NoError(t, err)
+
+		require.Len(t, dg.Steps, 2)
+		assert.Equal(t, "imported-step", dg.Steps[0].Name)
+		assert.Equal(t, "local-step", dg.Steps[1].Name)
+	})
+
+	t.Run("MergesNestedImports", func(t *testing.T) {
+		file := filepath.Join(testdataDir, "imports", "nested_parent.yaml")
+
+		dg, err := Load("", file, "")
+		require.NoError(t, err)
+
+		require.Len(t, dg.Steps, 3)
+		assert.Equal(t, "nested-grandchild-step", dg.Steps[0].Name)
+		assert.Equal(t, "nested-child-step", dg.Steps[1].Name)
+		assert.Equal(t, "nested-local-step", dg.Steps[2].Name)
+	})
+
+	t.Run("DetectsImportCycle", func(t *testing.T) {
+		file := filepath.Join(testdataDir, "imports", "cycle_a.yaml")
+
+		_, err := Load("", file, "")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), errCircularImport.Error())
+	})
+
+	t.Run("DetectsDuplicateImportedStepName", func(t *testing.T) {
+		file := filepath.Join(testdataDir, "imports", "duplicate_parent.yaml")
+
+		_, err := Load("", file, "")
+		require.Error(t, err)
+		require.ErrorIs(t, err, errDuplicateStepName)
+	})
+
+	t.Run("BlocksPathTraversalOutsideRoot", func(t *testing.T) {
+		rootDir := t.TempDir()
+		importsDir := filepath.Join(rootDir, "imports")
+		outsideDir := filepath.Join(rootDir, "outside")
+		require.NoError(t, os.MkdirAll(importsDir, 0o755))
+		require.NoError(t, os.MkdirAll(outsideDir, 0o755))
+
+		mainFile := filepath.Join(importsDir, "main.yaml")
+		require.NoError(t, os.WriteFile(mainFile, []byte(`
+imports:
+  - ../outside/shared
+steps:
+  - name: main
+    command: echo main
+`), 0o644))
+
+		outsideFile := filepath.Join(outsideDir, "shared.yaml")
+		require.NoError(t, os.WriteFile(outsideFile, []byte(`
+steps:
+  - name: outside
+    command: echo outside
+`), 0o644))
+
+		_, err := Load("", mainFile, "")
+		require.Error(t, err)
+		require.ErrorIs(t, err, errImportPathOutsideRoot)
+	})
+
+	t.Run("BlocksSymlinkEscapeOutsideRoot", func(t *testing.T) {
+		if runtime.GOOS == "windows" {
+			t.Skip("symlink test is skipped on windows")
+		}
+
+		rootDir := t.TempDir()
+		importsDir := filepath.Join(rootDir, "imports")
+		outsideDir := filepath.Join(rootDir, "outside")
+		require.NoError(t, os.MkdirAll(importsDir, 0o755))
+		require.NoError(t, os.MkdirAll(outsideDir, 0o755))
+
+		outsideFile := filepath.Join(outsideDir, "shared.yaml")
+		require.NoError(t, os.WriteFile(outsideFile, []byte(`
+steps:
+  - name: outside
+    command: echo outside
+`), 0o644))
+
+		linkPath := filepath.Join(importsDir, "linked.yaml")
+		require.NoError(t, os.Symlink(outsideFile, linkPath))
+
+		mainFile := filepath.Join(importsDir, "main.yaml")
+		require.NoError(t, os.WriteFile(mainFile, []byte(`
+imports:
+  - ./linked
+steps:
+  - name: main
+    command: echo main
+`), 0o644))
+
+		_, err := Load("", mainFile, "")
+		require.Error(t, err)
+		require.ErrorIs(t, err, errImportPathOutsideRoot)
 	})
 }

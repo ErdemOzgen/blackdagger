@@ -1,0 +1,10 @@
+name: import-example
+imports:
+  - ./common_steps
+  - ./notify_steps
+
+steps:
+  - name: run_pipeline
+    command: echo "running pipeline"
+    depends:
+      - validate_data

@@ -1,0 +1,20 @@
+steps:
+  - name: run_ansible_playbook
+    executor:
+      type: ansible
+      config:
+        binary: ansible-playbook
+        playbook: deploy/site.yml
+        inventory: inventory/prod.ini
+        tags:
+          - deploy
+          - app
+        extraVars:
+          image_tag: "1.2.3"
+          environment: "prod"
+        become: true
+        forks: 20
+        diff: true
+        check: false
+        env:
+          ANSIBLE_STDOUT_CALLBACK: yaml

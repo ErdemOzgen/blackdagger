@@ -1,0 +1,21 @@
+steps:
+  - name: terraform_apply
+    executor:
+      type: terraform
+      config:
+        binary: terraform
+        workingDir: ./infra
+        init: true
+        initArgs:
+          - -upgrade
+        subcommand: apply
+        varFiles:
+          - env/prod.tfvars
+        vars:
+          image_tag: "1.2.3"
+          region: "us-east-1"
+        targets:
+          - module.app
+        autoApprove: true
+        env:
+          TF_IN_AUTOMATION: "true"

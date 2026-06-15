@@ -15,6 +15,7 @@ import (
 	"github.com/ErdemOzgen/blackdagger/internal/client"
 	"github.com/ErdemOzgen/blackdagger/internal/dag"
 	"github.com/ErdemOzgen/blackdagger/internal/dag/scheduler"
+	"github.com/ErdemOzgen/blackdagger/internal/logforward"
 	"github.com/ErdemOzgen/blackdagger/internal/logger"
 	"github.com/ErdemOzgen/blackdagger/internal/mailer"
 	"github.com/ErdemOzgen/blackdagger/internal/persistence"
@@ -42,6 +43,8 @@ type Agent struct {
 	logDir       string
 	logFile      string
 	logger       logger.Logger
+	logSink      logforward.Sink
+	forwardLogs  bool
 
 	// requestID is request ID to identify DAG execution uniquely.
 	// The request ID can be used for history lookup, retry, etc.
@@ -60,6 +63,11 @@ type Options struct {
 	// If it's specified the agent will execute the DAG with the same
 	// configuration as the specified history.
 	RetryTarget *model.Status
+	// LogSink forwards execution logs to a central sink when provided.
+	LogSink logforward.Sink
+	// ForwardStepOutput enables forwarding step stdout/stderr files in addition
+	// to the normal execution log stream.
+	ForwardStepOutput bool
 }
 
 // New creates a new Agent.
@@ -72,6 +80,10 @@ func New(
 	dataStore persistence.DataStores,
 	opts *Options,
 ) *Agent {
+	if opts == nil {
+		opts = &Options{}
+	}
+
 	return &Agent{
 		requestID:   requestID,
 		dag:         workflow,
@@ -82,6 +94,8 @@ func New(
 		logger:      lg,
 		client:      cli,
 		dataStore:   dataStore,
+		logSink:     opts.LogSink,
+		forwardLogs: opts.ForwardStepOutput,
 	}
 }
 
@@ -98,6 +112,13 @@ var (
 func (a *Agent) Run(ctx context.Context) error {
 	if err := a.setup(); err != nil {
 		return err
+	}
+	if closer, ok := a.logSink.(logforward.Closer); ok {
+		defer func() {
+			if err := closer.Close(context.Background()); err != nil {
+				a.logger.Error("Log forwarding close failed", "error", err)
+			}
+		}()
 	}
 
 	// It should not run the DAG if the condition is unmet.
@@ -324,6 +345,9 @@ func (a *Agent) newScheduler() *scheduler.Scheduler {
 		Delay:         a.dag.Delay,
 		Dry:           a.dry,
 		ReqID:         a.requestID,
+		DAGName:       a.dag.Name,
+		LogSink:       a.logSink,
+		ForwardOutput: a.forwardLogs,
 	}
 
 	if a.dag.HandlerOn.Exit != nil {
@@ -348,6 +372,14 @@ func (a *Agent) newScheduler() *scheduler.Scheduler {
 // dryRun performs a dry-run of the DAG. It only simulates the execution of
 // the DAG without running the actual command.
 func (a *Agent) dryRun() error {
+	if closer, ok := a.logSink.(logforward.Closer); ok {
+		defer func() {
+			if err := closer.Close(context.Background()); err != nil {
+				a.logger.Error("Log forwarding close failed", "error", err)
+			}
+		}()
+	}
+
 	// done channel receives the node when the node is done.
 	// It's a way to update the status in real-time in efficient manner.
 	done := make(chan *scheduler.Node)

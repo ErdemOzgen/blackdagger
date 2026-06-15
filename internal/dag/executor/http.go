@@ -40,6 +40,9 @@ type httpJSONResult struct {
 	Body       any                 `json:"body"`
 }
 
+var errHTTPStatusCode = errors.New("http status code not 2xx")
+var errHTTPURLRequired = errors.New("http executor url is required")
+
 func newHTTP(ctx context.Context, step dag.Step) (Executor, error) {
 	var reqCfg httpConfig
 	if len(step.Script) > 0 {
@@ -56,6 +59,18 @@ func newHTTP(ctx context.Context, step dag.Step) (Executor, error) {
 		for k, v := range reqCfg.Headers {
 			reqCfg.Headers[k] = os.ExpandEnv(v)
 		}
+		for k, v := range reqCfg.Query {
+			reqCfg.Query[k] = os.ExpandEnv(v)
+		}
+	}
+
+	method := strings.TrimSpace(os.ExpandEnv(step.Command))
+	url := ""
+	if len(step.Args) > 0 {
+		url = strings.TrimSpace(os.ExpandEnv(step.Args[0]))
+	}
+	if url == "" {
+		return nil, errHTTPURLRequired
 	}
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -79,8 +94,8 @@ func newHTTP(ctx context.Context, step dag.Step) (Executor, error) {
 		stdout:    os.Stdout,
 		req:       req,
 		reqCancel: cancel,
-		method:    step.Command,
-		url:       step.Args[0],
+		method:    method,
+		url:       url,
 		cfg:       &reqCfg,
 	}, nil
 }
@@ -98,15 +113,12 @@ func (e *http) Kill(_ os.Signal) error {
 	return nil
 }
 
-var errHTTPStatusCode = errors.New("http status code not 2xx")
-
 func (e *http) writeJSONResult(rsp *resty.Response) error {
 	var (
 		httpJSONResultData  = &httpJSONResult{}
 		err                 error
 		httpJSONResultBytes []byte
 	)
-
 	if !rsp.IsSuccess() || !e.cfg.Silent {
 		httpJSONResultData.Headers = rsp.Header()
 		httpJSONResultData.StatusCode = rsp.StatusCode()

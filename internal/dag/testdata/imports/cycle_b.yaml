@@ -1,0 +1,5 @@
+imports:
+  - cycle_a
+steps:
+  - name: cycle-b-step
+    command: echo b

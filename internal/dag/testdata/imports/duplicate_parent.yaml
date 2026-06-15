@@ -1,0 +1,5 @@
+imports:
+  - duplicate_child
+steps:
+  - name: duplicate-step
+    command: echo duplicate-parent

@@ -44,6 +44,24 @@ type Config struct {
 	RemoteNodes         []RemoteNode
 	SkipInitialDAGPulls bool   // Skip initial DAG pulls
 	DAGRepo             string // DAG repository URL prefix
+	LogForwarding       *LogForwardingConfig
+}
+
+type LogForwardingConfig struct {
+	Enabled           bool              `mapstructure:"enabled"`
+	SinkType          string            `mapstructure:"sinkType"`
+	HTTPURL           string            `mapstructure:"httpURL"`
+	TimeoutSec        int               `mapstructure:"timeoutSec"`
+	Headers           map[string]string `mapstructure:"headers"`
+	IncludeStepOutput bool              `mapstructure:"includeStepOutput"`
+	QueueSize         int               `mapstructure:"queueSize"`
+	MaxRetries        int               `mapstructure:"maxRetries"`
+	InitialBackoffMS  int               `mapstructure:"initialBackoffMS"`
+	MaxBackoffMS      int               `mapstructure:"maxBackoffMS"`
+	MonitorEnabled    bool              `mapstructure:"monitorEnabled"`
+	MonitorHost       string            `mapstructure:"monitorHost"`
+	MonitorPort       int               `mapstructure:"monitorPort"`
+	MonitorBasePath   string            `mapstructure:"monitorBasePath"`
 }
 
 type TLS struct {
@@ -146,6 +164,18 @@ func setupViper() error {
 	viper.SetDefault("latestStatusToday", true)
 	viper.SetDefault("skipInitialDAGPulls", false)
 	viper.SetDefault("dagRepo", "https://github.com/ErdemOzgen/blackdagger-")
+	viper.SetDefault("logForwarding.enabled", false)
+	viper.SetDefault("logForwarding.sinkType", "http")
+	viper.SetDefault("logForwarding.timeoutSec", 5)
+	viper.SetDefault("logForwarding.includeStepOutput", false)
+	viper.SetDefault("logForwarding.queueSize", 256)
+	viper.SetDefault("logForwarding.maxRetries", 3)
+	viper.SetDefault("logForwarding.initialBackoffMS", 100)
+	viper.SetDefault("logForwarding.maxBackoffMS", 2000)
+	viper.SetDefault("logForwarding.monitorEnabled", false)
+	viper.SetDefault("logForwarding.monitorHost", "127.0.0.1")
+	viper.SetDefault("logForwarding.monitorPort", 8091)
+	viper.SetDefault("logForwarding.monitorBasePath", "/log-forwarding")
 	// Logging configurations
 	viper.SetDefault("logLevel", "info")
 	viper.SetDefault("logFormat", "text")
@@ -217,6 +247,19 @@ func bindEnvs() {
 	_ = viper.BindEnv("latestStatusToday", "BLACKDAGGER_LATEST_STATUS")
 	_ = viper.BindEnv("skipInitialDAGPulls", "BLACKDAGGER_SKIP_INITIAL_DAG_PULLS")
 	_ = viper.BindEnv("dagRepo", "BLACKDAGGER_DAG_REPO")
+	_ = viper.BindEnv("logForwarding.enabled", "BLACKDAGGER_LOG_FORWARDING_ENABLED")
+	_ = viper.BindEnv("logForwarding.sinkType", "BLACKDAGGER_LOG_FORWARDING_SINK_TYPE")
+	_ = viper.BindEnv("logForwarding.httpURL", "BLACKDAGGER_LOG_FORWARDING_HTTP_URL")
+	_ = viper.BindEnv("logForwarding.timeoutSec", "BLACKDAGGER_LOG_FORWARDING_TIMEOUT_SEC")
+	_ = viper.BindEnv("logForwarding.includeStepOutput", "BLACKDAGGER_LOG_FORWARDING_INCLUDE_STEP_OUTPUT")
+	_ = viper.BindEnv("logForwarding.queueSize", "BLACKDAGGER_LOG_FORWARDING_QUEUE_SIZE")
+	_ = viper.BindEnv("logForwarding.maxRetries", "BLACKDAGGER_LOG_FORWARDING_MAX_RETRIES")
+	_ = viper.BindEnv("logForwarding.initialBackoffMS", "BLACKDAGGER_LOG_FORWARDING_INITIAL_BACKOFF_MS")
+	_ = viper.BindEnv("logForwarding.maxBackoffMS", "BLACKDAGGER_LOG_FORWARDING_MAX_BACKOFF_MS")
+	_ = viper.BindEnv("logForwarding.monitorEnabled", "BLACKDAGGER_LOG_FORWARDING_MONITOR_ENABLED")
+	_ = viper.BindEnv("logForwarding.monitorHost", "BLACKDAGGER_LOG_FORWARDING_MONITOR_HOST")
+	_ = viper.BindEnv("logForwarding.monitorPort", "BLACKDAGGER_LOG_FORWARDING_MONITOR_PORT")
+	_ = viper.BindEnv("logForwarding.monitorBasePath", "BLACKDAGGER_LOG_FORWARDING_MONITOR_BASE_PATH")
 }
 
 func loadLegacyEnvs(cfg *Config) {

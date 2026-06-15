@@ -1,0 +1,5 @@
+steps:
+  - name: notify
+    command: echo "notifying"
+    depends:
+      - run_pipeline

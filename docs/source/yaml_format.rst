@@ -13,6 +13,7 @@ This section provides a comprehensive list of available fields that can be used 
 
 - ``name``: The name of the DAG, which is optional. The default name is the name of the file.
 - ``description``: A brief description of the DAG.
+- ``imports``: A list of DAG files to import for modular workflow composition.
 - ``schedule``: The execution schedule of the DAG in Cron expression format.
 - ``group``: The group name to organize DAGs, which is optional.
 - ``tags``: Free tags that can be used to categorize DAGs, separated by commas.
@@ -136,6 +137,49 @@ The minimal DAG definition is as simple as follows.
       command: echo world
       depends:
         - step 1
+
+Importing DAG Files
+-------------------
+
+You can compose modular workflows by importing one or more DAG files with the ``imports`` field.
+
+Imported files currently contribute their ``steps`` and ``functions`` definitions, and nested imports are supported. Circular imports are rejected.
+
+.. code-block:: yaml
+
+  # main_workflow.yaml
+  name: modular-workflow
+  imports:
+    - ./common_steps
+    - ./notify_steps
+
+  steps:
+    - name: run_pipeline
+      command: echo "running"
+      depends:
+        - validate_data
+
+.. code-block:: yaml
+
+  # common_steps.yaml
+  steps:
+    - name: prepare_data
+      command: echo "preparing"
+    - name: validate_data
+      command: echo "validating"
+      depends:
+        - prepare_data
+
+.. code-block:: yaml
+
+  # notify_steps.yaml
+  steps:
+    - name: notify
+      command: echo "done"
+      depends:
+        - run_pipeline
+
+See also the runnable example files in ``examples/imports``.
 
 .. _specifying working dir:
 
@@ -327,6 +371,32 @@ It is often desirable to take action when a specific event happens, for example,
   steps:
     - name: A task
       command: main.sh
+
+You can also use executors in lifecycle hooks. For HTTP callbacks, prefer the
+``webhook`` executor because URL, method, headers, and body are explicit in
+the executor config.
+
+.. code-block:: yaml
+
+  handlerOn:
+    success:
+      executor:
+        type: webhook
+        config:
+          url: "${CALLBACK_URL}"
+          method: "POST"
+          headers:
+            Content-Type: "application/json"
+          body: '{"status":"COMPLETED"}'
+    failure:
+      executor:
+        type: webhook
+        config:
+          url: "${CALLBACK_URL}"
+          method: "POST"
+          headers:
+            Content-Type: "application/json"
+          body: '{"status":"FAILED"}'
 
 Repeating a Task at Regular Intervals
 -------------------------------------

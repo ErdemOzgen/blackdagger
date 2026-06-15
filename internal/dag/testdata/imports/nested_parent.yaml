@@ -1,0 +1,6 @@
+name: nested-parent
+imports:
+  - nested_child
+steps:
+  - name: nested-local-step
+    command: echo nested-local

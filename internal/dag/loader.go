@@ -18,8 +18,15 @@ import (
 )
 
 var (
-	errConfigFileRequired = errors.New("config file was not specified")
-	errReadFile           = errors.New("failed to read file")
+	errConfigFileRequired    = errors.New("config file was not specified")
+	errReadFile              = errors.New("failed to read file")
+	errInvalidImportPath     = errors.New("invalid import path")
+	errImportPathOutsideRoot = errors.New(
+		"import path must stay within root dag directory",
+	)
+	errCircularImport     = errors.New("circular import detected")
+	errImportsRequirePath = errors.New("imports require a file path")
+	errDuplicateStepName  = errors.New("duplicate step name")
 )
 
 // Load loads config from file.
@@ -69,6 +76,9 @@ func loadYAML(data []byte, opts buildOpts) (*DAG, error) {
 	if err != nil {
 		return nil, err
 	}
+	if len(def.Imports) > 0 {
+		return nil, errImportsRequirePath
+	}
 
 	b := &builder{opts: opts}
 	return b.build(def, nil)
@@ -82,14 +92,7 @@ func loadBaseConfig(file string, opts buildOpts) (*DAG, error) {
 		return nil, nil
 	}
 
-	// Load the raw data from the file.
-	raw, err := readFile(file)
-	if err != nil {
-		return nil, err
-	}
-
-	// Decode the raw data into a config definition.
-	def, err := decode(raw)
+	def, err := loadDefinitionWithImportsFromFile(file)
 	if err != nil {
 		return nil, err
 	}
@@ -120,14 +123,7 @@ func loadDAG(dag string, opts buildOpts) (*DAG, error) {
 		return nil, err
 	}
 
-	// Load the raw data from the file.
-	raw, err := readFile(file)
-	if err != nil {
-		return nil, err
-	}
-
-	// Decode the raw data into a config definition.
-	def, err := decode(raw)
+	def, err := loadDefinitionWithImportsFromFile(file)
 	if err != nil {
 		return nil, err
 	}
@@ -257,6 +253,172 @@ func decode(cm map[string]any) (*definition, error) {
 	err := md.Decode(cm)
 
 	return c, err
+}
+
+// loadDefinitionWithImports loads a definition from a file and recursively
+// merges imported definitions into the returned definition.
+func loadDefinitionWithImportsFromFile(file string) (*definition, error) {
+	rootDir, err := importRootDir(file)
+	if err != nil {
+		return nil, err
+	}
+
+	return loadDefinitionWithImports(file, rootDir, map[string]struct{}{})
+}
+
+func loadDefinitionWithImports(
+	file, rootDir string, loading map[string]struct{},
+) (*definition, error) {
+	canonicalFile, err := canonicalizeFilePath(file)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, ok := loading[canonicalFile]; ok {
+		return nil, fmt.Errorf("%w: %s", errCircularImport, canonicalFile)
+	}
+
+	loading[canonicalFile] = struct{}{}
+	defer delete(loading, canonicalFile)
+
+	raw, err := readFile(canonicalFile)
+	if err != nil {
+		return nil, err
+	}
+
+	def, err := decode(raw)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(def.Imports) == 0 {
+		return def, nil
+	}
+
+	var importedFns []*funcDef
+	var importedSteps []*stepDef
+
+	for _, importPath := range def.Imports {
+		resolvedPath, err := resolveImportPath(canonicalFile, importPath, rootDir)
+		if err != nil {
+			return nil, err
+		}
+
+		importedDef, err := loadDefinitionWithImports(
+			resolvedPath, rootDir, loading,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		importedFns = append(importedFns, importedDef.Functions...)
+		importedSteps = append(importedSteps, importedDef.Steps...)
+	}
+
+	def.Functions = append(importedFns, def.Functions...)
+	def.Steps = append(importedSteps, def.Steps...)
+	def.Imports = nil
+
+	if err := validateStepNames(def.Steps); err != nil {
+		return nil, err
+	}
+
+	return def, nil
+}
+
+func resolveImportPath(file, importPath, rootDir string) (string, error) {
+	importPath = strings.TrimSpace(importPath)
+	if importPath == "" {
+		return "", errInvalidImportPath
+	}
+
+	if !strings.HasSuffix(importPath, ".yaml") &&
+		!strings.HasSuffix(importPath, ".yml") {
+		importPath = fmt.Sprintf("%s.yaml", importPath)
+	}
+
+	if !filepath.IsAbs(importPath) {
+		importPath = filepath.Join(filepath.Dir(file), importPath)
+	}
+
+	resolvedPath, err := filepath.Abs(importPath)
+	if err != nil {
+		return "", fmt.Errorf("%w: %s", errInvalidImportPath, importPath)
+	}
+
+	if !isPathWithinRoot(resolvedPath, rootDir) {
+		return "", fmt.Errorf("%w: %s", errImportPathOutsideRoot, importPath)
+	}
+
+	if evaluatedPath, err := filepath.EvalSymlinks(resolvedPath); err == nil {
+		resolvedPath = evaluatedPath
+		if !isPathWithinRoot(resolvedPath, rootDir) {
+			return "", fmt.Errorf(
+				"%w: %s", errImportPathOutsideRoot, importPath,
+			)
+		}
+	}
+
+	return resolvedPath, nil
+}
+
+func validateStepNames(steps []*stepDef) error {
+	seen := map[string]struct{}{}
+	for _, step := range steps {
+		if step == nil || step.Name == "" {
+			continue
+		}
+		if _, ok := seen[step.Name]; ok {
+			return fmt.Errorf("%w: %s", errDuplicateStepName, step.Name)
+		}
+		seen[step.Name] = struct{}{}
+	}
+
+	return nil
+}
+
+func canonicalizeFilePath(file string) (string, error) {
+	absPath, err := filepath.Abs(file)
+	if err != nil {
+		return "", err
+	}
+
+	if evaluatedPath, err := filepath.EvalSymlinks(absPath); err == nil {
+		return evaluatedPath, nil
+	}
+
+	return absPath, nil
+}
+
+func importRootDir(file string) (string, error) {
+	absFilePath, err := filepath.Abs(file)
+	if err != nil {
+		return "", err
+	}
+
+	rootDir := filepath.Dir(absFilePath)
+	if evaluatedRootDir, err := filepath.EvalSymlinks(rootDir); err == nil {
+		return evaluatedRootDir, nil
+	}
+
+	return rootDir, nil
+}
+
+func isPathWithinRoot(path, rootDir string) bool {
+	relPath, err := filepath.Rel(rootDir, path)
+	if err != nil {
+		return false
+	}
+
+	if relPath == ".." {
+		return false
+	}
+
+	if strings.HasPrefix(relPath, ".."+string(os.PathSeparator)) {
+		return false
+	}
+
+	return true
 }
 
 // merge merges the source DAG into the destination DAG.

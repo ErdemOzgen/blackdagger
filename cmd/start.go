@@ -76,6 +76,10 @@ func startCmd() *cobra.Command {
 
 			dataStore := newDataStores(cfg)
 			cli := newClient(cfg, dataStore, agentLogger)
+			logSink, forwardOutput, err := newLogForwarding(cfg, agentLogger)
+			if err != nil {
+				agentLogger.Fatal("Log forwarding setup failed", "error", err)
+			}
 
 			agentLogger.Info("Workflow execution initiated",
 				"workflow", workflow.Name,
@@ -90,7 +94,10 @@ func startCmd() *cobra.Command {
 				logFile.Name(),
 				cli,
 				dataStore,
-				&agent.Options{})
+				&agent.Options{
+					LogSink:           logSink,
+					ForwardStepOutput: forwardOutput,
+				})
 
 			ctx := cmd.Context()
 

@@ -7,6 +7,7 @@ type definition struct {
 	Name              string
 	Group             string
 	Description       string
+	Imports           []string
 	Schedule          any
 	LogDir            string
 	Env               any

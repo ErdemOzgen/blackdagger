@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/ErdemOzgen/blackdagger/internal/dag"
+	"github.com/ErdemOzgen/blackdagger/internal/logforward"
 	"github.com/ErdemOzgen/blackdagger/internal/logger"
 )
 
@@ -51,6 +52,9 @@ type Scheduler struct {
 	onFailure     *dag.Step
 	onCancel      *dag.Step
 	requestID     string
+	dagName       string
+	logSink       logforward.Sink
+	forwardOutput bool
 
 	canceled  int32
 	mu        sync.RWMutex
@@ -76,6 +80,9 @@ func New(cfg *Config) *Scheduler {
 		onFailure:     cfg.OnFailure,
 		onCancel:      cfg.OnCancel,
 		requestID:     cfg.ReqID,
+		dagName:       cfg.DAGName,
+		logSink:       cfg.LogSink,
+		forwardOutput: cfg.ForwardOutput,
 		pause:         time.Millisecond * 100,
 	}
 }
@@ -92,6 +99,9 @@ type Config struct {
 	OnFailure     *dag.Step
 	OnCancel      *dag.Step
 	ReqID         string
+	DAGName       string
+	LogSink       logforward.Sink
+	ForwardOutput bool
 }
 
 // Schedule runs the graph of steps.
@@ -266,7 +276,13 @@ func (sc *Scheduler) setLastError(err error) {
 
 func (sc *Scheduler) setupNode(node *Node) error {
 	if !sc.dry {
-		return node.setup(sc.logDir, sc.requestID)
+		return node.setupWithForwarding(
+			sc.logDir,
+			sc.requestID,
+			sc.dagName,
+			sc.logSink,
+			sc.forwardOutput,
+		)
 	}
 	return nil
 }
@@ -396,7 +412,13 @@ func (sc *Scheduler) runHandlerNode(ctx context.Context, node *Node) error {
 	node.setStatus(NodeStatusRunning)
 
 	if !sc.dry {
-		err := node.setup(sc.logDir, sc.requestID)
+		err := node.setupWithForwarding(
+			sc.logDir,
+			sc.requestID,
+			sc.dagName,
+			sc.logSink,
+			sc.forwardOutput,
+		)
 		if err != nil {
 			node.setStatus(NodeStatusError)
 			return nil
