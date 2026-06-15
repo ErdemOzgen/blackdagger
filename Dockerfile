@@ -2,7 +2,7 @@
 
 FROM ubuntu:latest
 
-ARG VERSION=1.1.4
+ARG VERSION=2.0.0
 ARG RELEASES_URL="https://github.com/ErdemOzgen/blackdagger/releases"
 
 EXPOSE 8080
