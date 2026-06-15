@@ -21,6 +21,32 @@ How Can I Retry a DAG from a Specific Task?
 
 If you want to retry a DAG from a specific task, you can set the status of that task to `failed` by clicking the step in the Web UI. When you rerun the DAG, it will execute the failed task and any subsequent tasks.
 
+Can I Use Symlinked DAG Files and Still Edit SPEC in the Web UI?
+-----------------------------------------------------------------
+
+Yes. Blackdagger supports DAG files that are symlinked and can also work when
+the configured DAG directory is a symlink.
+
+If SPEC cannot be shown or saved:
+
+- Ensure the process user has read and write permissions for the symlink
+	target files.
+- Ensure files use ``.yaml`` or ``.yml`` extensions.
+- As a fallback, set ``BLACKDAGGER_DAGS`` to the real target directory path
+	instead of the symlink path.
+
+Can I Run the Same DAG in Parallel with Different Parameters?
+-------------------------------------------------------------
+
+Not natively in the current runtime. A DAG is guarded by a single local socket,
+so only one active run of the same DAG is allowed at a time.
+
+Workarounds:
+
+- Use separate DAG files for each parameter set.
+- Use one orchestrator DAG that fans out work in parallel inside a step
+	(for example with ``xargs -P`` or GNU parallel).
+
 How Does It Track Running Processes Without DBMS?
 -------------------------------------------------
 

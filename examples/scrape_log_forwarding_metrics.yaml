@@ -1,0 +1,8 @@
+name: scrape-log-forwarding-metrics
+
+steps:
+  - name: scrape_prometheus_metrics
+    command: curl
+    args:
+      - -fsS
+      - http://127.0.0.1:8091/log-forwarding/metrics/prometheus

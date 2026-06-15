@@ -1,0 +1,6 @@
+name: parent
+imports:
+  - child
+steps:
+  - name: local-step
+    command: echo local

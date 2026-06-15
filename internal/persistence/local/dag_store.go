@@ -22,6 +22,13 @@ type dagStoreImpl struct {
 	metaCache *filecache.Cache[*dag.DAG]
 }
 
+func (d *dagStoreImpl) dagsRootDir() string {
+	if resolved, err := filepath.EvalSymlinks(d.dir); err == nil {
+		return resolved
+	}
+	return d.dir
+}
+
 type NewDAGStoreArgs struct {
 	Dir string
 }
@@ -145,20 +152,26 @@ func exists(file string) bool {
 
 func (d *dagStoreImpl) fileLocation(name string) (string, error) {
 	if filepath.IsAbs(name) {
-		// If the name is already an absolute path, return it as-is
-		return name, nil
+		if util.FileExists(name) {
+			return name, nil
+		}
+		withExt := util.AddYamlExtension(name)
+		if util.FileExists(withExt) {
+			return withExt, nil
+		}
+		return "", fmt.Errorf("workflow %s not found", name)
 	}
 	loc, err := d.resolve(name)
 	if err != nil {
 		return "", err
 	}
-	fmt.Printf("file location: %s\n", loc)
-	return util.AddYamlExtension(loc), nil
+	return loc, nil
 }
 
 func (d *dagStoreImpl) ensureDirExist() error {
-	if !exists(d.dir) {
-		if err := os.MkdirAll(d.dir, 0755); err != nil {
+	rootDir := d.dagsRootDir()
+	if !exists(rootDir) {
+		if err := os.MkdirAll(rootDir, 0755); err != nil {
 			return err
 		}
 	}
@@ -215,7 +228,7 @@ func (d *dagStoreImpl) ListPagination(params persistence.DAGListPaginationArgs) 
 		currentDag *dag.DAG
 	)
 
-	err := filepath.WalkDir(d.dir, func(path string, dir fs.DirEntry, err error) error {
+	err := filepath.WalkDir(d.dagsRootDir(), func(path string, dir fs.DirEntry, err error) error {
 		if err != nil {
 			errList = append(errList, fmt.Sprintf("error accessing %s: %s", path, err))
 			return nil
@@ -268,7 +281,7 @@ func (d *dagStoreImpl) List() (ret []*dag.DAG, errs []string, err error) {
 		return
 	}
 
-	err = filepath.WalkDir(d.dir, func(path string, dir fs.DirEntry, err error) error {
+	err = filepath.WalkDir(d.dagsRootDir(), func(path string, dir fs.DirEntry, err error) error {
 		if err != nil {
 			errs = append(errs, fmt.Sprintf("error accessing %s: %s", path, err))
 			return nil
@@ -315,7 +328,7 @@ func (d *dagStoreImpl) Grep(pattern string) (ret []*persistence.GrepResult, errs
 		return
 	}
 
-	err = filepath.WalkDir(d.dir, func(path string, dir fs.DirEntry, err error) error {
+	err = filepath.WalkDir(d.dagsRootDir(), func(path string, dir fs.DirEntry, err error) error {
 		if err != nil {
 			errs = append(errs, fmt.Sprintf("error accessing %s: %s", path, err))
 			return nil
@@ -407,7 +420,7 @@ func (d *dagStoreImpl) resolve(name string) (string, error) {
 
 	// Search recursively under d.dir
 	var foundPath string
-	err := filepath.WalkDir(d.dir, func(path string, dir fs.DirEntry, err error) error {
+	err := filepath.WalkDir(d.dagsRootDir(), func(path string, dir fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -444,7 +457,7 @@ func (d *dagStoreImpl) TagList() ([]string, []string, error) {
 		currentDag *dag.DAG
 	)
 
-	err := filepath.WalkDir(d.dir, func(path string, dir fs.DirEntry, err error) error {
+	err := filepath.WalkDir(d.dagsRootDir(), func(path string, dir fs.DirEntry, err error) error {
 		if err != nil {
 			errList = append(errList, fmt.Sprintf("error accessing %s: %s", path, err))
 			return nil

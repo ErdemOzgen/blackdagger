@@ -132,6 +132,11 @@ func restartCmd() *cobra.Command {
 					LogFile: logFile,
 					Quiet:   quiet,
 				})
+				logSink, forwardOutput, err := newLogForwarding(cfg, agentLogger)
+				if err != nil {
+					agentLogger.Fatal("Log forwarding setup failed", "error", err)
+					continue
+				}
 
 				agentLogger.Info("Workflow restart initiated",
 					"workflow", workflow.Name,
@@ -146,7 +151,11 @@ func restartCmd() *cobra.Command {
 					logFile.Name(),
 					newClient(cfg, dataStore, agentLogger),
 					dataStore,
-					&agent.Options{Dry: false},
+					&agent.Options{
+						Dry:               false,
+						LogSink:           logSink,
+						ForwardStepOutput: forwardOutput,
+					},
 				)
 
 				listenSignals(cmd.Context(), agt)

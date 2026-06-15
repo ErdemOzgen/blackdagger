@@ -363,6 +363,7 @@ It greps given text across all DAGs.
 - [Web User Interface](https://blackdagger.readthedocs.io/en/latest/web_interface.html)
 - YAML Format
   - [Minimal DAG Definition](https://blackdagger.readthedocs.io/en/latest/yaml_format.html#minimal-dag-definition)
+  - [Importing DAG Files](https://blackdagger.readthedocs.io/en/latest/yaml_format.html#importing-dag-files)
   - [Running Arbitrary Code Snippets](https://blackdagger.readthedocs.io/en/latest/yaml_format.html#running-arbitrary-code-snippets)
   - [Defining Environment Variables](https://blackdagger.readthedocs.io/en/latest/yaml_format.html#defining-environment-variables)
   - [Defining and Using Parameters](https://blackdagger.readthedocs.io/en/latest/yaml_format.html#defining-and-using-parameters)
@@ -376,11 +377,15 @@ It greps given text across all DAGs.
   - [All Available Fields for Steps](https://blackdagger.readthedocs.io/en/latest/yaml_format.html#all-available-fields-for-steps)
 - Example DAGs
   - [Hello World](https://blackdagger.readthedocs.io/en/latest/examples.html#hello-world)
+  - [Importing DAG Files](https://blackdagger.readthedocs.io/en/latest/examples.html#importing-dag-files)
   - [Conditional Steps](https://blackdagger.readthedocs.io/en/latest/examples.html#conditional-steps)
   - [File Output](https://blackdagger.readthedocs.io/en/latest/examples.html#file-output)
   - [Passing Output to Next Step](https://blackdagger.readthedocs.io/en/latest/examples.html#passing-output-to-next-step)
   - [Running a Docker Container](https://blackdagger.readthedocs.io/en/latest/examples.html#running-a-docker-container)
   - [Sending HTTP Requests](https://blackdagger.readthedocs.io/en/latest/examples.html#sending-http-requests)
+  - [Sending a Webhook](https://blackdagger.readthedocs.io/en/latest/examples.html#sending-a-webhook)
+  - [Running Terraform](https://blackdagger.readthedocs.io/en/latest/examples.html#running-terraform)
+  - [Running Ansible Playbook](https://blackdagger.readthedocs.io/en/latest/examples.html#running-ansible-playbook)
   - [Querying JSON Data with jq](https://blackdagger.readthedocs.io/en/latest/examples.html#querying-json-data-with-jq)
   - [Sending Email](https://blackdagger.readthedocs.io/en/latest/examples.html#sending-email)
 - [Configurations](https://blackdagger.readthedocs.io/en/latest/config.html)
@@ -545,12 +550,12 @@ We are excited about the journey ahead and invite the community to contribute id
   - **Description**: Triggers AWS Lambda functions, enabling serverless execution of tasks without provisioning or managing servers.
   - **Use Case**: Perfect for lightweight, event-driven tasks such as data transformation, real-time file processing, or integrating with AWS services.
 
-- [ ] **Terraform Executor**
+- [x] **Terraform Executor**
 
   - **Description**: Runs Terraform commands to apply infrastructure as code configurations, supporting the automated setup and teardown of cloud resources.
   - **Use Case**: Useful for DevOps pipelines that require dynamic environment provisioning for testing, staging, or production deployments.
 
-- [ ] **Webhook Executor**
+- [x] **Webhook Executor**
 
   - **Description**: Sends data to specified URLs via webhooks, allowing for easy integration with external systems and services.
   - **Use Case**: Ideal for triggering notifications, external workflows, or updating third-party systems as part of a workflow.
@@ -570,7 +575,7 @@ We are excited about the journey ahead and invite the community to contribute id
   - **Description**: Executes browser automation scripts using tools like Selenium or Puppeteer for web scraping, automated testing, or any task requiring browser interaction.
   - **Use Case**: Ideal for automated end-to-end web application testing, data extraction from web pages, or automating repetitive web tasks.
 
-- [ ] **Ansible Executor**
+- [x] **Ansible Executor**
 
   - **Description**: Executes Ansible playbooks for configuration management and application deployment.
   - **Use Case**: Great for ensuring consistent environment configuration, deploying applications, and managing changes across distributed infrastructure.
@@ -588,9 +593,9 @@ We are excited about the journey ahead and invite the community to contribute id
 
 - [ ] Create more executors see in [here](#executor-roadmap)
 - [ ] Create more playbooks for Default,DevOps, DevSecOps, MLOps, MLSecOps, and Continuous Automated Red Teaming (CART) environments.
-- [ ] Support for importing different DAGs within the same DAG using import statements, enabling modular workflow design.
+- [x] Support for importing different DAGs within the same DAG using import statements, enabling modular workflow design.
 - [ ] Implementation of centralized control, allowing BlackDagger to function as an agent for streamlined management.
-- [ ] Enhancement of log collection features to include forwarding logs to a central server for aggregated analysis.
+- [x] Enhancement of log collection features to include forwarding logs to a central server for aggregated analysis.
 - [ ] Addition of functionality to generate reports in DOCX and PDF formats for improved documentation and reporting.
 - [ ] Integration with ChatGPT and offline language models for automated document generation, enhancing documentation efficiency.
 

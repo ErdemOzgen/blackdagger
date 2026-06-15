@@ -103,3 +103,12 @@ Branches
 ---------
 
 * ``main``: The main branch where the source code always reflects a production-ready state.
+
+Feature Completion Checklist
+----------------------------
+
+For every new feature, include these deliverables in the same pull request:
+
+* Update user-facing documentation under ``docs/source``.
+* Add at least one runnable example workflow under ``examples``.
+* Add or update tests for the new behavior.

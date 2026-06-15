@@ -1,0 +1,3 @@
+steps:
+  - name: duplicate-step
+    command: echo duplicate-child

@@ -90,6 +90,10 @@ func retryCmd() *cobra.Command {
 			})
 
 			cli := newClient(cfg, dataStore, agentLogger)
+			logSink, forwardOutput, err := newLogForwarding(cfg, agentLogger)
+			if err != nil {
+				agentLogger.Fatal("Log forwarding setup failed", "error", err)
+			}
 
 			agentLogger.Info("Workflow retry initiated",
 				"workflow", workflow.Name,
@@ -105,7 +109,11 @@ func retryCmd() *cobra.Command {
 				logFile.Name(),
 				cli,
 				dataStore,
-				&agent.Options{RetryTarget: status.Status},
+				&agent.Options{
+					RetryTarget:       status.Status,
+					LogSink:           logSink,
+					ForwardStepOutput: forwardOutput,
+				},
 			)
 
 			ctx := cmd.Context()

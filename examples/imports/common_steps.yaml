@@ -1,0 +1,7 @@
+steps:
+  - name: prepare_data
+    command: echo "preparing data"
+  - name: validate_data
+    command: echo "validating data"
+    depends:
+      - prepare_data

@@ -1,0 +1,16 @@
+steps:
+  - name: trigger_deployment_webhook
+    executor:
+      type: webhook
+      config:
+        url: "https://example.org/hooks/deploy"
+        method: "POST"
+        timeout: 10
+        headers:
+          Authorization: "Bearer ${WEBHOOK_TOKEN}"
+          Content-Type: "application/json"
+        query:
+          env: "prod"
+        body: '{"service":"api","version":"1.2.3"}'
+        successStatusCodes: [200, 202]
+        silent: true

@@ -17,6 +17,7 @@ import (
 
 	"github.com/ErdemOzgen/blackdagger/internal/dag"
 	"github.com/ErdemOzgen/blackdagger/internal/dag/executor"
+	"github.com/ErdemOzgen/blackdagger/internal/logforward"
 	"github.com/ErdemOzgen/blackdagger/internal/util"
 )
 
@@ -39,6 +40,7 @@ type Node struct {
 	outputReader *os.File
 	scriptFile   *os.File
 	done         bool
+	forwarder    *logforward.Writer
 }
 
 type NodeData struct {
@@ -272,6 +274,16 @@ func (n *Node) cancel() {
 }
 
 func (n *Node) setup(logDir string, requestID string) error {
+	return n.setupWithForwarding(logDir, requestID, "", nil, false)
+}
+
+func (n *Node) setupWithForwarding(
+	logDir string,
+	requestID string,
+	dagName string,
+	sink logforward.Sink,
+	includeStepOutput bool,
+) error {
 	n.mu.Lock()
 	defer n.mu.Unlock()
 
@@ -305,6 +317,16 @@ func (n *Node) setup(logDir string, requestID string) error {
 	n.data.Step.Stderr = os.ExpandEnv(n.data.Step.Stderr)
 	n.data.Step.Dir = os.ExpandEnv(n.data.Step.Dir)
 
+	if sink != nil {
+		n.forwarder = logforward.NewWriter(
+			context.Background(),
+			sink,
+			requestID,
+			dagName,
+			n.data.Step.Name,
+		)
+	}
+
 	if err := n.setupLog(); err != nil {
 		return err
 	}
@@ -314,6 +336,16 @@ func (n *Node) setup(logDir string, requestID string) error {
 	if err := n.setupStderr(); err != nil {
 		return err
 	}
+
+	if includeStepOutput && n.forwarder != nil {
+		if n.stdoutWriter != nil {
+			n.stdoutWriter = bufio.NewWriter(io.MultiWriter(n.stdoutFile, n.forwarder))
+		}
+		if n.stderrWriter != nil {
+			n.stderrWriter = bufio.NewWriter(io.MultiWriter(n.stderrFile, n.forwarder))
+		}
+	}
+
 	return n.setupScript()
 }
 
@@ -385,6 +417,9 @@ func (n *Node) setupLog() error {
 		return err
 	}
 	n.logWriter = bufio.NewWriter(n.logFile)
+	if n.forwarder != nil {
+		n.logWriter = bufio.NewWriter(io.MultiWriter(n.logFile, n.forwarder))
+	}
 	return nil
 }
 func (n *Node) teardown() error {
@@ -410,6 +445,10 @@ func (n *Node) teardown() error {
 		}
 	}
 	n.logLock.Unlock()
+
+	if n.forwarder != nil {
+		n.forwarder.Flush()
+	}
 
 	if n.scriptFile != nil {
 		_ = os.Remove(n.scriptFile.Name())
