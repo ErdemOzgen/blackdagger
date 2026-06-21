@@ -83,5 +83,6 @@ While there are numerous workflow schedulers like Airflow available, these often
    :caption: FAQ and Contribution
    :hidden:  
 
+   roadmap_updates
    faq
    contrib

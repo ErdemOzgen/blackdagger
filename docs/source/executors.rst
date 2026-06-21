@@ -99,6 +99,12 @@ Making HTTP Requests
 
 The `http` executor allows us to make an arbitrary HTTP request. This can be useful for interacting with web services or APIs.
 
+Behavior notes:
+
+- URL is required. If URL cannot be resolved from the command/args, execution fails early with a clear validation error.
+- Environment variable expansion is applied to command-derived method values, URL args, config body values, and query values.
+- This makes lifecycle callback patterns (for example with ``handlerOn``) more reliable when values come from environment variables.
+
 .. code-block:: yaml
 
    steps:
@@ -139,8 +145,6 @@ The ``webhook`` executor triggers external systems by sending HTTP requests with
            successStatusCodes: [200, 202]
            silent: true
 
-See ``examples/execute_webhook.yaml`` for a runnable sample.
-
 Running Terraform Commands
 --------------------------
 
@@ -170,8 +174,6 @@ The ``terraform`` executor runs Terraform CLI commands for infrastructure workfl
            env:
              TF_IN_AUTOMATION: "true"
 
-See ``examples/execute_terraform.yaml`` for a runnable sample.
-
 Executing Ansible Playbooks
 ---------------------------
 
@@ -199,8 +201,6 @@ The ``ansible`` executor runs ``ansible-playbook`` for configuration management 
            check: false
            env:
              ANSIBLE_STDOUT_CALLBACK: yaml
-
-See ``examples/execute_ansible_playbook.yaml`` for a runnable sample.
 
 Sending Email
 -------------
