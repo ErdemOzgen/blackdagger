@@ -145,6 +145,12 @@ You can compose modular workflows by importing one or more DAG files with the ``
 
 Imported files currently contribute their ``steps`` and ``functions`` definitions, and nested imports are supported. Circular imports are rejected.
 
+Validation behavior:
+
+- Circular import chains are rejected.
+- Duplicate merge paths from nested imports are rejected to prevent ambiguous composition.
+- Import paths can be written without extension and resolve using workflow file conventions.
+
 .. code-block:: yaml
 
   # main_workflow.yaml
@@ -179,7 +185,7 @@ Imported files currently contribute their ``steps`` and ``functions`` definition
       depends:
         - run_pipeline
 
-See also the runnable example files in ``examples/imports``.
+The blocks above show complete contents for each imported workflow file.
 
 .. _specifying working dir:
 

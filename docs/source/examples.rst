@@ -108,6 +108,7 @@ Sending HTTP Requests
             "postId": "1"
           },
           "body": ""
+        }
 
 Sending a Webhook
 -----------------
@@ -130,8 +131,6 @@ Sending a Webhook
           body: '{"service":"api","version":"1.2.3"}'
           successStatusCodes: [200, 202]
           silent: true
-
-This example is also available as ``examples/execute_webhook.yaml``.
 
 Handler Callbacks with Webhooks
 -------------------------------
@@ -172,9 +171,6 @@ fails.
       script: |
         id
 
-This example is also available as
-``examples/handler_on_webhook_callback.yaml``.
-
 Running Terraform
 -----------------
 
@@ -202,8 +198,6 @@ Running Terraform
           env:
             TF_IN_AUTOMATION: "true"
 
-This example is also available as ``examples/execute_terraform.yaml``.
-
 Running Ansible Playbook
 ------------------------
 
@@ -229,9 +223,6 @@ Running Ansible Playbook
           check: false
           env:
             ANSIBLE_STDOUT_CALLBACK: yaml
-
-This example is also available as ``examples/execute_ansible_playbook.yaml``.
-        }
 
 Querying JSON Data with jq
 ----------------------------
@@ -374,7 +365,7 @@ Use ``imports`` to build modular workflows from reusable YAML files.
 
 .. code-block:: yaml
 
-  # examples/imports/main_workflow.yaml
+  # main_workflow.yaml
   name: import-example
   imports:
     - ./common_steps
@@ -388,7 +379,7 @@ Use ``imports`` to build modular workflows from reusable YAML files.
 
 .. code-block:: yaml
 
-  # examples/imports/common_steps.yaml
+  # common_steps.yaml
   steps:
     - name: prepare_data
       command: echo "preparing data"
@@ -399,7 +390,7 @@ Use ``imports`` to build modular workflows from reusable YAML files.
 
 .. code-block:: yaml
 
-  # examples/imports/notify_steps.yaml
+  # notify_steps.yaml
   steps:
     - name: notify
       command: echo "notifying"
@@ -423,4 +414,3 @@ the local monitor endpoint.
         - -fsS
         - http://127.0.0.1:8091/log-forwarding/metrics/prometheus
 
-This example is also available as ``examples/scrape_log_forwarding_metrics.yaml``.

@@ -208,4 +208,28 @@ When retries, queue drops, or terminal delivery failures occur, the command logg
 - ``event=log_forwarding_drop``
 - ``event=log_forwarding_failed``
 
-For a runnable configuration example, see ``examples/config_log_forwarding.yaml``.
+Full config.yaml example:
+
+.. code-block:: yaml
+
+    # config.yaml example for centralized log forwarding MVP
+    # monitor endpoints:
+    # - http://127.0.0.1:8091/log-forwarding/health
+    # - http://127.0.0.1:8091/log-forwarding/metrics (JSON)
+    # - http://127.0.0.1:8091/log-forwarding/metrics/prometheus
+    logForwarding:
+      enabled: true
+      sinkType: http
+      httpURL: https://logs.example.com/ingest
+      timeoutSec: 5
+      includeStepOutput: false
+      queueSize: 256
+      maxRetries: 3
+      initialBackoffMS: 100
+      maxBackoffMS: 2000
+      monitorEnabled: true
+      monitorHost: 127.0.0.1
+      monitorPort: 8091
+      monitorBasePath: /log-forwarding
+      headers:
+        Authorization: "Bearer ${LOG_FORWARDING_TOKEN}"
